@@ -26,6 +26,7 @@ import org.uriplay.media.entity.Episode;
 import org.uriplay.media.entity.Item;
 import org.uriplay.media.entity.Location;
 import org.uriplay.media.entity.Playlist;
+import org.uriplay.media.entity.Policy;
 import org.uriplay.media.entity.Version;
 
 import com.google.common.collect.BiMap;
@@ -51,6 +52,7 @@ public class NaiveTypeMap implements TypeMap {
 		map.put(Brand.class, Collections.singleton("http://purl.org/ontology/po/Brand"));
 		map.put(Item.class, Collections.singleton("http://uriplay.org/elements/Item"));
 		map.put(Playlist.class, Collections.singleton("http://uriplay.org/elements/List"));
+		map.put(Policy.class, Collections.singleton("http://uriplay.org/elements/Policy"));
 	}
 		
 	public Set<String> rdfTypes(Class<?> beanType) {
