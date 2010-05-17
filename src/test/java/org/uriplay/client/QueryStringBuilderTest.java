@@ -14,12 +14,13 @@ permissions and limitations under the License. */
 
 package org.uriplay.client;
 
-import org.jherd.util.Selection;
 import org.jmock.integration.junit3.MockObjectTestCase;
 import org.joda.time.DateTime;
 import org.uriplay.content.criteria.ContentQuery;
 import org.uriplay.content.criteria.Queries;
 import org.uriplay.content.criteria.attribute.Attributes;
+
+import com.metabroadcast.common.query.Selection;
 
 public class QueryStringBuilderTest extends MockObjectTestCase {
 

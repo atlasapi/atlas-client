@@ -15,6 +15,7 @@ permissions and limitations under the License. */
 package org.uriplay.client;
 
 import java.io.Reader;
+import java.io.StringReader;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,26 +23,25 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.jherd.remotesite.FetchException;
-import org.jherd.remotesite.http.CommonsHttpClient;
-import org.jherd.remotesite.http.RemoteSiteClient;
-import org.jherd.util.caching.FixedExpiryCache;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.Duration;
 import org.uriplay.content.criteria.ContentQuery;
 import org.uriplay.media.entity.simple.Description;
 import org.uriplay.media.entity.simple.Item;
 import org.uriplay.media.entity.simple.Playlist;
 import org.uriplay.media.entity.simple.UriplayXmlOutput;
 
-import com.google.soy.common.collect.Lists;
+import com.google.common.collect.Lists;
+import com.metabroadcast.common.cache.FixedExpiryCache;
+import com.metabroadcast.common.http.HttpClientBackedSimpleHttpClient;
+import com.metabroadcast.common.http.SimpleHttpClient;
+import com.metabroadcast.common.http.SimpleHttpClientBuilder;
 
 /**
  * @author Robert Chatley (robert@metabroadcast.com)
  */
+@SuppressWarnings("deprecation")
 public class JaxbUriplayClient implements SimpleUriplayClient {
 		
-	private final RemoteSiteClient<Reader> httpClient = new CommonsHttpClient().withConnectionTimeout(new Duration(30 * DateTimeConstants.MILLIS_PER_SECOND));
+	private final SimpleHttpClient httpClient = client();
 	
 	private final String baseUri;
 	
@@ -50,14 +50,14 @@ public class JaxbUriplayClient implements SimpleUriplayClient {
 	private QueryStringBuilder queryStringBuilder = new QueryStringBuilder();
 	
 	
-	private FixedExpiryCache<String, List<Item>> itemQueryCache = new FixedExpiryCache<String, List<Item>>(10) {
+    private FixedExpiryCache<String, List<Item>> itemQueryCache = new FixedExpiryCache<String, List<Item>>(10) {
 
 		@Override
 		protected List<Item> cacheMissFor(String query) {
 			try {
 				return extractContentOfType(retrieveData(baseUri + "/items.xml?" +  query), Item.class);
 			} catch (Exception e) {
-				throw new FetchException("Problem requesting query: " + query, e);
+				throw new RuntimeException("Problem requesting query: " + query, e);
 			} 
 		}
 	};
@@ -69,7 +69,7 @@ public class JaxbUriplayClient implements SimpleUriplayClient {
 			try {
 				return extractContentOfType(retrieveData(baseUri +  "/playlists.xml?" +  query), Playlist.class);
 			} catch (Exception e) {
-				throw new FetchException("Problem requesting query: " + query, e);
+				throw new RuntimeException("Problem requesting query: " + query, e);
 			} 
 		}
 	};
@@ -81,7 +81,7 @@ public class JaxbUriplayClient implements SimpleUriplayClient {
 			try {
 				return extractContentOfType(retrieveData(baseUri +  "/brands.xml?" +  query), Playlist.class);
 			} catch (Exception e) {
-				throw new FetchException("Problem requesting query: " + query, e);
+				throw new RuntimeException("Problem requesting query: " + query, e);
 			} 
 		}
 	};
@@ -93,7 +93,7 @@ public class JaxbUriplayClient implements SimpleUriplayClient {
 	
 
 	private List<Description> retrieveData(String queryUri) throws Exception {
-		Reader document = httpClient.get(queryUri);
+		Reader document = new StringReader(httpClient.get(queryUri));
 
 		Unmarshaller unmarshaller = context.createUnmarshaller();
 		
@@ -128,7 +128,7 @@ public class JaxbUriplayClient implements SimpleUriplayClient {
 	}
 
 	
-	@Override
+    @Override
 	public List<Item> itemQuery(ContentQuery query) {
 		return itemQueryCache.get(queryStringBuilder.build(query));
 	}
@@ -142,4 +142,10 @@ public class JaxbUriplayClient implements SimpleUriplayClient {
 	public List<Playlist> playlistQuery(ContentQuery query) {
 		return playlistQueryCache.get(queryStringBuilder.build(query));
 	}
+	
+	private static HttpClientBackedSimpleHttpClient client() {
+        return new SimpleHttpClientBuilder().
+            withUserAgent("Mozilla/5.0 (compatible; uriplay/2.0; +http://uriplay.org)")
+        .build();
+    }
 }

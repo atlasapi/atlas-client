@@ -1,9 +1,10 @@
 package org.uriplay.content.presentation;
 
-import org.jherd.model.simple.ModelBuilder;
-import org.jherd.model.simple.SimpleModel;
 import org.uriplay.media.entity.Brand;
 import org.uriplay.media.entity.Item;
+
+import com.metabroadcast.common.model.ModelBuilder;
+import com.metabroadcast.common.model.SimpleModel;
 
 /**
  * Renders the 'simple' (non-relational) attributes of a {@link Brand}

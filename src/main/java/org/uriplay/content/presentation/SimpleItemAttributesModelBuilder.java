@@ -3,13 +3,13 @@ package org.uriplay.content.presentation;
 import java.util.List;
 import java.util.Set;
 
-import org.jherd.model.simple.ModelBuilder;
-import org.jherd.model.simple.SimpleModel;
 import org.uriplay.media.entity.Brand;
 import org.uriplay.media.entity.Item;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.soy.common.collect.Lists;
+import com.metabroadcast.common.model.ModelBuilder;
+import com.metabroadcast.common.model.SimpleModel;
 
 
 /**

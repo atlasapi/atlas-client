@@ -16,11 +16,12 @@ package org.uriplay.client;
 
 import java.util.Set;
 
-import org.jherd.util.Selection;
 import org.uriplay.media.entity.Brand;
 import org.uriplay.media.entity.Description;
 import org.uriplay.media.entity.Item;
 import org.uriplay.media.entity.Playlist;
+
+import com.metabroadcast.common.query.Selection;
 
 /**
  * Client interface to the URIplay service.

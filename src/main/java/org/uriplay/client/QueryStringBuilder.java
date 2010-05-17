@@ -19,7 +19,6 @@ import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
 
-import org.jherd.util.Selection;
 import org.joda.time.DateTime;
 import org.uriplay.content.criteria.AttributeQuery;
 import org.uriplay.content.criteria.BooleanAttributeQuery;
@@ -35,6 +34,8 @@ import org.uriplay.content.criteria.attribute.Attribute;
 import org.uriplay.content.criteria.operator.Operator;
 import org.uriplay.content.criteria.operator.Operators;
 import org.uriplay.content.criteria.operator.Operators.Equals;
+
+import com.metabroadcast.common.query.Selection;
 
 public class QueryStringBuilder {
 

@@ -17,8 +17,9 @@ package org.uriplay.client;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import org.jherd.util.Selection;
 import org.uriplay.remotesite.aggregator.Profile;
+
+import com.metabroadcast.common.query.Selection;
 
 
 public class UriplayRequestBuilder {
