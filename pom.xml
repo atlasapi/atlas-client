@@ -23,23 +23,11 @@
             <groupId>uriplay-media-reference</groupId>
             <artifactId>uriplay-media-reference</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jherd</groupId>
-                    <artifactId>jherd</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>uriplay-persistence</groupId>
             <artifactId>uriplay-persistence</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jherd</groupId>
-                    <artifactId>jherd</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
