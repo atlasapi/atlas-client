@@ -50,12 +50,12 @@
             <version>2.3</version>
         </dependency>
     </dependencies>
-    
+
     <scm>
         <connection>scm:svn:https://uriplay.googlecode.com/svn/uriplay-local-remote-client/trunk/</connection>
         <developerConnection>scm:svn:http://uriplay.googlecode.com/svn/uriplay-local-remote-client/trunk/</developerConnection>
     </scm>
-    
+
     <distributionManagement>
         <repository>
             <id>metabroadcast-mvn</id>
@@ -78,7 +78,7 @@
             <layout>default</layout>
         </repository>
     </repositories>
-    
+
     <properties>
         <common.version>1.0-SNAPSHOT</common.version>
     </properties>
