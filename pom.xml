@@ -30,12 +30,12 @@
         <dependency>
             <groupId>org.uriplay</groupId>
             <artifactId>uriplay-media-reference</artifactId>
-            <version>${project.version}</version>
+            <version>${uriplay.version}</version>
         </dependency>
         <dependency>
             <groupId>org.uriplay</groupId>
             <artifactId>uriplay-persistence</artifactId>
-            <version>${project.version}</version>
+            <version>${uriplay.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -89,5 +89,6 @@
 
     <properties>
         <common.version>1.0-SNAPSHOT</common.version>
+        <uriplay.version>${project.version}</uriplay.version>
     </properties>
 </project>
