@@ -4,7 +4,7 @@ enum PublisherDisplayName {
 	
 	BBC("bbc.co.uk", "BBC iPlayer"),
 	C4("channel4.com", "Channel4 4OD" ),
-	YOUTUBE("youtube", "YouTube");
+	YOUTUBE("youtube.com", "YouTube");
 
 	private final String id;
 	private final String displayName;
