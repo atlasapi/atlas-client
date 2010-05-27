@@ -29,11 +29,12 @@ import org.uriplay.media.entity.simple.Item;
 import org.uriplay.media.entity.simple.Playlist;
 import org.uriplay.media.entity.simple.UriplayXmlOutput;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.metabroadcast.common.cache.FixedExpiryCache;
-import com.metabroadcast.common.http.HttpClientBackedSimpleHttpClient;
 import com.metabroadcast.common.http.SimpleHttpClient;
 import com.metabroadcast.common.http.SimpleHttpClientBuilder;
+import com.metabroadcast.common.url.UrlEncoding;
 
 /**
  * @author Robert Chatley (robert@metabroadcast.com)
@@ -61,6 +62,18 @@ public class JaxbUriplayClient implements SimpleUriplayClient {
 			} 
 		}
 	};
+	
+	private FixedExpiryCache<String, Description> anyQueryCache = new FixedExpiryCache<String, Description>(10) {
+
+			@Override
+			protected Description cacheMissFor(String uri) {
+				try {
+					return Iterables.getOnlyElement(retrieveData(baseUri + "/any.xml?uri=" +  UrlEncoding.encode(uri)), null);
+				} catch (Exception e) {
+					throw new RuntimeException("Problem requesting query: " + uri, e);
+				} 
+			}
+		};
 	
 	private FixedExpiryCache<String, List<Playlist>> playlistQueryCache = new FixedExpiryCache<String, List<Playlist>>(10) {
 
@@ -143,9 +156,16 @@ public class JaxbUriplayClient implements SimpleUriplayClient {
 		return playlistQueryCache.get(queryStringBuilder.build(query));
 	}
 	
-	private static HttpClientBackedSimpleHttpClient client() {
+	@Override
+	public Description anyQuery(String uri) {
+		return anyQueryCache.get(uri);
+	}
+
+	private static SimpleHttpClient client() {
         return new SimpleHttpClientBuilder().
             withUserAgent("Mozilla/5.0 (compatible; uriplay/2.0; +http://uriplay.org)")
         .build();
     }
+
+
 }

@@ -17,6 +17,7 @@ package org.uriplay.client;
 import java.util.List;
 
 import org.uriplay.content.criteria.ContentQuery;
+import org.uriplay.media.entity.simple.Description;
 import org.uriplay.media.entity.simple.Item;
 import org.uriplay.media.entity.simple.Playlist;
 
@@ -33,5 +34,7 @@ public interface SimpleUriplayClient {
 	List<Playlist> brandQuery(ContentQuery query);
 	
 	List<Playlist> playlistQuery(ContentQuery query);
+
+	Description anyQuery(String uri);
 	
 }
