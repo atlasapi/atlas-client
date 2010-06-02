@@ -21,6 +21,8 @@ import org.uriplay.media.entity.simple.Description;
 import org.uriplay.media.entity.simple.Item;
 import org.uriplay.media.entity.simple.Playlist;
 
+import com.metabroadcast.common.base.Maybe;
+
 /**
  * Client interface to the URIplay service.
  *  
@@ -35,6 +37,6 @@ public interface SimpleUriplayClient {
 	
 	List<Playlist> playlistQuery(ContentQuery query);
 
-	Description anyQuery(String uri);
+	Maybe<Description> anyQuery(String uri);
 	
 }

@@ -16,8 +16,10 @@ package org.uriplay.client;
 
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -29,9 +31,11 @@ import org.uriplay.media.entity.simple.Item;
 import org.uriplay.media.entity.simple.Playlist;
 import org.uriplay.media.entity.simple.UriplayQueryResult;
 
+import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.metabroadcast.common.cache.FixedExpiryCache;
+import com.google.common.collect.MapMaker;
+import com.google.common.collect.Sets;
+import com.metabroadcast.common.base.Maybe;
 import com.metabroadcast.common.http.SimpleHttpClient;
 import com.metabroadcast.common.http.SimpleHttpClientBuilder;
 import com.metabroadcast.common.url.UrlEncoding;
@@ -39,65 +43,76 @@ import com.metabroadcast.common.url.UrlEncoding;
 /**
  * @author Robert Chatley (robert@metabroadcast.com)
  */
-@SuppressWarnings("deprecation")
 public class JaxbUriplayClient implements SimpleUriplayClient {
 		
-	private final SimpleHttpClient httpClient = client();
+	private static final String USER_AGENT = "Mozilla/5.0 (compatible; uriplay/2.0; +http://uriplay.org)";
+
+	private final SimpleHttpClient httpClient = new SimpleHttpClientBuilder().withUserAgent(USER_AGENT).build();
 	
 	private final String baseUri;
 	
 	private JAXBContext context;
+	
 
 	private QueryStringBuilder queryStringBuilder = new QueryStringBuilder();
+
+	private final MapMaker cacheTemplate = new MapMaker().softValues().expiration(10, TimeUnit.MINUTES);
 	
 	
-    private FixedExpiryCache<String, List<Item>> itemQueryCache = new FixedExpiryCache<String, List<Item>>(10) {
+    private ConcurrentMap<String, List<Item>> itemQueryCache = cacheTemplate.makeComputingMap(new Function<String, List<Item>>() {
 
 		@Override
-		protected List<Item> cacheMissFor(String query) {
+		public List<Item> apply(String query) {
 			try {
-				return extractContentOfType(retrieveData(baseUri + "/items.xml?" +  query), Item.class);
+				return retrieveData(baseUri + "/items.xml?" +  query).getItems();
 			} catch (Exception e) {
 				throw new RuntimeException("Problem requesting query: " + query, e);
 			} 
 		}
-	};
-	
-	private FixedExpiryCache<String, Description> anyQueryCache = new FixedExpiryCache<String, Description>(10) {
+    });
+    
+    private ConcurrentMap<String, List<Playlist>> brandQueryCache = cacheTemplate.makeComputingMap(new Function<String, List<Playlist>>() {
 
-			@Override
-			protected Description cacheMissFor(String uri) {
-				try {
-					return Iterables.getOnlyElement(retrieveData(baseUri + "/any.xml?uri=" +  UrlEncoding.encode(uri)), null);
-				} catch (Exception e) {
-					throw new RuntimeException("Problem requesting query: " + uri, e);
-				} 
+		@Override
+		public List<Playlist> apply(String query) {
+			try {
+				return retrieveData(baseUri +  "/brands.xml?" +  query).getPlaylists();
+			} catch (Exception e) {
+				throw new RuntimeException("Problem requesting query: " + query, e);
 			}
-		};
-	
-	private FixedExpiryCache<String, List<Playlist>> playlistQueryCache = new FixedExpiryCache<String, List<Playlist>>(10) {
+		}
+    });
+    
+    private ConcurrentMap<String, List<Playlist>> playlistQueryCache = cacheTemplate.makeComputingMap(new Function<String, List<Playlist>>() {
 
 		@Override
-		protected List<Playlist> cacheMissFor(String query) {
+		public List<Playlist> apply(String query) {
 			try {
-				return extractContentOfType(retrieveData(baseUri +  "/playlists.xml?" +  query), Playlist.class);
+				return retrieveData(baseUri +  "/playlists.xml?" +  query).getPlaylists();
 			} catch (Exception e) {
 				throw new RuntimeException("Problem requesting query: " + query, e);
 			} 
 		}
-	};
+    });
+
 	
-	private FixedExpiryCache<String, List<Playlist>> brandQueryCache = new FixedExpiryCache<String, List<Playlist>>(10) {
+	private ConcurrentMap<String, Maybe<Description>> anyQueryCache = cacheTemplate.makeComputingMap(new Function<String, Maybe<Description>>() {
 
 		@Override
-		protected List<Playlist> cacheMissFor(String query) {
+		public Maybe<Description> apply(String uri) {
 			try {
-				return extractContentOfType(retrieveData(baseUri +  "/brands.xml?" +  query), Playlist.class);
+				UriplayQueryResult result = retrieveData(baseUri + "/any.xml?uri=" +  UrlEncoding.encode(uri));
+				Set<Description> all = Sets.newHashSet();
+				all.addAll(result.getItems());
+				all.addAll(result.getPlaylists());
+				return Maybe.fromPossibleNullValue(Iterables.getOnlyElement(all, null));
 			} catch (Exception e) {
-				throw new RuntimeException("Problem requesting query: " + query, e);
+				throw new RuntimeException("Problem requesting query: " + uri, e);
 			} 
 		}
-	};
+	});
+
+	
 
 	public JaxbUriplayClient(String baseUri) throws JAXBException {
 		this.baseUri = baseUri;
@@ -105,41 +120,13 @@ public class JaxbUriplayClient implements SimpleUriplayClient {
 	}
 	
 
-	private List<Description> retrieveData(String queryUri) throws Exception {
+	private UriplayQueryResult retrieveData(String queryUri) throws Exception {
 		Reader document = new StringReader(httpClient.get(queryUri));
 
 		Unmarshaller unmarshaller = context.createUnmarshaller();
 		
-		UriplayQueryResult wrapper = (UriplayQueryResult) unmarshaller.unmarshal(document);
-		
-		List<Description> beanGraph = Lists.newArrayList();
-		
-		if (wrapper.getItems() != null) {
-			beanGraph.addAll(wrapper.getItems());
-		}
-		
-		if (wrapper.getPlaylists() != null) {
-			beanGraph.addAll(wrapper.getPlaylists());
-		}
-		return beanGraph;
+		return (UriplayQueryResult) unmarshaller.unmarshal(document);
 	}
-	
-	@SuppressWarnings("unchecked")
-	private static <T extends Description> List<T> extractContentOfType(List<Description> beanGraph, Class<T> type) {
-
-		if (beanGraph == null) {
-			return null;
-		}
-		List<T> items = Lists.newArrayList();
-
-		for (Object bean : beanGraph) {
-			if (bean.getClass().equals(type)) {
-				items.add((T) bean);
-			}
-		}
-		return Collections.unmodifiableList(items);
-	}
-
 	
     @Override
 	public List<Item> itemQuery(ContentQuery query) {
@@ -157,15 +144,8 @@ public class JaxbUriplayClient implements SimpleUriplayClient {
 	}
 	
 	@Override
-	public Description anyQuery(String uri) {
+	public Maybe<Description> anyQuery(String uri) {
 		return anyQueryCache.get(uri);
 	}
-
-	private static SimpleHttpClient client() {
-        return new SimpleHttpClientBuilder().
-            withUserAgent("Mozilla/5.0 (compatible; uriplay/2.0; +http://uriplay.org)")
-        .build();
-    }
-
 
 }
