@@ -27,7 +27,7 @@ import org.uriplay.content.criteria.ContentQuery;
 import org.uriplay.media.entity.simple.Description;
 import org.uriplay.media.entity.simple.Item;
 import org.uriplay.media.entity.simple.Playlist;
-import org.uriplay.media.entity.simple.UriplayXmlOutput;
+import org.uriplay.media.entity.simple.UriplayQueryResult;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -101,7 +101,7 @@ public class JaxbUriplayClient implements SimpleUriplayClient {
 
 	public JaxbUriplayClient(String baseUri) throws JAXBException {
 		this.baseUri = baseUri;
-		context = JAXBContext.newInstance(UriplayXmlOutput.class);
+		context = JAXBContext.newInstance(UriplayQueryResult.class);
 	}
 	
 
@@ -110,7 +110,7 @@ public class JaxbUriplayClient implements SimpleUriplayClient {
 
 		Unmarshaller unmarshaller = context.createUnmarshaller();
 		
-		UriplayXmlOutput wrapper = (UriplayXmlOutput) unmarshaller.unmarshal(document);
+		UriplayQueryResult wrapper = (UriplayQueryResult) unmarshaller.unmarshal(document);
 		
 		List<Description> beanGraph = Lists.newArrayList();
 		
