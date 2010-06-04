@@ -14,40 +14,41 @@ permissions and limitations under the License. */
 
 package org.uriplay.client;
 
+import static org.uriplay.content.criteria.ContentQueryBuilder.query;
+
 import org.jmock.integration.junit3.MockObjectTestCase;
 import org.joda.time.DateTime;
-import org.uriplay.content.criteria.ContentQuery;
-import org.uriplay.content.criteria.Queries;
+import org.uriplay.content.criteria.ContentQueryBuilder;
 import org.uriplay.content.criteria.attribute.Attributes;
 
 import com.metabroadcast.common.query.Selection;
 
 public class QueryStringBuilderTest extends MockObjectTestCase {
 
-	
 	public void testTheBuilder() throws Exception {
 		
-		check(Queries.equalTo(Attributes.ITEM_TITLE, "foo"), "item.title=foo");
-		check(Queries.equalTo(Attributes.ITEM_TITLE, "foo&foo"), "item.title=foo%26foo");
-		check(Queries.equalTo(Attributes.ITEM_URI, "http://example.com?item=test"), "item.uri=http%3A%2F%2Fexample.com%3Fitem%3Dtest");
+		check(query().equalTo(Attributes.ITEM_TITLE, "foo"), "item.title=foo");
+		check(query().equalTo(Attributes.ITEM_TITLE, "foo&foo"), "item.title=foo%26foo");
+		check(query().equalTo(Attributes.ITEM_URI, "http://example.com?item=test"), "item.uri=http%3A%2F%2Fexample.com%3Fitem%3Dtest");
 
-		check(Queries.equalTo(Attributes.LOCATION_AVAILABLE, true), "location.available=true");
+		check(query().equalTo(Attributes.LOCATION_AVAILABLE, true), "location.available=true");
 		
-		check(Queries.after(Attributes.BROADCAST_TRANSMISSION_TIME, new DateTime().withMillis(101)), "broadcast.transmissionTime-after=101");
+		check(query().after(Attributes.BROADCAST_TRANSMISSION_TIME, new DateTime().withMillis(101)), "broadcast.transmissionTime-after=101");
 
-		check(Queries.and(Queries.equalTo(Attributes.ITEM_TITLE, "foo"), Queries.equalTo(Attributes.LOCATION_AVAILABLE, true)), "item.title=foo&location.available=true");
+		check(query().equalTo(Attributes.ITEM_TITLE, "foo").equalTo(Attributes.LOCATION_AVAILABLE, true), "item.title=foo&location.available=true");
 		
-		check(Queries.equalTo(Attributes.ITEM_GENRE, "a", "b"), "item.genre=a,b");
-
+		check(query().equalTo(Attributes.ITEM_GENRE, "a", "b"), "item.genre=a,b");
 	}
 	
 	public void testQueryLimits() throws Exception {
-		check(Queries.equalTo(Attributes.ITEM_GENRE, "funny").withSelection(new Selection(0, 10)), "item.genre=funny&startIndex=0&limit=10");
+		check(query().equalTo(Attributes.ITEM_GENRE, "funny").withSelection(new Selection(0, 10)), "item.genre=funny&startIndex=0&limit=10");
 
 	}
 
-	private void check(ContentQuery query, String expected) {
+	private void check(ContentQueryBuilder query, String expected) {
 		QueryStringBuilder builder = new QueryStringBuilder();
-		assertEquals(expected, builder.build(query));
+		assertEquals(expected, builder.build(query.build()));
 	}
+	
+
 }

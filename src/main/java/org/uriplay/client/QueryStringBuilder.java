@@ -22,7 +22,6 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.uriplay.content.criteria.AttributeQuery;
 import org.uriplay.content.criteria.BooleanAttributeQuery;
-import org.uriplay.content.criteria.ConjunctiveQuery;
 import org.uriplay.content.criteria.ContentQuery;
 import org.uriplay.content.criteria.DateTimeAttributeQuery;
 import org.uriplay.content.criteria.EnumAttributeQuery;
@@ -35,28 +34,19 @@ import org.uriplay.content.criteria.operator.Operator;
 import org.uriplay.content.criteria.operator.Operators;
 import org.uriplay.content.criteria.operator.Operators.Equals;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.metabroadcast.common.query.Selection;
 
 public class QueryStringBuilder {
 
 	private static final Equals DEFAULT_OP = Operators.EQUALS;
+	
+	private static final Joiner QUERY_PARTS = Joiner.on('&');
 
 	public String build(ContentQuery query) {
 		
-		String queryString = query.accept(new QueryVisitor<String>() {
-			
-			@Override
-			public String visit(ConjunctiveQuery conjunctiveQuery) {
-				Iterator<ContentQuery> operandsIterator = conjunctiveQuery.operands().iterator();
-				StringBuilder b = new StringBuilder();
-				while(operandsIterator.hasNext()) {
-					b.append(operandsIterator.next().accept(this));
-					if (operandsIterator.hasNext()) {
-						b.append('&');
-					}
-				}
-				return b.toString();
-			}
+		List<String> queryParts = query.accept(new QueryVisitor<String>() {
 			
 			@Override
 			public String visit(DateTimeAttributeQuery query) {
@@ -99,15 +89,18 @@ public class QueryStringBuilder {
 			}
 
 		});
+
+		List<String> queryPartsWithSelection = Lists.newArrayList(queryParts);
 		
 		Selection selection = query.getSelection();
 		if (selection != null) {
 			String params = selection.asQueryParameters();
 			if (params.length() > 1) {
-				queryString = queryString + "&" + params;
+				queryPartsWithSelection.add(params);
 			}
 		}
-		return queryString.toString();
+		return QUERY_PARTS.join(queryPartsWithSelection);
+
 	}
 	
 	private static String encodeValues(List<?> values) {
