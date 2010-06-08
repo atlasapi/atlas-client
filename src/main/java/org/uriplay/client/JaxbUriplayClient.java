@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -36,6 +37,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.MapMaker;
 import com.google.common.collect.Sets;
 import com.metabroadcast.common.base.Maybe;
+import com.metabroadcast.common.http.HttpStatusCodeException;
 import com.metabroadcast.common.http.SimpleHttpClient;
 import com.metabroadcast.common.http.SimpleHttpClientBuilder;
 import com.metabroadcast.common.url.UrlEncoding;
@@ -106,6 +108,11 @@ public class JaxbUriplayClient implements SimpleUriplayClient {
 				all.addAll(result.getItems());
 				all.addAll(result.getPlaylists());
 				return Maybe.fromPossibleNullValue(Iterables.getOnlyElement(all, null));
+			} catch (HttpStatusCodeException e) {
+				if (HttpServletResponse.SC_NOT_FOUND == e.getStatusCode()) {
+					return Maybe.nothing();
+				}
+				throw new RuntimeException("Problem requesting query: " + uri, e);
 			} catch (Exception e) {
 				throw new RuntimeException("Problem requesting query: " + uri, e);
 			} 
