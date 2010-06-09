@@ -14,14 +14,13 @@ permissions and limitations under the License. */
 
 package org.uriplay.client;
 
-import java.util.Set;
+import java.util.List;
+import java.util.Map;
 
-import org.uriplay.media.entity.Brand;
-import org.uriplay.media.entity.Description;
-import org.uriplay.media.entity.Item;
-import org.uriplay.media.entity.Playlist;
-
-import com.metabroadcast.common.query.Selection;
+import org.uriplay.content.criteria.ContentQuery;
+import org.uriplay.media.entity.simple.Description;
+import org.uriplay.media.entity.simple.Item;
+import org.uriplay.media.entity.simple.Playlist;
 
 /**
  * Client interface to the URIplay service.
@@ -29,14 +28,14 @@ import com.metabroadcast.common.query.Selection;
  * @author John Ayres (john@metabroadcast.com)
  * @author Robert Chatley (robert@metabroadcast.com)
  */
-public interface Uriplay {
+public interface UriplayClient {
 
-	Set<Description> query(String uri);
+	List<Item> itemQuery(ContentQuery query);
+	
+	List<Playlist> brandQuery(ContentQuery query);
+	
+	List<Playlist> playlistQuery(ContentQuery query);
 
-	Item itemWithCurie(String curie);
-
-	Brand brandWithCurie(String curie);
-
-	Playlist genreQuery(String genreUri, Selection selection);
+	Map<String, Description> identifierQuery(Iterable<String> ids);
 	
 }

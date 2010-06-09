@@ -14,8 +14,6 @@ permissions and limitations under the License. */
 
 package org.uriplay.client;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
 
@@ -37,8 +35,9 @@ import org.uriplay.content.criteria.operator.Operators.Equals;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.metabroadcast.common.query.Selection;
+import com.metabroadcast.common.url.UrlEncoding;
 
-public class QueryStringBuilder {
+class QueryStringBuilder {
 
 	private static final Equals DEFAULT_OP = Operators.EQUALS;
 	
@@ -115,7 +114,7 @@ public class QueryStringBuilder {
 	}
 	
 	private static String encodeValue(Object value) {
-		return encodeString(asString(value));
+		return UrlEncoding.encode(asString(value));
 	}
 	
 	private static String asString(Object value) {
@@ -123,13 +122,5 @@ public class QueryStringBuilder {
 			return String.valueOf(((DateTime) value).getMillis());
 		}
 		return value.toString();
-	}
-
-	private static String encodeString(String s) {
-		try {
-			return URLEncoder.encode(s, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
 	}
 }
