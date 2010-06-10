@@ -32,7 +32,7 @@ class JaxbStringQueryUriplayClient implements StringQueryClient {
 	public UriplayQueryResult query(String queryUri) {
 		try {
 			Unmarshaller unmarshaller = context.createUnmarshaller();
-			return (UriplayQueryResult) unmarshaller.unmarshal(new StringReader(httpClient.get(queryUri)));
+			return (UriplayQueryResult) unmarshaller.unmarshal(new StringReader(httpClient.getContentsOf(queryUri)));
 		}  catch (HttpStatusCodeException e) {
 			if (HttpServletResponse.SC_NOT_FOUND == e.getStatusCode()) {
 				return new UriplayQueryResult();
