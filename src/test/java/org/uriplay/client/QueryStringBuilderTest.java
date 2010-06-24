@@ -41,7 +41,7 @@ public class QueryStringBuilderTest extends MockObjectTestCase {
 	}
 	
 	public void testQueryLimits() throws Exception {
-		check(query().equalTo(Attributes.ITEM_GENRE, "funny").withSelection(new Selection(0, 10)), "item.genre=funny&offset=0&limit=10");
+		check(query().equalTo(Attributes.ITEM_GENRE, "funny").withSelection(new Selection(0, 10)), "item.genre=funny&limit=10");
 
 	}
 
