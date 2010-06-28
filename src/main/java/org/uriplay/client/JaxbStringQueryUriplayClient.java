@@ -2,7 +2,6 @@ package org.uriplay.client;
 
 import java.io.StringReader;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -15,11 +14,13 @@ import com.metabroadcast.common.http.SimpleHttpClientBuilder;
 
 class JaxbStringQueryUriplayClient implements StringQueryClient {
 
-	private static final String USER_AGENT = "Mozilla/5.0 (compatible; uriplay/2.0; +http://uriplay.org)";
+	private static final String USER_AGENT = "Mozilla/5.0 (compatible; uriplay-java-client/2.0; +http://uriplay.org)";
+
+	private static final int NOT_FOUND = 404;
 
 	private final SimpleHttpClient httpClient = new SimpleHttpClientBuilder().withUserAgent(USER_AGENT).build();
 	
-	private JAXBContext context;
+	private final JAXBContext context;
 	
 	public JaxbStringQueryUriplayClient() {
 		try {
@@ -34,7 +35,7 @@ class JaxbStringQueryUriplayClient implements StringQueryClient {
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			return (UriplayQueryResult) unmarshaller.unmarshal(new StringReader(httpClient.getContentsOf(queryUri)));
 		}  catch (HttpStatusCodeException e) {
-			if (HttpServletResponse.SC_NOT_FOUND == e.getStatusCode()) {
+			if (NOT_FOUND == e.getStatusCode()) {
 				return new UriplayQueryResult();
 			}
 			throw new RuntimeException(e);
