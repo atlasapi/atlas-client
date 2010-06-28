@@ -14,17 +14,19 @@ permissions and limitations under the License. */
 
 package org.uriplay.client;
 
+import static org.junit.Assert.assertEquals;
 import static org.uriplay.content.criteria.ContentQueryBuilder.query;
 
-import org.jmock.integration.junit3.MockObjectTestCase;
 import org.joda.time.DateTime;
+import org.junit.Test;
 import org.uriplay.content.criteria.ContentQueryBuilder;
 import org.uriplay.content.criteria.attribute.Attributes;
 
 import com.metabroadcast.common.query.Selection;
 
-public class QueryStringBuilderTest extends MockObjectTestCase {
+public class QueryStringBuilderTest  {
 
+	@Test
 	public void testTheBuilder() throws Exception {
 		
 		check(query().equalTo(Attributes.ITEM_TITLE, "foo"), "item.title=foo");
@@ -40,6 +42,7 @@ public class QueryStringBuilderTest extends MockObjectTestCase {
 		check(query().equalTo(Attributes.ITEM_GENRE, "a", "b"), "item.genre=a,b");
 	}
 	
+	@Test
 	public void testQueryLimits() throws Exception {
 		check(query().equalTo(Attributes.ITEM_GENRE, "funny").withSelection(new Selection(0, 10)), "item.genre=funny&limit=10");
 
