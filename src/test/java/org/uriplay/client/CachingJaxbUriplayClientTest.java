@@ -39,24 +39,24 @@ public class CachingJaxbUriplayClientTest {
 			one(uriplay).query("uriplay/any.xml?uri=1,2"); will(returnValue(result(item1, playlist2)));
 		}});
 		
-		assertThat(client.identifierQuery(ImmutableList.of("1", "2")), is(ImmutableMap.of("1", item1, "2", playlist2)));
+		assertThat(client.any(ImmutableList.of("1", "2")), is(ImmutableMap.of("1", item1, "2", playlist2)));
 		
 		context.checking(new Expectations() {{
 			never(uriplay);
 		}});
 		
 		// these next requests should be served from the cache
-		assertThat(client.identifierQuery(ImmutableList.of("1", "2")), is(ImmutableMap.of("1", item1, "2", playlist2)));
-		assertThat(client.identifierQuery(ImmutableList.of("1")), is(ImmutableMap.of("1", item1)));
-		assertThat(client.identifierQuery(ImmutableList.of(":1")), is(ImmutableMap.of("1", item1)));
-		assertThat(client.identifierQuery(ImmutableList.of("2")), is(ImmutableMap.of("2", playlist2)));
+		assertThat(client.any(ImmutableList.of("1", "2")), is(ImmutableMap.of("1", item1, "2", playlist2)));
+		assertThat(client.any(ImmutableList.of("1")), is(ImmutableMap.of("1", item1)));
+		assertThat(client.any(ImmutableList.of(":1")), is(ImmutableMap.of("1", item1)));
+		assertThat(client.any(ImmutableList.of("2")), is(ImmutableMap.of("2", playlist2)));
 		
 		// item1 and playlist 2 should be served from the cache, we only need to fetch item 3
 		context.checking(new Expectations() {{
 			one(uriplay).query("uriplay/any.xml?uri=3"); will(returnValue(result(item3)));
 		}});
 		
-		assertThat(client.identifierQuery(ImmutableList.of("1", "2", "3")), is(ImmutableMap.of("1", item1, "2", playlist2, "3", item3)));
+		assertThat(client.any(ImmutableList.of("1", "2", "3")), is(ImmutableMap.of("1", item1, "2", playlist2, "3", item3)));
 	}
 	
 	@Test
@@ -68,15 +68,15 @@ public class CachingJaxbUriplayClientTest {
 			one(uriplay).query("uriplay/any.xml?uri=missing,exists"); will(returnValue(result(exists)));
 		}});
 		
-		assertThat(client.identifierQuery(ImmutableList.of("missing", "exists")), is(ImmutableMap.of("exists", exists)));
+		assertThat(client.any(ImmutableList.of("missing", "exists")), is(ImmutableMap.of("exists", exists)));
 
 		context.checking(new Expectations() {{
 			never(uriplay);
 		}});
 		
 		// negative results should be served from the cache
-		assertThat(client.identifierQuery(ImmutableList.of("missing", "exists")), is(ImmutableMap.of("exists", exists)));
-		assertThat(client.identifierQuery(ImmutableList.of("missing")), is(ImmutableMap.<String, Description>of()));
+		assertThat(client.any(ImmutableList.of("missing", "exists")), is(ImmutableMap.of("exists", exists)));
+		assertThat(client.any(ImmutableList.of("missing")), is(ImmutableMap.<String, Description>of()));
 	}
 
 	protected UriplayQueryResult result(Description... content) {

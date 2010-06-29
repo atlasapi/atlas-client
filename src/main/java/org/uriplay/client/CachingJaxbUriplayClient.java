@@ -84,22 +84,22 @@ public class CachingJaxbUriplayClient implements UriplayClient {
 	}
 	
 	@Override
-	public List<Item> itemQuery(ContentQuery query) {
+	public List<Item> items(ContentQuery query) {
 		return itemQueryCache.get(queryStringBuilder.build(query));
 	}
 
 	@Override
-	public List<Playlist> brandQuery(ContentQuery query) {
+	public List<Playlist> brands(ContentQuery query) {
 		return brandQueryCache.get(queryStringBuilder.build(query));
 	}
 	
 	@Override
-	public List<Playlist> playlistQuery(ContentQuery query) {
+	public List<Playlist> playlists(ContentQuery query) {
 		return playlistQueryCache.get(queryStringBuilder.build(query));
 	}
 	
 	@Override
-	public ImmutableMap<String, Description> identifierQuery(Iterable<String> ids) {
+	public ImmutableMap<String, Description> any(Iterable<String> ids) {
 		Map<String, Description> results = Maps.newHashMap();
 		List<String> toFetch = Lists.newArrayList();
 		

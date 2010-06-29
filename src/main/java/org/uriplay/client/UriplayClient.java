@@ -30,12 +30,12 @@ import org.uriplay.media.entity.simple.Playlist;
  */
 public interface UriplayClient {
 
-	List<Item> itemQuery(ContentQuery query);
+	List<Item> items(ContentQuery query);
 	
-	List<Playlist> brandQuery(ContentQuery query);
+	List<Playlist> brands(ContentQuery query);
 	
-	List<Playlist> playlistQuery(ContentQuery query);
+	List<Playlist> playlists(ContentQuery query);
 
-	Map<String, Description> identifierQuery(Iterable<String> ids);
+	Map<String, Description> any(Iterable<String> ids);
 	
 }
