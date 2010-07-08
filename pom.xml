@@ -7,7 +7,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <description></description>
     <build>
-        <finalName>uriplay-local-remote-client</finalName>
+        <finalName>atlas-client</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
