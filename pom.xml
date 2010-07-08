@@ -40,9 +40,9 @@
         </dependency>
     </dependencies>
 
-    <scm>
-        <connection>scm:svn:https://uriplay.googlecode.com/svn/uriplay-local-remote-client/trunk/</connection>
-        <developerConnection>scm:svn:http://uriplay.googlecode.com/svn/uriplay-local-remote-client/trunk/</developerConnection>
+     <scm>
+        <connection>scm:git:git://github.com/atlas/atlas-client.git</connection>
+        <developerConnection>scm:git:git://github.com/atlas/atlas-client.git</developerConnection>
     </scm>
 
     <distributionManagement>
