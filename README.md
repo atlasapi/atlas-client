@@ -1,6 +1,9 @@
+Atlas Java Client Library
+=========================
+
 This is an attempt to fully document the "Atlas":http://docs.atlasapi.org Java Client.  The client is still in development, so please bear with us while the API evolves.
 
-# Getting started with Maven 2
+## Getting started with Maven 2
 
 Use maven, add the following to your dependencies:
 
@@ -10,7 +13,7 @@ Use maven, add the following to your dependencies:
         <version>0.0.1-SNAPSHOT</version>
     </dependency>
 
-p. The artifacts can be found in the MetaBroadcast public repository, add it to your project using the following snippet:
+The artifacts can be found in the MetaBroadcast public repository, add it to your project using the following snippet:
 
     <repositories>
       <repository>
@@ -21,7 +24,7 @@ p. The artifacts can be found in the MetaBroadcast public repository, add it to 
       </repository>
     </repositories>
 
-# Using the client
+## Using the client
 
 Create yourself a client like so:
 
