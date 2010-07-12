@@ -119,7 +119,7 @@ class QueryStringBuilder {
 	
 	private static String asString(Object value) {
 		if (value instanceof DateTime) {
-			return String.valueOf(((DateTime) value).getMillis());
+			return String.valueOf(((DateTime) value).getMillis() / 1000);
 		}
 		return value.toString();
 	}

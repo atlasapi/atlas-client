@@ -36,7 +36,7 @@ public class QueryStringBuilderTest  {
 
 		check(query().equalTo(Attributes.LOCATION_AVAILABLE, true), "location.available=true");
 		
-		check(query().after(Attributes.BROADCAST_TRANSMISSION_TIME, new DateTime().withMillis(101)), "broadcast.transmissionTime-after=101");
+		check(query().after(Attributes.BROADCAST_TRANSMISSION_TIME, new DateTime().withMillis(1000)), "broadcast.transmissionTime-after=1");
 
 		check(query().equalTo(Attributes.ITEM_TITLE, "foo").equalTo(Attributes.LOCATION_AVAILABLE, true), "item.title=foo&location.available=true");
 		
