@@ -3,7 +3,7 @@ package org.atlasapi.client;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
-import org.atlasapi.client.CachingJaxbUriplayClient;
+import org.atlasapi.client.CachingJaxbAtlasClient;
 import org.atlasapi.client.StringQueryClient;
 import org.atlasapi.media.entity.simple.Description;
 import org.atlasapi.media.entity.simple.Item;
@@ -23,8 +23,8 @@ import com.google.common.collect.ImmutableMap;
 public class CachingJaxbUriplayClientTest {
 
 	private final Mockery context = new JUnit4Mockery();
-	private final StringQueryClient uriplay = context.mock(StringQueryClient.class);
-	private final CachingJaxbUriplayClient client = new CachingJaxbUriplayClient("uriplay", uriplay);
+	private final StringQueryClient atlas = context.mock(StringQueryClient.class);
+	private final CachingJaxbAtlasClient client = new CachingJaxbAtlasClient("atlas", atlas);
 	
 	@Test
 	public void testBasicCachingOfIdentifierQueries() throws Exception {
@@ -38,13 +38,13 @@ public class CachingJaxbUriplayClientTest {
 		final Description item3 = new Item("3");
 		
 		context.checking(new Expectations() {{
-			one(uriplay).query("uriplay/any.xml?uri=1,2"); will(returnValue(result(item1, playlist2)));
+			one(atlas).query("atlas/any.xml?uri=1,2"); will(returnValue(result(item1, playlist2)));
 		}});
 		
 		assertThat(client.any(ImmutableList.of("1", "2")), is(ImmutableMap.of("1", item1, "2", playlist2)));
 		
 		context.checking(new Expectations() {{
-			never(uriplay);
+			never(atlas);
 		}});
 		
 		// these next requests should be served from the cache
@@ -55,7 +55,7 @@ public class CachingJaxbUriplayClientTest {
 		
 		// item1 and playlist 2 should be served from the cache, we only need to fetch item 3
 		context.checking(new Expectations() {{
-			one(uriplay).query("uriplay/any.xml?uri=3"); will(returnValue(result(item3)));
+			one(atlas).query("atlas/any.xml?uri=3"); will(returnValue(result(item3)));
 		}});
 		
 		assertThat(client.any(ImmutableList.of("1", "2", "3")), is(ImmutableMap.of("1", item1, "2", playlist2, "3", item3)));
@@ -67,13 +67,13 @@ public class CachingJaxbUriplayClientTest {
 		final Description exists = new Item("exists");
 		
 		context.checking(new Expectations() {{
-			one(uriplay).query("uriplay/any.xml?uri=missing,exists"); will(returnValue(result(exists)));
+			one(atlas).query("atlas/any.xml?uri=missing,exists"); will(returnValue(result(exists)));
 		}});
 		
 		assertThat(client.any(ImmutableList.of("missing", "exists")), is(ImmutableMap.of("exists", exists)));
 
 		context.checking(new Expectations() {{
-			never(uriplay);
+			never(atlas);
 		}});
 		
 		// negative results should be served from the cache
