@@ -17,10 +17,8 @@ package org.atlasapi.client;
 import java.util.List;
 import java.util.Map;
 
-import org.atlasapi.content.criteria.ContentQuery;
+import org.atlasapi.client.query.AtlasQuery;
 import org.atlasapi.media.entity.simple.Description;
-import org.atlasapi.media.entity.simple.Item;
-import org.atlasapi.media.entity.simple.Playlist;
 
 /**
  * Client interface to the URIplay service.
@@ -29,13 +27,9 @@ import org.atlasapi.media.entity.simple.Playlist;
  * @author Robert Chatley (robert@metabroadcast.com)
  */
 public interface AtlasClient {
-
-	List<Item> items(ContentQuery query);
 	
-	List<Playlist> brands(ContentQuery query);
+	<T> List<T> query(AtlasQuery<T> query);
 	
-	List<Playlist> playlists(ContentQuery query);
-
 	Map<String, Description> any(Iterable<String> ids);
 	
 }

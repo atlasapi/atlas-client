@@ -20,11 +20,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
-import org.atlasapi.content.criteria.ContentQuery;
-import org.atlasapi.media.entity.simple.Description;
-import org.atlasapi.media.entity.simple.Item;
-import org.atlasapi.media.entity.simple.Playlist;
+import org.atlasapi.client.query.AtlasQuery;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
+import org.atlasapi.media.entity.simple.Description;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
@@ -46,29 +44,14 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 
 	private final MapMaker cacheTemplate = new MapMaker().softValues().expiration(10, TimeUnit.MINUTES);
 	
-    private ConcurrentMap<String, List<Item>> itemQueryCache = cacheTemplate.makeComputingMap(new Function<String, List<Item>>() {
+    private ConcurrentMap<String, ContentQueryResult> queryCache = cacheTemplate.makeComputingMap(new Function<String, ContentQueryResult>() {
 
 		@Override
-		public List<Item> apply(String query) {
-			return queryClient.query(baseUri + "/items.xml?" +  query).getItems();
+		public ContentQueryResult apply(String query) {
+			return queryClient.query(query);
 		}
     });
-    
-    private ConcurrentMap<String, List<Playlist>> brandQueryCache = cacheTemplate.makeComputingMap(new Function<String, List<Playlist>>() {
-
-		@Override
-		public List<Playlist> apply(String query) {
-			return queryClient.query(baseUri +  "/brands.xml?" +  query).getPlaylists();
-		}
-    });
-    
-    private ConcurrentMap<String, List<Playlist>> playlistQueryCache = cacheTemplate.makeComputingMap(new Function<String, List<Playlist>>() {
-
-		@Override
-		public List<Playlist> apply(String query) {
-			return queryClient.query(baseUri +  "/playlists.xml?" +  query).getPlaylists();
-		}
-    });
+ 
 	
 	private ConcurrentMap<String, Maybe<Description>> identifierQueryCache = cacheTemplate.makeMap();
 
@@ -84,18 +67,8 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 	}
 	
 	@Override
-	public List<Item> items(ContentQuery query) {
-		return itemQueryCache.get(queryStringBuilder.build(query));
-	}
-
-	@Override
-	public List<Playlist> brands(ContentQuery query) {
-		return brandQueryCache.get(queryStringBuilder.build(query));
-	}
-	
-	@Override
-	public List<Playlist> playlists(ContentQuery query) {
-		return playlistQueryCache.get(queryStringBuilder.build(query));
+	public <T> List<T> query(AtlasQuery<T> query) {
+		return query.extractFrom(queryCache.get(baseUri + "/" + query.urlPrefix() + ".xml?" +  queryStringBuilder.build(query.build())));
 	}
 	
 	@Override
