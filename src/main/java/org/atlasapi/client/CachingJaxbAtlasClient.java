@@ -66,6 +66,10 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 		this("http://atlasapi.org/2.0", new JaxbStringQueryClient());
 	}
 	
+	public CachingJaxbAtlasClient(String baseUri) {
+	    this(baseUri, new JaxbStringQueryClient());
+	}
+	
 	@Override
 	public <T> List<T> query(AtlasQuery<T> query) {
 		return query.extractFrom(queryCache.get(baseUri + "/" + query.urlPrefix() + ".xml?" +  queryStringBuilder.build(query.build())));
