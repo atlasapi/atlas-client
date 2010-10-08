@@ -27,6 +27,10 @@ public abstract class AtlasQuery<T> {
 		return new ItemQuery(ImmutableList.<AtomicQuery>of(), Selection.ALL);
 	}
 	
+	public static AtlasQuery<Playlist> playlists() {
+	    return new PlaylistQuery(ImmutableList.<AtomicQuery>of(), Selection.ALL);
+	}
+	
 	AtlasQuery(ImmutableList<AtomicQuery> conjuncts, Selection selection) {
 		this.conjuncts = conjuncts;
 		this.selection = selection;
