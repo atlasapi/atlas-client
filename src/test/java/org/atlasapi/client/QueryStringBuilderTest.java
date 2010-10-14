@@ -27,8 +27,11 @@ import com.metabroadcast.common.query.Selection;
 
 public class QueryStringBuilderTest  {
 
+	private QueryStringBuilder builder;
+	
 	@Test
 	public void testTheBuilder() throws Exception {
+		this.builder = new QueryStringBuilder();
 		
 		check(query().equalTo(Attributes.ITEM_TITLE, "foo"), "item.title=foo");
 		check(query().equalTo(Attributes.ITEM_TITLE, "foo&foo"), "item.title=foo%26foo");
@@ -45,13 +48,31 @@ public class QueryStringBuilderTest  {
 	
 	@Test
 	public void testQueryLimits() throws Exception {
-		check(query().equalTo(Attributes.ITEM_GENRE, "funny").withSelection(new Selection(0, 10)), "item.genre=funny&limit=10");
+		this.builder = new QueryStringBuilder();
 
+		check(query().equalTo(Attributes.ITEM_GENRE, "funny").withSelection(new Selection(0, 10)), "item.genre=funny&limit=10");
+	}
+	
+	@Test
+	public void testQueryApiKey() throws Exception {
+		this.builder = new QueryStringBuilder();
+		builder.setApiKey("testKey");
+		
+		check(query().equalTo(Attributes.ITEM_TITLE, "foo"), "item.title=foo&apiKey=testKey");
+		check(query().equalTo(Attributes.ITEM_TITLE, "foo&foo"), "item.title=foo%26foo&apiKey=testKey");
+		check(query().equalTo(Attributes.ITEM_URI, "http://example.com?item=test"), "item.uri=http%3A%2F%2Fexample.com%3Fitem%3Dtest&apiKey=testKey");
+
+		check(query().equalTo(Attributes.LOCATION_AVAILABLE, true), "location.available=true&apiKey=testKey");
+		
+		check(query().after(Attributes.BROADCAST_TRANSMISSION_TIME, new DateTime().withMillis(1000)), "broadcast.transmissionTime-after=1&apiKey=testKey");
+
+		check(query().equalTo(Attributes.ITEM_TITLE, "foo").equalTo(Attributes.LOCATION_AVAILABLE, true), "item.title=foo&location.available=true&apiKey=testKey");
+		
+		check(query().equalTo(Attributes.ITEM_GENRE, "a", "b"), "item.genre=a,b&apiKey=testKey");
 	}
 
 	private void check(ContentQueryBuilder query, String expected) {
-		QueryStringBuilder builder = new QueryStringBuilder();
-		assertEquals(expected, builder.build(query.build()));
+		assertEquals(expected, this.builder.build(query.build()));
 	}
 	
 

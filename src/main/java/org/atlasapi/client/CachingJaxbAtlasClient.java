@@ -56,6 +56,7 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 	private ConcurrentMap<String, Maybe<Description>> identifierQueryCache = cacheTemplate.makeMap();
 
 	private final String baseUri;
+	private String apiKey;
 
 	public CachingJaxbAtlasClient(String baseUri, StringQueryClient queryClient) {
 		this.baseUri = baseUri;
@@ -70,11 +71,17 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 	    this(baseUri, new JaxbStringQueryClient());
 	}
 	
-	@Override
-	public <T> List<T> query(AtlasQuery<T> query) {
-		return query.extractFrom(queryCache.get(baseUri + "/" + query.urlPrefix() + ".xml?" +  queryStringBuilder.build(query.build())));
+	public CachingJaxbAtlasClient withApiKey(String apiKey) {
+		this.apiKey = apiKey;
+		this.queryStringBuilder.setApiKey(apiKey);
+		return this;
 	}
 	
+	@Override
+	public <T> List<T> query(AtlasQuery<T> query) {
+		return query.extractFrom(queryCache.get(baseUri + "/" + query.urlPrefix() + ".xml?" + queryStringBuilder.build(query.build())));
+	}
+
 	@Override
 	public ImmutableMap<String, Description> any(Iterable<String> ids) {
 		Map<String, Description> results = Maps.newHashMap();
@@ -99,11 +106,18 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 	}
 
 	private Map<String, Description> fetchIdentifierQuery(Iterable<String> uris) {
-		ContentQueryResult result = queryClient.query(baseUri + "/any.xml?uri=" +  Joiner.on(",").join(UrlEncoding.encode(uris)));
+		ContentQueryResult result = queryClient.query(baseUri + "/any.xml?uri=" +  Joiner.on(",").join(UrlEncoding.encode(uris)) + apiKeyQueryPart());
 		Set<Description> all = Sets.newHashSet();
 		all.addAll(result.getItems());
 		all.addAll(result.getPlaylists());
 		return cacheResults(all, Sets.newHashSet(uris));
+	}
+	
+	private String apiKeyQueryPart() {
+		if (this.apiKey != null) {
+			return "&apiKey="+this.apiKey;
+		}
+		return "";
 	}
 
 	private Map<String, Description> cacheResults(Set<Description> all, Set<String> uris) {

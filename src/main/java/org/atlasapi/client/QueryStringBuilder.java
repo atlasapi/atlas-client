@@ -43,6 +43,8 @@ class QueryStringBuilder {
 	
 	private static final Joiner QUERY_PARTS = Joiner.on('&');
 
+	private String apiKey;
+
 	public String build(ContentQuery query) {
 		
 		List<String> queryParts = query.accept(new QueryVisitor<String>() {
@@ -98,8 +100,12 @@ class QueryStringBuilder {
 				queryPartsWithSelection.add(params);
 			}
 		}
+		
+		if (apiKey != null) {
+			queryPartsWithSelection.add("apiKey="+apiKey);
+		}
+		
 		return QUERY_PARTS.join(queryPartsWithSelection);
-
 	}
 	
 	private static String encodeValues(List<?> values) {
@@ -122,5 +128,9 @@ class QueryStringBuilder {
 			return String.valueOf(((DateTime) value).getMillis() / 1000);
 		}
 		return value.toString();
+	}
+	
+	public void setApiKey(String apiKey) {
+		this.apiKey = apiKey;
 	}
 }
