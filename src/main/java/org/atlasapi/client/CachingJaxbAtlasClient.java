@@ -71,6 +71,11 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 	    this(baseUri, new JaxbStringQueryClient());
 	}
 	
+	public CachingJaxbAtlasClient(String baseUri, String apiKey) {
+	    this(baseUri, new JaxbStringQueryClient());
+	    this.withApiKey(apiKey);
+	}
+	
 	public CachingJaxbAtlasClient withApiKey(String apiKey) {
 		this.apiKey = apiKey;
 		this.queryStringBuilder.setApiKey(apiKey);
