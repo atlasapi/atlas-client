@@ -7,6 +7,7 @@ import org.atlasapi.content.criteria.ContentQuery;
 import org.atlasapi.content.criteria.attribute.Attribute;
 import org.atlasapi.content.criteria.attribute.Attributes;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
+import org.atlasapi.media.entity.simple.Description;
 import org.atlasapi.media.entity.simple.Item;
 import org.atlasapi.media.entity.simple.Playlist;
 
@@ -29,6 +30,10 @@ public abstract class AtlasQuery<T> {
 	
 	public static AtlasQuery<Playlist> playlists() {
 	    return new PlaylistQuery(ImmutableList.<AtomicQuery>of(), Selection.ALL);
+	}
+	
+	public static AtlasQuery<Description> any() {
+	    return new AnyQuery(ImmutableList.<AtomicQuery>of(), Selection.ALL);
 	}
 	
 	AtlasQuery(ImmutableList<AtomicQuery> conjuncts, Selection selection) {
