@@ -9,7 +9,7 @@ import org.atlasapi.media.entity.simple.Description;
 
 import com.google.common.collect.Maps;
 
-public class TestAtlasClient implements AtlasClient {
+public class StubAtlasClient implements AtlasClient {
     
     Map<String, Description> contentMap = Maps.newHashMap();
 
