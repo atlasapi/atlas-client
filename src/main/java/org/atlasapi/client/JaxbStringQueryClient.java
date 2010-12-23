@@ -1,6 +1,7 @@
 package org.atlasapi.client;
 
 import java.io.StringReader;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -18,7 +19,7 @@ class JaxbStringQueryClient implements StringQueryClient {
 
 	private static final int NOT_FOUND = 404;
 
-	private final SimpleHttpClient httpClient = new SimpleHttpClientBuilder().withUserAgent(USER_AGENT).build();
+	private final SimpleHttpClient httpClient = new SimpleHttpClientBuilder().withUserAgent(USER_AGENT).withSocketTimeout(1, TimeUnit.MINUTES).build();
 	
 	private final JAXBContext context;
 	
