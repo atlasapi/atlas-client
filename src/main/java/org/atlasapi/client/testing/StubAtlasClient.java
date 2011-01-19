@@ -14,22 +14,26 @@ public class StubAtlasClient implements AtlasClient {
     Map<String, Description> contentMap = Maps.newHashMap();
 
     @Override
-    public <T> List<T> query(AtlasQuery<T> query) {
+    public List<Description> discover(AtlasQuery query) {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Map<String, Description> any(Iterable<String> ids) {
-        Map<String, Description> results = Maps.newHashMap();
-        
-        for (String id : ids) {
-            results.put(id, contentMap.get(id));
-        }
-       
-        return results;
     }
 
     public void put(String uri, Description content) {
         contentMap.put(uri, content);
     }
+
+	@Override
+	public Map<String, Description> any(Iterable<String> ids, AtlasQuery filter) {
+		return any(ids);
+	}
+
+	@Override
+	public Map<String, Description> any(Iterable<String> ids) {
+		Map<String, Description> results = Maps.newHashMap();
+        
+        for (String id : ids) {
+            results.put(id, contentMap.get(id));
+        }
+        return results;
+	}
 }

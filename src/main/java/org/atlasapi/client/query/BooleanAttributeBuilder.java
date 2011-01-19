@@ -5,25 +5,25 @@ import org.atlasapi.content.criteria.operator.Operators;
 
 import com.google.common.collect.ImmutableList;
 
-public final class BooleanAttributeBuilder<T> {
+public final class BooleanAttributeBuilder {
 
 	private final Attribute<Boolean> attribute;
-	private final AtlasQuery<T> chain;
+	private final AtlasQuery chain;
 
-	BooleanAttributeBuilder(AtlasQuery<T> chain, Attribute<Boolean> attribute) {
+	BooleanAttributeBuilder(AtlasQuery chain, Attribute<Boolean> attribute) {
 		this.chain = chain;
 		this.attribute = attribute;
 	}
 	
-	public AtlasQuery<T> isTrue() {
+	public AtlasQuery isTrue() {
 		return chain.add(attribute.createQuery(Operators.EQUALS, ImmutableList.of(true)));
 	}
 	
-	public AtlasQuery<T> isFalse() {
+	public AtlasQuery isFalse() {
 		return chain.add(attribute.createQuery(Operators.EQUALS, ImmutableList.of(false)));
 	
 	}
-	public AtlasQuery<T> isAnything() {
+	public AtlasQuery isAnything() {
 		return chain.add(attribute.createQuery(Operators.EQUALS, ImmutableList.of(true, false)));
 	}
 }

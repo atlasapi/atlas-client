@@ -3,6 +3,8 @@ package org.atlasapi.client;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
+import java.util.Map;
+
 import org.atlasapi.client.CachingJaxbAtlasClient;
 import org.atlasapi.client.StringQueryClient;
 import org.atlasapi.media.entity.simple.Description;
@@ -41,24 +43,24 @@ public class CachingJaxbUriplayClientTest {
 			one(atlas).query("atlas/any.xml?uri=1,2"); will(returnValue(result(item1, playlist2)));
 		}});
 		
-		assertThat(client.any(ImmutableList.of("1", "2")), is(ImmutableMap.of("1", item1, "2", playlist2)));
+		assertThat(client.any(ImmutableList.of("1", "2")), is((Map<String, Description>) ImmutableMap.of("1", item1, "2", playlist2)));
 		
 		context.checking(new Expectations() {{
 			never(atlas);
 		}});
 		
 		// these next requests should be served from the cache
-		assertThat(client.any(ImmutableList.of("1", "2")), is(ImmutableMap.of("1", item1, "2", playlist2)));
-		assertThat(client.any(ImmutableList.of("1")), is(ImmutableMap.of("1", item1)));
-		assertThat(client.any(ImmutableList.of(":1")), is(ImmutableMap.of("1", item1)));
-		assertThat(client.any(ImmutableList.of("2")), is(ImmutableMap.of("2", playlist2)));
+		assertThat(client.any(ImmutableList.of("1", "2")), is((Map<String, Description>) ImmutableMap.of("1", item1, "2", playlist2)));
+		assertThat(client.any(ImmutableList.of("1")), is((Map<String, Description>) ImmutableMap.of("1", item1)));
+		assertThat(client.any(ImmutableList.of(":1")), is((Map<String, Description>) ImmutableMap.of("1", item1)));
+		assertThat(client.any(ImmutableList.of("2")), is((Map<String, Description>) ImmutableMap.of("2", playlist2)));
 		
 		// item1 and playlist 2 should be served from the cache, we only need to fetch item 3
 		context.checking(new Expectations() {{
 			one(atlas).query("atlas/any.xml?uri=3"); will(returnValue(result(item3)));
 		}});
 		
-		assertThat(client.any(ImmutableList.of("1", "2", "3")), is(ImmutableMap.of("1", item1, "2", playlist2, "3", item3)));
+		assertThat(client.any(ImmutableList.of("1", "2", "3")), is((Map<String, Description>) ImmutableMap.of("1", item1, "2", playlist2, "3", item3)));
 	}
 	
 	@Test
@@ -70,25 +72,21 @@ public class CachingJaxbUriplayClientTest {
 			one(atlas).query("atlas/any.xml?uri=missing,exists"); will(returnValue(result(exists)));
 		}});
 		
-		assertThat(client.any(ImmutableList.of("missing", "exists")), is(ImmutableMap.of("exists", exists)));
+		assertThat(client.any(ImmutableList.of("missing", "exists")), is((Map<String, Description>) ImmutableMap.of("exists", exists)));
 
 		context.checking(new Expectations() {{
 			never(atlas);
 		}});
 		
 		// negative results should be served from the cache
-		assertThat(client.any(ImmutableList.of("missing", "exists")), is(ImmutableMap.of("exists", exists)));
-		assertThat(client.any(ImmutableList.of("missing")), is(ImmutableMap.<String, Description>of()));
+		assertThat(client.any(ImmutableList.of("missing", "exists")), is((Map<String, Description>) ImmutableMap.of("exists", exists)));
+		assertThat(client.any(ImmutableList.of("missing")), is((Map<String, Description>) ImmutableMap.<String, Description>of()));
 	}
 
 	protected ContentQueryResult result(Description... content) {
 		ContentQueryResult result = new ContentQueryResult();
 		for (Description description : content) {
-			if (description instanceof Playlist) {
-				result.addPlaylist((Playlist) description);
-			} else {
-				result.addItem((Item) description);
-			}
+			result.add(description);
 		}
 		return result;
 	}

@@ -52,7 +52,6 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 		}
     });
  
-	
 	private ConcurrentMap<String, Maybe<Description>> identifierQueryCache = cacheTemplate.makeMap();
 
 	private final String baseUri;
@@ -83,39 +82,18 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 	}
 	
 	@Override
-	public <T> List<T> query(AtlasQuery<T> query) {
-		return query.extractFrom(queryCache.get(baseUri + "/" + query.urlPrefix() + ".xml?" + queryStringBuilder.build(query.build())));
+	public List<Description> discover(AtlasQuery query) {
+		return queryCache.get(baseUri + "/discover.xml?" + queryStringBuilder.build(query.build())).getContents();
 	}
 
 	@Override
-	public ImmutableMap<String, Description> any(Iterable<String> ids) {
-		Map<String, Description> results = Maps.newHashMap();
-		List<String> toFetch = Lists.newArrayList();
-		
-		for (String id : ids) {
-			if (identifierQueryCache.containsKey(id)) {
-				Maybe<Description> description = identifierQueryCache.get(id);
-				
-				if (description.hasValue()) {
-					results.put(description.requireValue().getUri(), description.requireValue());
-				}
-			}
-			else {
-				toFetch.add(id);
-			}
-		}
-		if (!toFetch.isEmpty()) {
-			results.putAll(fetchIdentifierQuery(toFetch));
-		}
-		return ImmutableMap.copyOf(results);
+	public ImmutableMap<String, Description> any(Iterable<String> ids, AtlasQuery filter) {
+		throw new UnsupportedOperationException("TODO");
 	}
 
 	private Map<String, Description> fetchIdentifierQuery(Iterable<String> uris) {
 		ContentQueryResult result = queryClient.query(baseUri + "/any.xml?uri=" +  Joiner.on(",").join(UrlEncoding.encode(uris)) + apiKeyQueryPart());
-		Set<Description> all = Sets.newHashSet();
-		all.addAll(result.getItems());
-		all.addAll(result.getPlaylists());
-		return cacheResults(all, Sets.newHashSet(uris));
+		return cacheResults(Sets.newHashSet(result.getContents()), Sets.newHashSet(uris));
 	}
 	
 	private String apiKeyQueryPart() {
@@ -146,5 +124,28 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 		if (content.getCurie() != null) {
 			cache.put(content.getCurie(),  Maybe.just(content));
 		}
+	}
+
+	@Override
+	public Map<String, Description> any(Iterable<String> ids) {
+		Map<String, Description> results = Maps.newHashMap();
+		List<String> toFetch = Lists.newArrayList();
+		
+		for (String id : ids) {
+			if (identifierQueryCache.containsKey(id)) {
+				Maybe<Description> description = identifierQueryCache.get(id);
+				
+				if (description.hasValue()) {
+					results.put(description.requireValue().getUri(), description.requireValue());
+				}
+			}
+			else {
+				toFetch.add(id);
+			}
+		}
+		if (!toFetch.isEmpty()) {
+			results.putAll(fetchIdentifierQuery(toFetch));
+		}
+		return ImmutableMap.copyOf(results);
 	}
 }

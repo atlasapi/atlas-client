@@ -28,8 +28,10 @@ import org.atlasapi.media.entity.simple.Description;
  */
 public interface AtlasClient {
 	
-	<T> List<T> query(AtlasQuery<T> query);
+	List<Description> discover(AtlasQuery query);
 	
+	Map<String, Description> any(Iterable<String> ids, AtlasQuery filter);
+
 	Map<String, Description> any(Iterable<String> ids);
 	
 }
