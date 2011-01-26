@@ -1,7 +1,5 @@
 package org.atlasapi.client.query;
 
-import java.util.List;
-
 import org.atlasapi.content.criteria.attribute.Attribute;
 import org.atlasapi.content.criteria.operator.Operators;
 
@@ -17,11 +15,11 @@ public class EnumAttributeBuilder<T, E extends Enum<E>> {
         this.attribute = attribute;
     }
     
-    public AtlasQuery<T> equalTo(Enum<E>... values) {
+    public AtlasQuery<T> equalTo(E... values) {
         return chain.add(attribute.createQuery(Operators.EQUALS, ImmutableList.copyOf(values)));
     }
     
-    public AtlasQuery<T> in(List<Enum<E>> values) {
+    public AtlasQuery<T> in(Iterable<E> values) {
         return chain.add(attribute.createQuery(Operators.EQUALS, ImmutableList.copyOf(values)));
     }
 }

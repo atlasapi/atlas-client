@@ -6,6 +6,7 @@ import org.atlasapi.content.criteria.AtomicQuery;
 import org.atlasapi.content.criteria.ContentQuery;
 import org.atlasapi.content.criteria.attribute.Attribute;
 import org.atlasapi.content.criteria.attribute.Attributes;
+import org.atlasapi.media.entity.Publisher;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
 import org.atlasapi.media.entity.simple.Item;
@@ -49,6 +50,10 @@ public abstract class AtlasQuery<T> {
 		return new StringAttributeBuilder<T>(this, Attributes.PLAYLIST_URI);
 	}
 	
+	public EnumAttributeBuilder<T, Publisher> publisher() {
+	    return new EnumAttributeBuilder<T, Publisher>(this, publisherAttribute());
+	}
+	
 	public StringAttributeBuilder<T> channel() {
 		return new StringAttributeBuilder<T>(this, Attributes.BROADCAST_ON);
 	}
@@ -72,6 +77,8 @@ public abstract class AtlasQuery<T> {
 	protected abstract Attribute<String> titleAttribute();
 
 	abstract Attribute<String> uriAtttribute();
+	
+	abstract Attribute<Enum<Publisher>> publisherAttribute();
 
 	public AtlasQuery<T> withSelection(Selection selection) {
 		return copyWith(conjuncts, selection);

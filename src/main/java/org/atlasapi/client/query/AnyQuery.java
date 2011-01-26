@@ -22,10 +22,6 @@ public class AnyQuery extends AtlasQuery<Description> {
         return new StringAttributeBuilder<Description>(this, Attributes.DESCRIPTION_GENRE);
     }
     
-    public EnumAttributeBuilder<Description, Publisher> publisher() {
-        return new EnumAttributeBuilder<Description, Publisher>(this, Attributes.DESCRIPTION_PUBLISHER);
-    }
-
     @Override
     protected AtlasQuery<Description> copyWith(ImmutableList<AtomicQuery> conjuncts, Selection selection) {
         return new AnyQuery(conjuncts, selection);
@@ -49,6 +45,11 @@ public class AnyQuery extends AtlasQuery<Description> {
     @Override
     public String urlPrefix() {
         return "any";
+    }
+
+    @Override
+    Attribute<Enum<Publisher>> publisherAttribute() {
+        return Attributes.DESCRIPTION_PUBLISHER;
     }
 
 }

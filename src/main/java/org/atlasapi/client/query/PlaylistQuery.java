@@ -5,6 +5,7 @@ import java.util.List;
 import org.atlasapi.content.criteria.AtomicQuery;
 import org.atlasapi.content.criteria.attribute.Attribute;
 import org.atlasapi.content.criteria.attribute.Attributes;
+import org.atlasapi.media.entity.Publisher;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Playlist;
 
@@ -40,5 +41,10 @@ public class PlaylistQuery extends AtlasQuery<Playlist> {
     @Override
     protected AtlasQuery<Playlist> copyWith(ImmutableList<AtomicQuery> conjuncts, Selection selection) {
         return new PlaylistQuery(conjuncts, selection);
+    }
+
+    @Override
+    Attribute<Enum<Publisher>> publisherAttribute() {
+        return Attributes.PLAYLIST_PUBLISHER;
     }
 }
