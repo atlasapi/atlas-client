@@ -83,7 +83,7 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 	}
 	
 	@Override
-	public <T> List<T> query(AtlasQuery<T> query) {
+	public <T extends Description> List<T> query(AtlasQuery<T> query) {
 		return query.extractFrom(queryCache.get(baseUri + "/" + query.urlPrefix() + ".xml?" + queryStringBuilder.build(query.build())));
 	}
 

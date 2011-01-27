@@ -28,7 +28,7 @@ import org.atlasapi.media.entity.simple.Description;
  */
 public interface AtlasClient {
 	
-	<T> List<T> query(AtlasQuery<T> query);
+	<T extends Description> List<T> query(AtlasQuery<T> query);
 	
 	Map<String, Description> any(Iterable<String> ids);
 	

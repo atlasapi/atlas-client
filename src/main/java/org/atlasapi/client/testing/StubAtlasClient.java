@@ -14,7 +14,7 @@ public class StubAtlasClient implements AtlasClient {
     Map<String, Description> contentMap = Maps.newHashMap();
 
     @Override
-    public <T> List<T> query(AtlasQuery<T> query) {
+    public <T extends Description> List<T> query(AtlasQuery<T> query) {
         throw new UnsupportedOperationException();
     }
 
