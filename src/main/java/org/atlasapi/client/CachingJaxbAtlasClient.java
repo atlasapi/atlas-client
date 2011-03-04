@@ -42,7 +42,7 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 	private QueryStringBuilder queryStringBuilder = new QueryStringBuilder();
 	private StringQueryClient queryClient;
 
-	private final MapMaker cacheTemplate = new MapMaker().softValues().expiration(10, TimeUnit.MINUTES);
+	private final MapMaker cacheTemplate = new MapMaker().softValues().expireAfterWrite(10, TimeUnit.MINUTES);
 	
     private ConcurrentMap<String, ContentQueryResult> queryCache = cacheTemplate.makeComputingMap(new Function<String, ContentQueryResult>() {
 
