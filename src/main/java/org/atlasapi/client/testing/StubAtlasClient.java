@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.atlasapi.client.AtlasClient;
+import org.atlasapi.client.ScheduleQuery;
 import org.atlasapi.client.query.AtlasQuery;
 import org.atlasapi.media.entity.simple.Description;
+import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 
 import com.google.common.collect.Maps;
 
@@ -35,5 +37,10 @@ public class StubAtlasClient implements AtlasClient {
             results.put(id, contentMap.get(id));
         }
         return results;
+	}
+
+	@Override
+	public ScheduleQueryResult scheduleFor(ScheduleQuery query) {
+        throw new UnsupportedOperationException();
 	}
 }

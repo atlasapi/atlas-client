@@ -8,6 +8,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.atlasapi.media.entity.simple.ContentQueryResult;
+import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 
 import com.metabroadcast.common.http.HttpStatusCodeException;
 import com.metabroadcast.common.http.SimpleHttpClient;
@@ -31,10 +32,11 @@ class JaxbStringQueryClient implements StringQueryClient {
 		}
 	}
 	
-	public ContentQueryResult query(String queryUri) {
+	public Object queryInternal(String queryUri) {
+		System.out.println(queryUri);
 		try {
 			Unmarshaller unmarshaller = context.createUnmarshaller();
-			return (ContentQueryResult) unmarshaller.unmarshal(new StringReader(httpClient.getContentsOf(queryUri)));
+			return unmarshaller.unmarshal(new StringReader(httpClient.getContentsOf(queryUri)));
 		}  catch (HttpStatusCodeException e) {
 			if (NOT_FOUND == e.getStatusCode()) {
 				return new ContentQueryResult();
@@ -43,5 +45,15 @@ class JaxbStringQueryClient implements StringQueryClient {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	public ScheduleQueryResult scheduleQuery(String queryUri) {
+		return (ScheduleQueryResult) queryInternal(queryUri);
+	}
+
+	@Override
+	public ContentQueryResult query(String queryUri) {
+		return (ContentQueryResult) queryInternal(queryUri);
 	}
 }

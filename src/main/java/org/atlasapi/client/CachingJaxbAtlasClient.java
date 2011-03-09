@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.atlasapi.client.query.AtlasQuery;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
+import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
@@ -32,6 +33,7 @@ import com.google.common.collect.MapMaker;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.metabroadcast.common.base.Maybe;
+import com.metabroadcast.common.url.QueryStringParameters;
 import com.metabroadcast.common.url.UrlEncoding;
 
 /**
@@ -63,7 +65,7 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 	}
 	
 	public CachingJaxbAtlasClient() {
-		this("http://atlasapi.org/2.0", new JaxbStringQueryClient());
+		this("http://otter.atlasapi.org/3.0", new JaxbStringQueryClient());
 	}
 	
 	public CachingJaxbAtlasClient(String baseUri) {
@@ -124,6 +126,16 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 		if (content.getCurie() != null) {
 			cache.put(content.getCurie(),  Maybe.just(content));
 		}
+	}
+	
+	@Override
+	public ScheduleQueryResult scheduleFor(ScheduleQuery query) {
+		// avoid using the naive cache, schedules require day-binned caches provided by higher-layers.
+		QueryStringParameters params = query.toParams();
+		if (apiKey != null) {
+			params.add("apiKey", apiKey);
+		}
+		return queryClient.scheduleQuery(baseUri + "/schedule.xml?" + params.toQueryString());
 	}
 
 	@Override

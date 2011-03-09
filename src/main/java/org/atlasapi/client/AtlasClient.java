@@ -19,6 +19,7 @@ import java.util.Map;
 
 import org.atlasapi.client.query.AtlasQuery;
 import org.atlasapi.media.entity.simple.Description;
+import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 
 /**
  * Client interface to the URIplay service.
@@ -29,9 +30,11 @@ import org.atlasapi.media.entity.simple.Description;
 public interface AtlasClient {
 	
 	List<Description> discover(AtlasQuery query);
+
+	ScheduleQueryResult scheduleFor(ScheduleQuery query);
 	
 	Map<String, Description> any(Iterable<String> ids, AtlasQuery filter);
 
 	Map<String, Description> any(Iterable<String> ids);
-	
+
 }
