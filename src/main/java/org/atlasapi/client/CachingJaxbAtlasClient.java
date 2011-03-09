@@ -90,7 +90,7 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 	}
 
 	private Map<String, Description> fetchIdentifierQuery(Iterable<String> uris) {
-		ContentQueryResult result = queryClient.query(baseUri + "/any.xml?uri=" +  Joiner.on(",").join(UrlEncoding.encode(uris)) + apiKeyQueryPart());
+		ContentQueryResult result = queryClient.query(baseUri + "/content.xml?uri=" +  Joiner.on(",").join(UrlEncoding.encode(uris)) + apiKeyQueryPart());
 		return cacheResults(Sets.newHashSet(result.getContents()), Sets.newHashSet(uris));
 	}
 	

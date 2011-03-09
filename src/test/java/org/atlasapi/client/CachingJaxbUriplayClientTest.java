@@ -36,7 +36,7 @@ public class CachingJaxbUriplayClientTest {
 		final Description item3 = new Item("3");
 		
 		context.checking(new Expectations() {{
-			one(atlas).query("atlas/any.xml?uri=1,2"); will(returnValue(result(item1, playlist2)));
+			one(atlas).query("atlas/content.xml?uri=1,2"); will(returnValue(result(item1, playlist2)));
 		}});
 		
 		assertThat(client.content(ImmutableList.of("1", "2")).getContents(), hasItems(item1, playlist2));
@@ -53,7 +53,7 @@ public class CachingJaxbUriplayClientTest {
 		
 		// item1 and playlist 2 should be served from the cache, we only need to fetch item 3
 		context.checking(new Expectations() {{
-			one(atlas).query("atlas/any.xml?uri=3"); will(returnValue(result(item3)));
+			one(atlas).query("atlas/content.xml?uri=3"); will(returnValue(result(item3)));
 		}});
 		
 		assertThat(client.content(ImmutableList.of("1", "2", "3")).getContents(), hasItems(item1, playlist2, item3));
@@ -65,7 +65,7 @@ public class CachingJaxbUriplayClientTest {
 		final Description exists = new Item("exists");
 		
 		context.checking(new Expectations() {{
-			one(atlas).query("atlas/any.xml?uri=missing,exists"); will(returnValue(result(exists)));
+			one(atlas).query("atlas/content.xml?uri=missing,exists"); will(returnValue(result(exists)));
 		}});
 		
 		assertThat(client.content(ImmutableList.of("missing", "exists")).getContents(), hasItems(exists));
