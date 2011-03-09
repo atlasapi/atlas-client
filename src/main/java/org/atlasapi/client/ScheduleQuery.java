@@ -43,7 +43,7 @@ public final class ScheduleQuery {
 		params.add("to", String.valueOf(interval.getEnd().getMillis() / 1000));
 		
 		if (!publishers.isEmpty()) {
-			params.add("publishers", CSV.join(Iterables.transform(publishers, Publisher.TO_KEY)));
+			params.add("publisher", CSV.join(Iterables.transform(publishers, Publisher.TO_KEY)));
 		}
 		return params;
 	}

@@ -14,11 +14,9 @@ permissions and limitations under the License. */
 
 package org.atlasapi.client;
 
-import java.util.List;
-import java.util.Map;
-
 import org.atlasapi.client.query.AtlasQuery;
-import org.atlasapi.media.entity.simple.Description;
+import org.atlasapi.media.entity.simple.ContentQueryResult;
+import org.atlasapi.media.entity.simple.DiscoverQueryResult;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 
 /**
@@ -29,12 +27,10 @@ import org.atlasapi.media.entity.simple.ScheduleQueryResult;
  */
 public interface AtlasClient {
 	
-	List<Description> discover(AtlasQuery query);
+	DiscoverQueryResult discover(AtlasQuery query);
 
 	ScheduleQueryResult scheduleFor(ScheduleQuery query);
 	
-	Map<String, Description> any(Iterable<String> ids, AtlasQuery filter);
-
-	Map<String, Description> any(Iterable<String> ids);
+	ContentQueryResult content(Iterable<String> ids);
 
 }

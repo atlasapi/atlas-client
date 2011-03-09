@@ -26,14 +26,13 @@ class JaxbStringQueryClient implements StringQueryClient {
 	
 	public JaxbStringQueryClient() {
 		try {
-			context = JAXBContext.newInstance(ContentQueryResult.class);
+			context = JAXBContext.newInstance(ContentQueryResult.class, ScheduleQueryResult.class);
 		} catch (JAXBException e) {
 			throw new RuntimeException(e);
 		}
 	}
 	
 	public Object queryInternal(String queryUri) {
-		System.out.println(queryUri);
 		try {
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			return unmarshaller.unmarshal(new StringReader(httpClient.getContentsOf(queryUri)));

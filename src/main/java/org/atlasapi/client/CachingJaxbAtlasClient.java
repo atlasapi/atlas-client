@@ -23,11 +23,11 @@ import java.util.concurrent.TimeUnit;
 import org.atlasapi.client.query.AtlasQuery;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
+import org.atlasapi.media.entity.simple.DiscoverQueryResult;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.MapMaker;
 import com.google.common.collect.Maps;
@@ -84,13 +84,9 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 	}
 	
 	@Override
-	public List<Description> discover(AtlasQuery query) {
-		return queryCache.get(baseUri + "/discover.xml?" + queryStringBuilder.build(query.build())).getContents();
-	}
-
-	@Override
-	public ImmutableMap<String, Description> any(Iterable<String> ids, AtlasQuery filter) {
-		throw new UnsupportedOperationException("TODO");
+	public DiscoverQueryResult discover(AtlasQuery query) {
+	    List<Description> contents = queryCache.get(baseUri + "/discover.xml?" + queryStringBuilder.build(query.build())).getContents();
+		return new DiscoverQueryResult(contents);
 	}
 
 	private Map<String, Description> fetchIdentifierQuery(Iterable<String> uris) {
@@ -139,7 +135,7 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 	}
 
 	@Override
-	public Map<String, Description> any(Iterable<String> ids) {
+	public ContentQueryResult content(Iterable<String> ids) {
 		Map<String, Description> results = Maps.newHashMap();
 		List<String> toFetch = Lists.newArrayList();
 		
@@ -158,6 +154,9 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 		if (!toFetch.isEmpty()) {
 			results.putAll(fetchIdentifierQuery(toFetch));
 		}
-		return ImmutableMap.copyOf(results);
+		
+		ContentQueryResult result = new ContentQueryResult();
+		result.setContents(results.values());
+		return result;
 	}
 }
