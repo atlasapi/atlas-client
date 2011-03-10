@@ -108,6 +108,7 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 			results.put(description.getUri(), description);
 			putInCache(identifierQueryCache, description);
 			allIdentifiersReturned.addAll(description.identifiers());
+			allIdentifiersReturned.addAll(description.getSameAs());
 		}
 		// Make sure negative results are cached
 		Set<String> notFound = Sets.difference(uris, allIdentifiersReturned);
