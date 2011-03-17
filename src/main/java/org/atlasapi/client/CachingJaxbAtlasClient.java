@@ -160,4 +160,13 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 		result.setContents(results.values());
 		return result;
 	}
+
+    @Override
+    public ContentQueryResult search(SearchQuery query) {
+        QueryStringParameters params = query.toParams();
+        if (apiKey != null) {
+            params.add("apiKey", apiKey);
+        }
+        return queryClient.query(baseUri + "/search.xml?" + params.toQueryString());
+    }
 }

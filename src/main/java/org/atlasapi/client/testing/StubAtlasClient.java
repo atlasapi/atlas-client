@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.atlasapi.client.AtlasClient;
 import org.atlasapi.client.ScheduleQuery;
+import org.atlasapi.client.SearchQuery;
 import org.atlasapi.client.query.AtlasQuery;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
@@ -39,4 +40,9 @@ public class StubAtlasClient implements AtlasClient {
 	public ScheduleQueryResult scheduleFor(ScheduleQuery query) {
         throw new UnsupportedOperationException();
 	}
+
+    @Override
+    public ContentQueryResult search(SearchQuery query) {
+        throw new UnsupportedOperationException();
+    }
 }

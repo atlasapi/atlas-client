@@ -26,10 +26,6 @@ public class AtlasQuery {
 		return new StringAttributeBuilder(this, Attributes.BROADCAST_ON);
 	}
 	
-	public StringAttributeBuilder title() {
-		return new StringAttributeBuilder(this, Attributes.DESCRIPTION_TITLE);
-	}
-	
 	public StringAttributeBuilder genres() {
 		return new StringAttributeBuilder(this, Attributes.DESCRIPTION_GENRE);
 	}
@@ -52,10 +48,6 @@ public class AtlasQuery {
 	
 	private AtlasQuery copyWith(ImmutableList<AtomicQuery> conjuncts, Selection selection) {
 		return new AtlasQuery(conjuncts, selection);
-	}
-
-	public DateTimeAttributeBuilder transmissionTime() {
-		return new DateTimeAttributeBuilder(this, Attributes.BROADCAST_TRANSMISSION_TIME);
 	}
 	
 	public ContentQuery build() {

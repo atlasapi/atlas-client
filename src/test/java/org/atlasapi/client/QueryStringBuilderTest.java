@@ -19,7 +19,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.atlasapi.content.criteria.ContentQueryBuilder;
 import org.atlasapi.content.criteria.attribute.Attributes;
-import org.joda.time.DateTime;
 import org.junit.Test;
 
 import com.metabroadcast.common.query.Selection;
@@ -32,14 +31,7 @@ public class QueryStringBuilderTest  {
 	public void testTheBuilder() throws Exception {
 		this.builder = new QueryStringBuilder();
 		
-		check(query().equalTo(Attributes.DESCRIPTION_TITLE, "foo"), "title=foo");
-		check(query().equalTo(Attributes.DESCRIPTION_TITLE, "foo&foo"), "title=foo%26foo");
-
 		check(query().equalTo(Attributes.LOCATION_AVAILABLE, true), "available=true");
-		
-		check(query().after(Attributes.BROADCAST_TRANSMISSION_TIME, new DateTime().withMillis(1000)), "transmissionTime-after=1");
-
-		check(query().equalTo(Attributes.DESCRIPTION_TITLE, "foo").equalTo(Attributes.LOCATION_AVAILABLE, true), "title=foo&available=true");
 		
 		check(query().equalTo(Attributes.DESCRIPTION_GENRE, "a", "b"), "genre=a,b");
 	}
@@ -55,15 +47,7 @@ public class QueryStringBuilderTest  {
 		this.builder = new QueryStringBuilder();
 		builder.setApiKey("testKey");
 		
-		check(query().equalTo(Attributes.DESCRIPTION_TITLE, "foo"), "title=foo&apiKey=testKey");
-		check(query().equalTo(Attributes.DESCRIPTION_TITLE, "foo&foo"), "title=foo%26foo&apiKey=testKey");
-
 		check(query().equalTo(Attributes.LOCATION_AVAILABLE, true), "available=true&apiKey=testKey");
-		
-		check(query().after(Attributes.BROADCAST_TRANSMISSION_TIME, new DateTime().withMillis(1000)), "transmissionTime-after=1&apiKey=testKey");
-
-		check(query().equalTo(Attributes.DESCRIPTION_TITLE, "foo").equalTo(Attributes.LOCATION_AVAILABLE, true), "title=foo&available=true&apiKey=testKey");
-		
 		check(query().equalTo(Attributes.DESCRIPTION_GENRE, "a", "b"), "genre=a,b&apiKey=testKey");
 	}
 

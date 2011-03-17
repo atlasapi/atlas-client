@@ -32,5 +32,7 @@ public interface AtlasClient {
 	ScheduleQueryResult scheduleFor(ScheduleQuery query);
 	
 	ContentQueryResult content(Iterable<String> ids);
+	
+	ContentQueryResult search(SearchQuery query);
 
 }

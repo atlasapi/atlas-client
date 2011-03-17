@@ -22,8 +22,4 @@ public final class StringAttributeBuilder {
 	public AtlasQuery in(Iterable<String> values) {
 		return chain.add(attribute.createQuery(Operators.EQUALS, ImmutableList.copyOf(values)));
 	}
-	
-	public AtlasQuery search(String... values) {
-		return chain.add(attribute.createQuery(Operators.SEARCH, ImmutableList.copyOf(values)));
-	}
 }
