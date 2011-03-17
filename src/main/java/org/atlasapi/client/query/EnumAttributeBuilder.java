@@ -7,7 +7,7 @@ import org.atlasapi.content.criteria.operator.Operators;
 
 import com.google.common.collect.ImmutableList;
 
-public class EnumAttributeBuilder<T, E extends Enum<E>> {
+public class EnumAttributeBuilder<E extends Enum<E>> {
 
     private final AtlasQuery chain;
     private final Attribute<Enum<E>> attribute;
