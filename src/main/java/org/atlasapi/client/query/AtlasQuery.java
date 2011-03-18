@@ -3,6 +3,7 @@ package org.atlasapi.client.query;
 import org.atlasapi.content.criteria.AtomicQuery;
 import org.atlasapi.content.criteria.ContentQuery;
 import org.atlasapi.content.criteria.attribute.Attributes;
+import org.atlasapi.media.entity.Publisher;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -36,6 +37,10 @@ public class AtlasQuery {
 	
 	public BooleanAttributeBuilder available() {
 		return new BooleanAttributeBuilder(this, Attributes.LOCATION_AVAILABLE);
+	}
+	
+	public EnumAttributeBuilder<Publisher> publisher() {
+		return new EnumAttributeBuilder<Publisher>(this, Attributes.DESCRIPTION_PUBLISHER);
 	}
 	
 	public AtlasQuery withSelection(Selection selection) {
