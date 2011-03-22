@@ -36,7 +36,9 @@ public class SearchQuery {
             params.add("publisher", CSV.join(Iterables.transform(publishers, Publisher.TO_KEY)));
         }
         if (selection != null) {
-            params.add(Selection.LIMIT_REQUEST_PARAM, selection.getLimit().toString());
+            if (selection.getLimit() != null) {
+                params.add(Selection.LIMIT_REQUEST_PARAM, selection.getLimit().toString());
+            }
             if (selection.getOffset() > 0) {
                 params.add(Selection.START_INDEX_REQUEST_PARAM, String.valueOf(selection.getOffset()));
             }
