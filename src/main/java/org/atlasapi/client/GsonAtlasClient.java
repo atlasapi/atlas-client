@@ -12,15 +12,15 @@ import com.google.common.base.Joiner;
 import com.metabroadcast.common.url.QueryStringParameters;
 import com.metabroadcast.common.url.UrlEncoding;
 
-public class JsonAtlasClient implements AtlasClient {
+public class GsonAtlasClient implements AtlasClient {
     
     private final QueryStringBuilder queryStringBuilder = new QueryStringBuilder();
-    private final JsonQueryClient client = new JsonQueryClient();
+    private final GsonQueryClient client = new GsonQueryClient();
     private final Joiner joiner = Joiner.on(",");
     private final String baseUri;
     private final String apiKey;
     
-    public JsonAtlasClient(String baseUri, String apiKey) {
+    public GsonAtlasClient(String baseUri, String apiKey) {
         this.baseUri = baseUri;
         this.apiKey = apiKey;
         this.queryStringBuilder.setApiKey(apiKey);

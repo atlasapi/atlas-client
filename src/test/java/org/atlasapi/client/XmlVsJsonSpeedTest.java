@@ -8,7 +8,7 @@ import org.junit.Test;
 
 public class XmlVsJsonSpeedTest {
     private final String urlBase = "http://otter.atlasapi.org/3.0/content.%s?uri=http://www.bbc.co.uk/programmes/b00vsvv5";
-    private final JsonQueryClient jsonClient = new JsonQueryClient();
+    private final GsonQueryClient jsonClient = new GsonQueryClient();
     private final JaxbStringQueryClient xmlClient = new JaxbStringQueryClient();
     
     @Test

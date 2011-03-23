@@ -27,7 +27,7 @@ import com.metabroadcast.common.http.HttpStatusCodeException;
 import com.metabroadcast.common.http.SimpleHttpClient;
 import com.metabroadcast.common.http.SimpleHttpClientBuilder;
 
-public class JsonQueryClient implements StringQueryClient {
+public class GsonQueryClient implements StringQueryClient {
     
     private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .registerTypeAdapter(Date.class, new DateDeserializer())

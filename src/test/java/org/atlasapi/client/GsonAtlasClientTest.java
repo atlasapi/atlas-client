@@ -25,10 +25,10 @@ import com.google.common.collect.Iterables;
 import com.metabroadcast.common.query.Selection;
 import com.metabroadcast.common.time.DateTimeZones;
 
-public class JsonAtlasClientTest {
+public class GsonAtlasClientTest {
 
     private static final Selection SELECTION = new Selection(0, 5);
-    private final JsonAtlasClient client = new JsonAtlasClient("http://otter.atlasapi.org/3.0", null);
+    private final GsonAtlasClient client = new GsonAtlasClient("http://otter.atlasapi.org/3.0", null);
 
     @Test
     public void shouldGetEpisode() {
