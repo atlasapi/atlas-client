@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
 import org.atlasapi.media.entity.simple.Item;
+import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.Playlist;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 import org.joda.time.format.DateTimeFormat;
@@ -40,7 +41,7 @@ public class GsonQueryClient implements StringQueryClient {
     private final SimpleHttpClient httpClient = new SimpleHttpClientBuilder().withUserAgent(USER_AGENT).withSocketTimeout(1, TimeUnit.MINUTES).build();
     
     @Override
-    public ContentQueryResult query(String queryUri) {
+    public ContentQueryResult contentQuery(String queryUri) {
         try {
             return gson.fromJson(httpClient.getContentsOf(queryUri), ContentQueryResult.class);
         } catch (HttpStatusCodeException e) {
@@ -60,6 +61,20 @@ public class GsonQueryClient implements StringQueryClient {
         } catch (HttpStatusCodeException e) {
             if (NOT_FOUND == e.getStatusCode()) {
                 return new ScheduleQueryResult();
+            }
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    @Override
+    public PeopleQueryResult peopleQuery(String queryUri) {
+        try {
+            return gson.fromJson(httpClient.getContentsOf(queryUri), PeopleQueryResult.class);
+        } catch (HttpStatusCodeException e) {
+            if (NOT_FOUND == e.getStatusCode()) {
+                return new PeopleQueryResult();
             }
             throw new RuntimeException(e);
         } catch (Exception e) {
@@ -116,4 +131,5 @@ public class GsonQueryClient implements StringQueryClient {
             }
         }
     }
+
 }

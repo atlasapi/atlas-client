@@ -14,7 +14,7 @@ public class XmlVsJsonSpeedTest {
     @Test
     public void jsonTest() {
         String url = String.format(urlBase, "json");
-        ContentQueryResult query = jsonClient.query(url);
+        ContentQueryResult query = jsonClient.contentQuery(url);
         assertFalse(query.getContents().isEmpty());
         
         speedTest(jsonClient, url);
@@ -23,7 +23,7 @@ public class XmlVsJsonSpeedTest {
     @Test
     public void xmlTest() {
         String url = String.format(urlBase, "xml");
-        ContentQueryResult query = xmlClient.query(url);
+        ContentQueryResult query = xmlClient.contentQuery(url);
         assertFalse(query.getContents().isEmpty());
         
         speedTest(xmlClient, url);
@@ -32,7 +32,7 @@ public class XmlVsJsonSpeedTest {
     private void speedTest(StringQueryClient client, String url) {
         long currentTimeMillis = System.currentTimeMillis();
         for (int i=0; i<5; i++) {
-            client.query(url);
+            client.contentQuery(url);
         }
         long took = System.currentTimeMillis() - currentTimeMillis;
         System.out.println("Test took "+took+" millis");

@@ -9,6 +9,7 @@ import org.atlasapi.client.query.AtlasQuery;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
 import org.atlasapi.media.entity.simple.DiscoverQueryResult;
+import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 
 import com.google.common.collect.Maps;
@@ -43,6 +44,11 @@ public class StubAtlasClient implements AtlasClient {
 
     @Override
     public ContentQueryResult search(SearchQuery query) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public PeopleQueryResult people(Iterable<String> uris) {
         throw new UnsupportedOperationException();
     }
 }

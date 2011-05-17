@@ -24,6 +24,7 @@ import org.atlasapi.client.query.AtlasQuery;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
 import org.atlasapi.media.entity.simple.DiscoverQueryResult;
+import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 
 import com.google.common.base.Function;
@@ -50,11 +51,11 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 
 		@Override
 		public ContentQueryResult apply(String query) {
-			return queryClient.query(query);
+			return queryClient.contentQuery(query);
 		}
     });
  
-	private ConcurrentMap<String, Maybe<Description>> identifierQueryCache = cacheTemplate.makeMap();
+	private ConcurrentMap<String, Maybe<Description>> contentIdentifierQueryCache = cacheTemplate.makeMap();
 
 	private final String baseUri;
 	private String apiKey;
@@ -90,7 +91,7 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 	}
 
 	private Map<String, Description> fetchIdentifierQuery(Iterable<String> uris) {
-		ContentQueryResult result = queryClient.query(baseUri + "/content.xml?uri=" +  Joiner.on(",").join(UrlEncoding.encode(uris)) + apiKeyQueryPart());
+		ContentQueryResult result = queryClient.contentQuery(baseUri + "/content.xml?uri=" +  Joiner.on(",").join(UrlEncoding.encode(uris)) + apiKeyQueryPart());
 		return cacheResults(Sets.newHashSet(result.getContents()), Sets.newHashSet(uris));
 	}
 	
@@ -106,14 +107,14 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 		Set<String> allIdentifiersReturned = Sets.newHashSet();
 		for (Description description : all) {
 			results.put(description.getUri(), description);
-			putInCache(identifierQueryCache, description);
+			putInCache(contentIdentifierQueryCache, description);
 			allIdentifiersReturned.addAll(description.identifiers());
 			allIdentifiersReturned.addAll(description.getSameAs());
 		}
 		// Make sure negative results are cached
 		Set<String> notFound = Sets.difference(uris, allIdentifiersReturned);
 		for (String notfound : notFound) {
-			identifierQueryCache.put(notfound, Maybe.<Description>nothing());
+			contentIdentifierQueryCache.put(notfound, Maybe.<Description>nothing());
 		}
 		return results;
 	}
@@ -141,8 +142,8 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 		List<String> toFetch = Lists.newArrayList();
 		
 		for (String id : ids) {
-			if (identifierQueryCache.containsKey(id)) {
-				Maybe<Description> description = identifierQueryCache.get(id);
+			if (contentIdentifierQueryCache.containsKey(id)) {
+				Maybe<Description> description = contentIdentifierQueryCache.get(id);
 				
 				if (description.hasValue()) {
 					results.put(description.requireValue().getUri(), description.requireValue());
@@ -167,6 +168,11 @@ public class CachingJaxbAtlasClient implements AtlasClient {
         if (apiKey != null) {
             params.add("apiKey", apiKey);
         }
-        return queryClient.query(baseUri + "/search.xml?" + params.toQueryString());
+        return queryClient.contentQuery(baseUri + "/search.xml?" + params.toQueryString());
+    }
+
+    @Override
+    public PeopleQueryResult people(Iterable<String> uris) {
+        return queryClient.peopleQuery(baseUri + "/people.xml?uri=" + Joiner.on(",").join(UrlEncoding.encode(uris)) + apiKeyQueryPart());
     }
 }

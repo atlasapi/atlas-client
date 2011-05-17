@@ -6,6 +6,7 @@ import org.atlasapi.client.query.AtlasQuery;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
 import org.atlasapi.media.entity.simple.DiscoverQueryResult;
+import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 
 import com.google.common.base.Joiner;
@@ -28,7 +29,7 @@ public class GsonAtlasClient implements AtlasClient {
 
     @Override
     public ContentQueryResult content(Iterable<String> ids) {
-        return client.query(baseUri + "/content.json?uri=" +  joiner.join(UrlEncoding.encode(ids)) + apiKeyQueryPart());
+        return client.contentQuery(baseUri + "/content.json?uri=" +  joiner.join(UrlEncoding.encode(ids)) + apiKeyQueryPart());
     }
     private String apiKeyQueryPart() {
         if (this.apiKey != null) {
@@ -39,7 +40,7 @@ public class GsonAtlasClient implements AtlasClient {
 
     @Override
     public DiscoverQueryResult discover(AtlasQuery query) {
-        List<Description> contents = client.query(baseUri + "/discover.json?" + queryStringBuilder.build(query.build())).getContents();
+        List<Description> contents = client.contentQuery(baseUri + "/discover.json?" + queryStringBuilder.build(query.build())).getContents();
         return new DiscoverQueryResult(contents);
     }
 
@@ -58,6 +59,12 @@ public class GsonAtlasClient implements AtlasClient {
         if (apiKey != null) {
             params.add("apiKey", apiKey);
         }
-        return client.query(baseUri + "/search.json?" + params.toQueryString());
+        return client.contentQuery(baseUri + "/search.json?" + params.toQueryString());
+    }
+
+    @Override
+    public PeopleQueryResult people(Iterable<String> uris) {
+        
+        return client.peopleQuery(baseUri + "/people.json?uri=" +  joiner.join(UrlEncoding.encode(uris)) + apiKeyQueryPart());
     }
 }

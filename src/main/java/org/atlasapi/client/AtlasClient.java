@@ -17,6 +17,7 @@ package org.atlasapi.client;
 import org.atlasapi.client.query.AtlasQuery;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.DiscoverQueryResult;
+import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 
 /**
@@ -35,4 +36,5 @@ public interface AtlasClient {
 	
 	ContentQueryResult search(SearchQuery query);
 
+	PeopleQueryResult people(Iterable<String> uris);
 }

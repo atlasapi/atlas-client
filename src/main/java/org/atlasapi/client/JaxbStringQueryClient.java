@@ -8,6 +8,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.atlasapi.media.entity.simple.ContentQueryResult;
+import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 
 import com.metabroadcast.common.http.HttpStatusCodeException;
@@ -26,7 +27,7 @@ class JaxbStringQueryClient implements StringQueryClient {
 	
 	public JaxbStringQueryClient() {
 		try {
-			context = JAXBContext.newInstance(ContentQueryResult.class, ScheduleQueryResult.class);
+			context = JAXBContext.newInstance(ContentQueryResult.class, ScheduleQueryResult.class, PeopleQueryResult.class);
 		} catch (JAXBException e) {
 			throw new RuntimeException(e);
 		}
@@ -52,7 +53,12 @@ class JaxbStringQueryClient implements StringQueryClient {
 	}
 
 	@Override
-	public ContentQueryResult query(String queryUri) {
+	public ContentQueryResult contentQuery(String queryUri) {
 		return (ContentQueryResult) queryInternal(queryUri);
 	}
+
+    @Override
+    public PeopleQueryResult peopleQuery(String queryUri) {
+        return (PeopleQueryResult) queryInternal(queryUri);
+    }
 }
