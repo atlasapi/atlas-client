@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.atlasapi.content.criteria.ContentQueryBuilder;
 import org.atlasapi.content.criteria.attribute.Attributes;
+import org.atlasapi.media.entity.MediaType;
 import org.junit.Test;
 
 import com.metabroadcast.common.query.Selection;
@@ -31,7 +32,7 @@ public class QueryStringBuilderTest  {
 	public void testTheBuilder() throws Exception {
 		this.builder = new QueryStringBuilder();
 		
-		check(query().equalTo(Attributes.LOCATION_AVAILABLE, true), "available=true");
+		check(query().equalTo(Attributes.DESCRIPTION_TYPE, MediaType.AUDIO), "mediaType=AUDIO");
 		
 		check(query().equalTo(Attributes.DESCRIPTION_GENRE, "a", "b"), "genre=a,b");
 	}
@@ -47,7 +48,7 @@ public class QueryStringBuilderTest  {
 		this.builder = new QueryStringBuilder();
 		builder.setApiKey("testKey");
 		
-		check(query().equalTo(Attributes.LOCATION_AVAILABLE, true), "available=true&apiKey=testKey");
+		check(query().equalTo(Attributes.DESCRIPTION_TYPE, MediaType.AUDIO), "mediaType=AUDIO&apiKey=testKey");
 		check(query().equalTo(Attributes.DESCRIPTION_GENRE, "a", "b"), "genre=a,b&apiKey=testKey");
 	}
 

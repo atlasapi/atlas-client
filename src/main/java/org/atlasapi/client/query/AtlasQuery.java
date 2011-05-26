@@ -23,21 +23,21 @@ public class AtlasQuery {
 		this.selection = selection;
 	}
 
-	public StringAttributeBuilder channel() {
-		return new StringAttributeBuilder(this, Attributes.BROADCAST_ON);
-	}
+//	public StringAttributeBuilder channel() {
+//		return new StringAttributeBuilder(this, Attributes.BROADCAST_ON);
+//	}
 	
 	public StringAttributeBuilder genres() {
 		return new StringAttributeBuilder(this, Attributes.DESCRIPTION_GENRE);
 	}
 	
-	public BooleanAttributeBuilder longForm() {
-		return new BooleanAttributeBuilder(this, Attributes.ITEM_IS_LONG_FORM);
-	}
+//	public BooleanAttributeBuilder longForm() {
+//		return new BooleanAttributeBuilder(this, Attributes.ITEM_IS_LONG_FORM);
+//	}
 	
-	public BooleanAttributeBuilder available() {
-		return new BooleanAttributeBuilder(this, Attributes.LOCATION_AVAILABLE);
-	}
+//	public BooleanAttributeBuilder available() {
+//		return new BooleanAttributeBuilder(this, Attributes.LOCATION_AVAILABLE);
+//	}
 	
 	public EnumAttributeBuilder<Publisher> publisher() {
 		return new EnumAttributeBuilder<Publisher>(this, Attributes.DESCRIPTION_PUBLISHER);
