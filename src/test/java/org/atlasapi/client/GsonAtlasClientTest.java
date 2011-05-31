@@ -5,12 +5,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.atlasapi.client.query.AtlasQuery;
 import org.atlasapi.media.entity.Channel;
 import org.atlasapi.media.entity.Publisher;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
-import org.atlasapi.media.entity.simple.DiscoverQueryResult;
 import org.atlasapi.media.entity.simple.Item;
 import org.atlasapi.media.entity.simple.Location;
 import org.atlasapi.media.entity.simple.Playlist;
@@ -68,14 +66,8 @@ public class GsonAtlasClientTest {
                 Playlist playlist = (Playlist) desc;
                 assertFalse(playlist.getContent().isEmpty());
 
-                for (Description description : playlist.getContent()) {
-                    Item item = (Item) description;
-                    assertFalse(item.getBroadcasts().isEmpty());
+               assertFalse(playlist.getContent().isEmpty());
 
-                    for (Location location : item.getLocations()) {
-                        assertNotNull(location.getAvailabilityStart());
-                    }
-                }
                 found = true;
             }
         }
@@ -109,24 +101,5 @@ public class GsonAtlasClientTest {
             assertNotNull(item.getTitle());
         }
     }
-    
-    @Test
-    public void shouldDiscover() {
-        AtlasQuery query = AtlasQuery.filter().genres().equalTo("comedy").publisher().equalTo(Publisher.BBC).withSelection(SELECTION);
-        DiscoverQueryResult result = client.discover(query);
-        assertFalse(result.getResults().isEmpty());
-        
-        for (Description description: result.getResults()) {
-            assertEquals(Publisher.BBC.key(), description.getPublisher().getKey());
-            assertNotNull(description.getTitle());
-            
-            boolean found = false;
-            for (String genre: description.getGenres()) {
-                if (genre.contains("comedy")) {
-                    found = true;
-                }
-            }
-            assertTrue(found);
-        }
-    }
+
 }

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.atlasapi.media.entity.simple.ContentIdentifier;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
 import org.atlasapi.media.entity.simple.Item;
@@ -13,6 +14,7 @@ import org.atlasapi.media.entity.simple.Playlist;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
@@ -35,6 +37,7 @@ public class GsonQueryClient implements StringQueryClient {
             .registerTypeAdapter(Long.class, new LongDeserializer())
             .registerTypeAdapter(Boolean.class, new BooleanDeserializer())
             .registerTypeAdapter(Description.class, new DescriptionDeserializer())
+            .registerTypeAdapter(ContentIdentifier.class, new ContentIdentifierDeserializer())
             .create();
     private static final String USER_AGENT = "Mozilla/5.0 (compatible; atlas-java-client/1.0; +http://atlasapi.org)";
     private static final int NOT_FOUND = 404;
@@ -83,7 +86,7 @@ public class GsonQueryClient implements StringQueryClient {
     }
     
     public static class DateDeserializer implements JsonDeserializer<Date> {
-        private static final DateTimeFormatter fmt = DateTimeFormat.forPattern("dd-MMM-yyyy HH:mm:ss");
+        private static final DateTimeFormatter fmt = ISODateTimeFormat.dateTimeNoMillis();
         @Override
         public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             String jsonString = json.getAsJsonPrimitive().getAsString();
@@ -132,4 +135,12 @@ public class GsonQueryClient implements StringQueryClient {
         }
     }
 
+    public static class ContentIdentifierDeserializer implements JsonDeserializer<ContentIdentifier> {
+
+        @Override
+        public ContentIdentifier deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            JsonObject jsonObj = json.getAsJsonObject();
+            return ContentIdentifier.identifierFrom(jsonObj.get("uri").getAsString(), jsonObj.get("type").getAsString());
+        }
+    }
 }
