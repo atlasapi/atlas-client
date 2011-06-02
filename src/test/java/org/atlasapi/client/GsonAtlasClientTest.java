@@ -26,17 +26,17 @@ import com.metabroadcast.common.time.DateTimeZones;
 public class GsonAtlasClientTest {
 
     private static final Selection SELECTION = new Selection(0, 5);
-    private final GsonAtlasClient client = new GsonAtlasClient("http://otter.atlasapi.org/3.0", null);
+    private final GsonAtlasClient client = new GsonAtlasClient("http://owl.atlasapi.org/3.0", null);
 
     @Test
     public void shouldGetEpisode() {
-        ContentQueryResult content = client.content(ImmutableSet.of("http://www.bbc.co.uk/programmes/b00yb5kv"));
+        ContentQueryResult content = client.content(ImmutableSet.of("http://www.bbc.co.uk/programmes/b011r46z"));
         assertFalse(content.getContents().isEmpty());
 
         Description desc = Iterables.getOnlyElement(content.getContents());
         assertNotNull(desc);
 
-        assertEquals("http://www.bbc.co.uk/programmes/b00yb5kv", desc.getUri());
+        assertEquals("http://www.bbc.co.uk/programmes/b011r46z", desc.getUri());
         assertEquals(Publisher.BBC, Publisher.fromKey(desc.getPublisher().getKey()).requireValue());
 
         Item item = (Item) desc;
@@ -49,7 +49,7 @@ public class GsonAtlasClientTest {
 
     @Test
     public void shouldGetPlaylist() {
-        ContentQueryResult content = client.content(ImmutableSet.of("http://www.bbc.co.uk/programmes/b00vsvv5"));
+        ContentQueryResult content = client.content(ImmutableSet.of("http://www.bbc.co.uk/programmes/b007sh7m"));
         assertFalse(content.getContents().isEmpty());
 
         boolean found = false;
@@ -59,9 +59,9 @@ public class GsonAtlasClientTest {
             Publisher publisher = Publisher.fromKey(desc.getPublisher().getKey()).requireValue();
             if (publisher == Publisher.BBC) {
 
-                assertEquals("http://www.bbc.co.uk/programmes/b00vsvv5", desc.getUri());
+                assertEquals("http://www.bbc.co.uk/programmes/b007sh7m", desc.getUri());
                 assertEquals(Publisher.BBC, publisher);
-                assertEquals("The Trip", desc.getTitle());
+                assertEquals("EastEnders Omnibus", desc.getTitle());
 
                 Playlist playlist = (Playlist) desc;
                 assertFalse(playlist.getContent().isEmpty());
@@ -76,14 +76,14 @@ public class GsonAtlasClientTest {
     
     @Test
     public void shouldSearch() {
-        SearchQuery search = SearchQuery.builder().withPublishers(ImmutableSet.of(Publisher.BBC)).withQuery("The Trip").withSelection(SELECTION).build();
+        SearchQuery search = SearchQuery.builder().withPublishers(ImmutableSet.of(Publisher.BBC)).withQuery("EastEnders").withSelection(SELECTION).build();
         ContentQueryResult content = client.search(search);
         assertFalse(content.getContents().isEmpty());
 
         for (Description desc : content.getContents()) {
             assertNotNull(desc);
 
-            assertTrue(desc.getTitle().contains("Trip"));
+            assertTrue(desc.getTitle().contains("EastEnders"));
         }
     }
     
