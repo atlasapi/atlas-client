@@ -8,12 +8,14 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 
 import com.metabroadcast.common.http.HttpException;
 import com.metabroadcast.common.http.HttpResponseTransformer;
+import com.metabroadcast.common.http.HttpStatusCode;
 import com.metabroadcast.common.http.SimpleHttpClient;
 import com.metabroadcast.common.http.SimpleHttpClientBuilder;
 
@@ -37,6 +39,11 @@ class JaxbStringQueryClient implements StringQueryClient {
     private class JaxbTransformer implements HttpResponseTransformer<Object> {
         @Override
         public Object transform(HttpResponse response) throws HttpException, IOException {
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (!HttpStatusCode.OK.is(statusCode)) {
+                String body = EntityUtils.toString(response.getEntity());
+                throw new HttpException(body, new com.metabroadcast.common.http.HttpResponse(body, statusCode));
+            }
             try {
                 Unmarshaller unmarshaller = context.createUnmarshaller();
                 return unmarshaller.unmarshal(response.getEntity().getContent());
