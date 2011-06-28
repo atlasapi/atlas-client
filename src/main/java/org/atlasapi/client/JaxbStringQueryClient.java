@@ -57,7 +57,7 @@ class JaxbStringQueryClient implements StringQueryClient {
         try {
             return httpClient.get(queryUri).transform();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Could not load " + queryUri + " from atlas", e);
         }
     }
 
