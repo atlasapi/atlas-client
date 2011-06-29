@@ -40,6 +40,7 @@ import com.metabroadcast.common.url.UrlEncoding;
 /**
  * @author Robert Chatley (robert@metabroadcast.com)
  */
+@Deprecated
 public class CachingJaxbAtlasClient implements AtlasClient {
 		
 	private QueryStringBuilder queryStringBuilder = new QueryStringBuilder();
