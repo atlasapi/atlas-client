@@ -30,13 +30,13 @@ public class GsonAtlasClientTest {
 
     @Test
     public void shouldGetEpisode() {
-        ContentQueryResult content = client.content(ImmutableSet.of("http://www.bbc.co.uk/programmes/b011r46z"));
+        ContentQueryResult content = client.content(ImmutableSet.of("http://www.bbc.co.uk/programmes/b0074gdy"));
         assertFalse(content.getContents().isEmpty());
 
         Description desc = Iterables.getOnlyElement(content.getContents());
         assertNotNull(desc);
 
-        assertEquals("http://www.bbc.co.uk/programmes/b011r46z", desc.getUri());
+        assertEquals("http://www.bbc.co.uk/programmes/b0074gdy", desc.getUri());
         assertEquals(Publisher.BBC, Publisher.fromKey(desc.getPublisher().getKey()).requireValue());
 
         Item item = (Item) desc;
@@ -57,16 +57,15 @@ public class GsonAtlasClientTest {
             assertNotNull(desc);
 
             Publisher publisher = Publisher.fromKey(desc.getPublisher().getKey()).requireValue();
-            if (publisher == Publisher.BBC) {
+            if ("http://www.bbc.co.uk/programmes/b007sh7m".equals(desc.getUri())) {
 
-                assertEquals("http://www.bbc.co.uk/programmes/b007sh7m", desc.getUri());
                 assertEquals(Publisher.BBC, publisher);
                 assertEquals("EastEnders Omnibus", desc.getTitle());
 
                 Playlist playlist = (Playlist) desc;
                 assertFalse(playlist.getContent().isEmpty());
 
-               assertFalse(playlist.getContent().isEmpty());
+                assertFalse(playlist.getContent().isEmpty());
 
                 found = true;
             }
