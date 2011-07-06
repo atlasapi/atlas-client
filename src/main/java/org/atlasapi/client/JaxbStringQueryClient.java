@@ -37,7 +37,11 @@ class JaxbStringQueryClient implements StringQueryClient {
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         }
-        httpClient = new SimpleHttpClientBuilder().withUserAgent(USER_AGENT).withSocketTimeout(1, TimeUnit.MINUTES).build();
+        httpClient = new SimpleHttpClientBuilder()
+            .withUserAgent(USER_AGENT)
+            .withSocketTimeout(1, TimeUnit.MINUTES)
+            .withRequestCompressedResponses()
+       .build();
     }
     
     private HttpResponseTransformer<Object> JAXB_TRANSFORMER = new HttpResponseTransformer<Object>() {
