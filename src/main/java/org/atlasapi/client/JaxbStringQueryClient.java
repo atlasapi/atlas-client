@@ -41,6 +41,7 @@ class JaxbStringQueryClient implements StringQueryClient {
             .withUserAgent(USER_AGENT)
             .withSocketTimeout(1, TimeUnit.MINUTES)
             .withRequestCompressedResponses()
+            .withPoolConnections()
        .build();
     }
     
