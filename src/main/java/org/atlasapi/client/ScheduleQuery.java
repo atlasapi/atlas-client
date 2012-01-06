@@ -5,11 +5,12 @@ import static com.google.common.base.Preconditions.checkArgument;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.atlasapi.media.entity.Channel;
+import org.atlasapi.media.channel.Channel;
 import org.atlasapi.media.entity.Publisher;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
+import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -38,7 +39,12 @@ public final class ScheduleQuery {
 	
 	QueryStringParameters toParams() {
 		QueryStringParameters params = new QueryStringParameters();
-		params.add("channel", CSV.join(Channel.toKeys(channels)));
+        params.add("channel", CSV.join(Iterables.transform(channels, new Function<Channel, String>() {
+            @Override
+            public String apply(Channel input) {
+                return null;
+            }
+        })));
 		params.add("from", String.valueOf(interval.getStart().getMillis() / 1000));
 		params.add("to", String.valueOf(interval.getEnd().getMillis() / 1000));
 		

@@ -5,7 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.atlasapi.media.entity.Channel;
+import org.atlasapi.media.channel.Channel;
 import org.atlasapi.media.entity.Publisher;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
@@ -89,11 +89,13 @@ public class GsonAtlasClientTest {
     @Test
     public void shouldRetrieveSchedule() {
         DateTime now = new DateTime(DateTimeZones.UTC);
-        ScheduleQuery scheduleQuery = ScheduleQuery.builder().withChannels(Channel.BBC_ONE).withPublishers(ImmutableSet.of(Publisher.BBC)).withOnBetween(new Interval(now, now.plusHours(1))).build();
+        Channel bbcOne = new Channel();
+        bbcOne.setKey("bbcone");
+        ScheduleQuery scheduleQuery = ScheduleQuery.builder().withChannels(bbcOne).withPublishers(ImmutableSet.of(Publisher.BBC)).withOnBetween(new Interval(now, now.plusHours(1))).build();
         ScheduleQueryResult schedule = client.scheduleFor(scheduleQuery);
         
         ScheduleChannel channel = Iterables.getOnlyElement(schedule.getChannels());
-        assertEquals(Channel.BBC_ONE.key(), channel.getChannelKey());
+        assertEquals("bbcone", channel.getChannelKey());
         assertFalse(channel.getItems().isEmpty());
         for (Item item: channel.getItems()) {
             assertEquals(Publisher.BBC.key(), item.getPublisher().getKey());
