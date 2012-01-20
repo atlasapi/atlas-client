@@ -1,5 +1,7 @@
 package org.atlasapi.client;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -17,6 +19,7 @@ import com.metabroadcast.common.url.QueryStringParameters;
 public class SearchQuery {
     
     private final Joiner CSV = Joiner.on(',');
+    private final NumberFormat fractionFormat = DecimalFormat.getNumberInstance();
     
     private final List<Publisher> publishers;
     private final String query;
@@ -27,6 +30,7 @@ public class SearchQuery {
     
     public SearchQuery(SearchQueryBuilder builder) {
         Preconditions.checkNotNull(builder.query, "Search query must not be null");
+        fractionFormat.setMaximumFractionDigits(2);
         this.query = builder.query;
         this.publishers = ImmutableList.copyOf(builder.publishers);
         this.selection = builder.selection;
@@ -51,13 +55,13 @@ public class SearchQuery {
             }
         }
         if (titleWeighting.hasValue()) {
-            params.add("titleWeighting", String.valueOf(titleWeighting.requireValue()));
+            params.add("titleWeighting", fractionFormat.format(titleWeighting.requireValue()));
         }
         if (broadcastWeighting.hasValue()) {
-            params.add("broadcastWeighting", String.valueOf(broadcastWeighting.requireValue()));
+            params.add("broadcastWeighting", fractionFormat.format(broadcastWeighting.requireValue()));
         }
         if (catchupWeighting.hasValue()) {
-            params.add("catchupWeighting", String.valueOf(catchupWeighting.requireValue()));
+            params.add("catchupWeighting", fractionFormat.format(catchupWeighting.requireValue()));
         }
         return params;
     }
