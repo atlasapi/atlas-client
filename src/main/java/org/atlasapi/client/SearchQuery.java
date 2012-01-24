@@ -1,5 +1,7 @@
 package org.atlasapi.client;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -10,25 +12,34 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
+import com.metabroadcast.common.base.Maybe;
 import com.metabroadcast.common.query.Selection;
 import com.metabroadcast.common.url.QueryStringParameters;
 
 public class SearchQuery {
     
     private final Joiner CSV = Joiner.on(',');
+    private final NumberFormat fractionFormat = DecimalFormat.getNumberInstance();
     
     private final List<Publisher> publishers;
     private final String query;
     private final Selection selection;
+    private final Maybe<Float> titleWeighting;
+    private final Maybe<Float> broadcastWeighting;
+    private final Maybe<Float> catchupWeighting;
     
     public SearchQuery(SearchQueryBuilder builder) {
         Preconditions.checkNotNull(builder.query, "Search query must not be null");
+        fractionFormat.setMaximumFractionDigits(2);
         this.query = builder.query;
         this.publishers = ImmutableList.copyOf(builder.publishers);
         this.selection = builder.selection;
+        this.titleWeighting = builder.titleWeighting;
+        this.broadcastWeighting = builder.broadcastWeighting;
+        this.catchupWeighting = builder.catchupWeighting;
     }
     
-    QueryStringParameters toParams() {
+    public QueryStringParameters toParams() {
         QueryStringParameters params = new QueryStringParameters();
         params.add("q", query);
         
@@ -43,6 +54,15 @@ public class SearchQuery {
                 params.add(Selection.START_INDEX_REQUEST_PARAM, String.valueOf(selection.getOffset()));
             }
         }
+        if (titleWeighting.hasValue()) {
+            params.add("titleWeighting", fractionFormat.format(titleWeighting.requireValue()));
+        }
+        if (broadcastWeighting.hasValue()) {
+            params.add("broadcastWeighting", fractionFormat.format(broadcastWeighting.requireValue()));
+        }
+        if (catchupWeighting.hasValue()) {
+            params.add("catchupWeighting", fractionFormat.format(catchupWeighting.requireValue()));
+        }
         return params;
     }
 
@@ -51,6 +71,9 @@ public class SearchQuery {
         private LinkedHashSet<Publisher> publishers = Sets.newLinkedHashSet();
         private Selection selection;
         private String query;
+        private Maybe<Float> titleWeighting = Maybe.nothing();
+        private Maybe<Float> broadcastWeighting = Maybe.nothing();
+        private Maybe<Float> catchupWeighting = Maybe.nothing();
 
         private SearchQueryBuilder() {
         }
@@ -71,6 +94,21 @@ public class SearchQuery {
         
         public SearchQueryBuilder withSelection(Selection selection) {
             this.selection = selection;
+            return this;
+        }
+        
+        public SearchQueryBuilder withTitleWeighting(float titleWeighting) {
+            this.titleWeighting = Maybe.just(titleWeighting);
+            return this;
+        }
+        
+        public SearchQueryBuilder withBroadcastWeighting(float broadcastWeighting) {
+            this.broadcastWeighting = Maybe.just(broadcastWeighting);
+            return this;
+        }
+        
+        public SearchQueryBuilder withCatchupWeighting(float catchupWeighting) {
+            this.catchupWeighting = Maybe.just(catchupWeighting);
             return this;
         }
     }
