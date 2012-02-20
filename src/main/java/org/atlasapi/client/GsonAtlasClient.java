@@ -31,6 +31,12 @@ public class GsonAtlasClient implements AtlasClient {
     public ContentQueryResult content(Iterable<String> ids) {
         return client.contentQuery(baseUri + "/content.json?uri=" +  joiner.join(UrlEncoding.encode(ids)) + apiKeyQueryPart());
     }
+    
+    @Override
+    public ContentQueryResult content(ContentQuery query) {
+        throw new UnsupportedOperationException();
+    }
+    
     private String apiKeyQueryPart() {
         if (this.apiKey != null) {
             return "&apiKey="+this.apiKey;

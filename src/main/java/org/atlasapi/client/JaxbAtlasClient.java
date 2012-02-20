@@ -63,6 +63,11 @@ public class JaxbAtlasClient implements AtlasClient {
     public ContentQueryResult content(Iterable<String> uris) {
         return queryClient.contentQuery(baseUri + "/content.xml?uri=" +  Joiner.on(",").join(UrlEncoding.encode(uris)) + apiKeyQueryPart());
     }
+    
+    @Override
+    public ContentQueryResult content(ContentQuery query) {
+        return queryClient.contentQuery(baseUri + "/content.xml?" + withApiKey(query.toQueryStringParameters()).toQueryString()); 
+    }
 
     @Override
     public ContentQueryResult search(SearchQuery query) {
@@ -76,5 +81,12 @@ public class JaxbAtlasClient implements AtlasClient {
     @Override
     public PeopleQueryResult people(Iterable<String> uris) {
         return queryClient.peopleQuery(baseUri + "/people.xml?uri=" + Joiner.on(",").join(UrlEncoding.encode(uris)) + apiKeyQueryPart());
+    }
+    
+    public QueryStringParameters withApiKey(QueryStringParameters parameters) {
+        if (apiKey != null) {
+            parameters.add("apiKey", apiKey);
+        }
+        return parameters;
     }
 }
