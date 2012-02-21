@@ -37,4 +37,7 @@ public interface AtlasClient {
 	ContentQueryResult search(SearchQuery query);
 
 	PeopleQueryResult people(Iterable<String> uris);
+	
+	ContentQueryResult content(ContentQuery query);
+	
 }

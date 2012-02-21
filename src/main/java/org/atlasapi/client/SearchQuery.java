@@ -39,7 +39,7 @@ public class SearchQuery {
         this.catchupWeighting = builder.catchupWeighting;
     }
     
-    QueryStringParameters toParams() {
+    public QueryStringParameters toParams() {
         QueryStringParameters params = new QueryStringParameters();
         params.add("q", query);
         
