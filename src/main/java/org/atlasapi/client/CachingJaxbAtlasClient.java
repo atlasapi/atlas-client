@@ -162,6 +162,11 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 		result.setContents(results.values());
 		return result;
 	}
+	
+	@Override
+    public ContentQueryResult content(ContentQuery query) {
+        throw new UnsupportedOperationException();
+    }
 
     @Override
     public ContentQueryResult search(SearchQuery query) {
