@@ -3,6 +3,7 @@ package org.atlasapi.client.testing;
 import java.util.Map;
 
 import org.atlasapi.client.AtlasClient;
+import org.atlasapi.client.ContentQuery;
 import org.atlasapi.client.ScheduleQuery;
 import org.atlasapi.client.SearchQuery;
 import org.atlasapi.client.query.AtlasQuery;
@@ -49,6 +50,11 @@ public class StubAtlasClient implements AtlasClient {
 
     @Override
     public PeopleQueryResult people(Iterable<String> uris) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ContentQueryResult content(ContentQuery query) {
         throw new UnsupportedOperationException();
     }
 }
