@@ -34,7 +34,7 @@ public class GsonAtlasClient implements AtlasClient {
     
     @Override
     public ContentQueryResult content(ContentQuery query) {
-        throw new UnsupportedOperationException();
+        return client.contentQuery(baseUri + "/content.json?" + withApiKey(query.toQueryStringParameters()).toQueryString());
     }
     
     private String apiKeyQueryPart() {
@@ -42,6 +42,13 @@ public class GsonAtlasClient implements AtlasClient {
             return "&apiKey="+this.apiKey;
         }
         return "";
+    }
+    
+    public QueryStringParameters withApiKey(QueryStringParameters parameters) {
+        if (apiKey != null) {
+            parameters.add("apiKey", apiKey);
+        }
+        return parameters;
     }
 
     @Override
