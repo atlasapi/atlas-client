@@ -12,6 +12,7 @@ import javax.xml.bind.Unmarshaller;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
+import org.atlasapi.media.entity.simple.TopicQueryResult;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
@@ -83,5 +84,10 @@ class JaxbStringQueryClient implements StringQueryClient {
     @Override
     public PeopleQueryResult peopleQuery(String queryUri) {
         return (PeopleQueryResult) queryInternal(queryUri);
+    }
+
+    @Override
+    public TopicQueryResult topicQuery(String queryUri) {
+        return (TopicQueryResult) queryInternal(queryUri);
     }
 }
