@@ -4,6 +4,9 @@ import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Topic;
 import org.atlasapi.output.Annotation;
 
+import com.google.common.base.Optional;
+import com.metabroadcast.common.query.Selection;
+
 public interface AtlasTopicClient {
 
     //TODO: add topics method
@@ -11,6 +14,6 @@ public interface AtlasTopicClient {
     Topic topic(String topicId);
     
     //TODO: encapsulate parameters into TopicQuery
-    ContentQueryResult contentFor(String topicId, Annotation...annotations);
+    ContentQueryResult contentFor(String topicId, Optional<Selection> selection, Annotation...annotations);
     
 }
