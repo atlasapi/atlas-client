@@ -6,6 +6,7 @@ import org.atlasapi.output.Annotation;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
@@ -22,6 +23,8 @@ public class ContentQuery {
     private final Set<Annotation> annotations;
     
     private ContentQuery(Iterable<String> uris, Iterable<Annotation> annotations) {
+        Preconditions.checkArgument(!Iterables.isEmpty(uris));
+        
         this.uris = ImmutableSet.copyOf(uris);
         this.annotations = ImmutableSet.copyOf(annotations);
     }
