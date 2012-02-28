@@ -19,6 +19,7 @@ import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.DiscoverQueryResult;
 import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
+import org.atlasapi.media.entity.simple.TopicQueryResult;
 
 /**
  * Client interface to the URIplay service.
@@ -28,6 +29,7 @@ import org.atlasapi.media.entity.simple.ScheduleQueryResult;
  */
 public interface AtlasClient {
 	
+    @Deprecated
 	DiscoverQueryResult discover(AtlasQuery query);
 
 	ScheduleQueryResult scheduleFor(ScheduleQuery query);
