@@ -52,7 +52,7 @@ public final class ScheduleQuery {
 			params.add("publisher", CSV.join(Iterables.transform(publishers, Publisher.TO_KEY)));
 		}
 		if (!annotations.isEmpty()) {
-		    params.add("annotations", CSV.join(Iterables.transform(annotations, Functions.toStringFunction())));
+		    params.add("annotations", CSV.join(Iterables.transform(annotations, Annotation.TO_KEY)));
 		}
 		
 		return params;
