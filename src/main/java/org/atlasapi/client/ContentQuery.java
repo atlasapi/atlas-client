@@ -6,6 +6,7 @@ import org.atlasapi.output.Annotation;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
@@ -16,13 +17,16 @@ public class ContentQuery {
     private static final Joiner JOINER = Joiner.on(',');
     
     private static final String URIS_PARAMETER = "uri";
+    private static final String IDS_PARAMETER = "id";
     private static final String ANNOTATIONS_PARAMETER = "annotations";
     
     private final Set<String> uris;
+    private final Set<String> ids;
     private final Set<Annotation> annotations;
     
-    private ContentQuery(Iterable<String> uris, Iterable<Annotation> annotations) {
+    private ContentQuery(Iterable<String> uris, Iterable<String> ids, Iterable<Annotation> annotations) {
         this.uris = ImmutableSet.copyOf(uris);
+        this.ids = ImmutableSet.copyOf(ids);
         this.annotations = ImmutableSet.copyOf(annotations);
     }
     
@@ -35,6 +39,9 @@ public class ContentQuery {
         
         if (!uris.isEmpty()) {
             parameters.add(URIS_PARAMETER, JOINER.join(uris));
+        }
+        if (!ids.isEmpty()) {
+            parameters.add(IDS_PARAMETER, JOINER.join(ids));
         }
         if (!annotations.isEmpty()) {
             parameters.add(ANNOTATIONS_PARAMETER, JOINER.join(Iterables.transform(annotations, Annotation.TO_KEY)));
@@ -52,15 +59,16 @@ public class ContentQuery {
         
         Set<String> urls = Sets.newHashSet();
         Set<Annotation> annotations = Sets.newHashSet();
+        Set<String> ids = Sets.newHashSet();
         
         public ContentQueryBuilder withUrls(Iterable<String> urls) {
+            Preconditions.checkArgument(this.ids.isEmpty(), "Cannot set urls and ids on a ContentQuery");
             Iterables.addAll(this.urls, urls);
             return this;
         }
         
-        public ContentQueryBuilder withUrls(String... url) {
-            this.urls.addAll(ImmutableSet.copyOf(url));
-            return this;
+        public ContentQueryBuilder withUrls(String... urls) {
+            return withUrls(ImmutableSet.copyOf(urls));
         }
         
         public ContentQueryBuilder withAnnotations(Iterable<Annotation> annotations) {
@@ -68,13 +76,22 @@ public class ContentQuery {
             return this;
         }
         
-        public ContentQueryBuilder withAnnotations(Annotation... annotation) {
-            this.annotations.addAll(ImmutableSet.copyOf(annotation));
+        public ContentQueryBuilder withAnnotations(Annotation... annotations) {
+            return withAnnotations(ImmutableSet.copyOf(annotations));
+        }
+        
+        public ContentQueryBuilder withIds(Iterable<String> ids) {
+            Preconditions.checkArgument(this.urls.isEmpty(), "Cannot set urls and ids on a ContentQuery");
+            Iterables.addAll(this.ids, ids);
             return this;
         }
         
+        public ContentQueryBuilder withIds(String... ids) {
+            return withIds(ImmutableSet.copyOf(ids));
+        }
+
         public ContentQuery build() {
-            return new ContentQuery(urls, annotations);
+            return new ContentQuery(urls, ids, annotations);
         }
     }
     
