@@ -21,7 +21,6 @@ import org.joda.time.format.ISODateTimeFormat;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.io.CharStreams;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -37,6 +36,8 @@ import com.metabroadcast.common.http.HttpStatusCodeException;
 import com.metabroadcast.common.http.SimpleHttpClient;
 import com.metabroadcast.common.http.SimpleHttpClientBuilder;
 import com.metabroadcast.common.http.SimpleHttpRequest;
+import com.metabroadcast.common.intl.Countries;
+import com.metabroadcast.common.intl.Country;
 
 public class GsonQueryClient implements StringQueryClient {
     
@@ -46,6 +47,7 @@ public class GsonQueryClient implements StringQueryClient {
             .registerTypeAdapter(Boolean.class, new BooleanDeserializer())
             .registerTypeAdapter(Description.class, new DescriptionDeserializer())
             .registerTypeAdapter(ContentIdentifier.class, new ContentIdentifierDeserializer())
+            .registerTypeAdapter(Country.class, new CountryDeserializer())
             .create();
     private static final String USER_AGENT = "Mozilla/5.0 (compatible; atlas-java-client/1.0; +http://atlasapi.org)";
     private static final int NOT_FOUND = 404;
@@ -164,5 +166,14 @@ public class GsonQueryClient implements StringQueryClient {
             JsonObject jsonObj = json.getAsJsonObject();
             return ContentIdentifier.identifierFrom(jsonObj.get("uri").getAsString(), jsonObj.get("type").getAsString());
         }
+    }
+    
+    public static class CountryDeserializer implements JsonDeserializer<Country> {
+
+        @Override
+        public Country deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            return Countries.fromCode(json.getAsJsonObject().get("code").getAsString());
+        }
+        
     }
 }

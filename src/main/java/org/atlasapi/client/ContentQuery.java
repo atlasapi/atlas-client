@@ -27,9 +27,7 @@ public class ContentQuery {
     private final Set<Annotation> annotations;
     
     private ContentQuery(Iterable<String> uris, Iterable<String> ids, Iterable<Annotation> annotations) {
-        
         checkArgument(Iterables.isEmpty(uris) ^ Iterables.isEmpty(ids));
-        
         this.uris = ImmutableSet.copyOf(uris);
         this.ids = ImmutableSet.copyOf(ids);
         this.annotations = ImmutableSet.copyOf(annotations);
