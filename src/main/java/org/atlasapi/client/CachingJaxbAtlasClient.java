@@ -14,11 +14,11 @@ permissions and limitations under the License. */
 
 package org.atlasapi.client;
 
+import static java.util.concurrent.TimeUnit.MINUTES;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
 
 import org.atlasapi.client.query.AtlasQuery;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
@@ -27,10 +27,12 @@ import org.atlasapi.media.entity.simple.DiscoverQueryResult;
 import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 
-import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
-import com.google.common.collect.MapMaker;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.metabroadcast.common.base.Maybe;
@@ -46,17 +48,14 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 	private QueryStringBuilder queryStringBuilder = new QueryStringBuilder();
 	private StringQueryClient queryClient;
 
-	private final MapMaker cacheTemplate = new MapMaker().softValues().expireAfterWrite(10, TimeUnit.MINUTES);
-	
-    private ConcurrentMap<String, ContentQueryResult> queryCache = cacheTemplate.makeComputingMap(new Function<String, ContentQueryResult>() {
-
-		@Override
-		public ContentQueryResult apply(String query) {
-			return queryClient.contentQuery(query);
-		}
+    private LoadingCache<String, ContentQueryResult> queryCache = CacheBuilder.newBuilder().softValues().expireAfterWrite(10, MINUTES).build(new CacheLoader<String, ContentQueryResult>() {
+        @Override
+        public ContentQueryResult load(String key) throws Exception {
+            return queryClient.contentQuery(key);
+        }
     });
  
-	private ConcurrentMap<String, Maybe<Description>> contentIdentifierQueryCache = cacheTemplate.makeMap();
+	private Cache<String, Maybe<Description>> contentIdentifierQueryCache = CacheBuilder.newBuilder().softValues().expireAfterWrite(10, MINUTES).build();
 
 	private final String baseUri;
 	private String apiKey;
@@ -87,7 +86,7 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 	
 	@Override
 	public DiscoverQueryResult discover(AtlasQuery query) {
-	    List<Description> contents = queryCache.get(baseUri + "/discover.xml?" + queryStringBuilder.build(query.build())).getContents();
+	    List<Description> contents = queryCache.getUnchecked(baseUri + "/discover.xml?" + queryStringBuilder.build(query.build())).getContents();
 		return new DiscoverQueryResult(contents);
 	}
 
@@ -120,7 +119,7 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 		return results;
 	}
 
-	private void putInCache(ConcurrentMap<String, Maybe<Description>> cache, Description content) {
+	private void putInCache(Cache<String, Maybe<Description>> cache, Description content) {
 		cache.put(content.getUri(), Maybe.just(content));
 		if (content.getCurie() != null) {
 			cache.put(content.getCurie(),  Maybe.just(content));
@@ -143,9 +142,8 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 		List<String> toFetch = Lists.newArrayList();
 		
 		for (String id : ids) {
-			if (contentIdentifierQueryCache.containsKey(id)) {
-				Maybe<Description> description = contentIdentifierQueryCache.get(id);
-				
+		    Maybe<Description> description = contentIdentifierQueryCache.getIfPresent(id);
+		    if (description != null) {
 				if (description.hasValue()) {
 					results.put(description.requireValue().getUri(), description.requireValue());
 				}
