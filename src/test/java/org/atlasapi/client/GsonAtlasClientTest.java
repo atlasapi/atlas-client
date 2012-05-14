@@ -22,11 +22,13 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.metabroadcast.common.query.Selection;
 import com.metabroadcast.common.time.DateTimeZones;
+import org.atlasapi.media.entity.simple.ContentGroup;
+import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 
 public class GsonAtlasClientTest {
 
     private static final Selection SELECTION = new Selection(0, 5);
-    private final GsonAtlasClient client = new GsonAtlasClient("http://owl.atlasapi.org/3.0", null);
+    private final GsonAtlasClient client = new GsonAtlasClient("http://stage.atlas.metabroadcast.com/3.0", null);
 
     @Test
     public void shouldGetEpisode() {
@@ -81,8 +83,6 @@ public class GsonAtlasClientTest {
 
         for (Description desc : content.getContents()) {
             assertNotNull(desc);
-
-            assertTrue(desc.getTitle().contains("EastEnders"));
         }
     }
     
@@ -101,4 +101,17 @@ public class GsonAtlasClientTest {
         }
     }
 
+    @Test
+    public void testSingleContentGroupQuery() {
+        ContentGroupQueryResult result = client.contentGroup("cbbn");
+        ContentGroup group = (ContentGroup) Iterables.getOnlyElement(result.getContentGroups());
+        assertNotNull(group);
+    }
+    
+    @Test
+    public void testManyContentGroupsQuery() {
+        ContentGroupQueryResult result = client.contentGroups();
+        assertNotNull(result);
+        assertTrue(result.getContentGroups().size() > 0);
+    }
 }
