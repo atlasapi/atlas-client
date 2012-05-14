@@ -12,6 +12,7 @@ import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 import com.google.common.base.Joiner;
 import com.metabroadcast.common.url.QueryStringParameters;
 import com.metabroadcast.common.url.UrlEncoding;
+import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 
 public class GsonAtlasClient implements AtlasClient {
     
@@ -35,6 +36,16 @@ public class GsonAtlasClient implements AtlasClient {
     @Override
     public ContentQueryResult content(ContentQuery query) {
         return client.contentQuery(baseUri + "/content.json?" + withApiKey(query.toQueryStringParameters()).toQueryString());
+    }
+    
+    @Override
+    public ContentGroupQueryResult contentGroup(String id) {
+        return client.contentGroupQuery(baseUri + "/content_groups/" + id + ".json?" + apiKeyQueryPart());
+    }
+    
+    @Override
+    public ContentGroupQueryResult contentGroups() {
+        return client.contentGroupQuery(baseUri + "/content_groups.json?" +  apiKeyQueryPart());
     }
     
     private String apiKeyQueryPart() {
