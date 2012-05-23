@@ -25,7 +25,7 @@ public class JaxbAtlasClientTest {
         
         ContentQuery contentQuery = ContentQuery.builder().withUrls("http://pressassociation.com/brands/8306").withAnnotations(UPCOMING, AVAILABLE_LOCATIONS).build();
         
-        AtlasClient client = new JaxbAtlasClient("http://atlas.metabroadcast.com/3.0", "59be198386c143a7badb3b20a03ca042");
+        AtlasClient client = new JaxbAtlasClient("http://stage.atlas.metabroadcast.com/3.0", "59be198386c143a7badb3b20a03ca042");
         
         ContentQueryResult content = client.content(contentQuery);
         Playlist result = (Playlist) Iterables.getOnlyElement(content.getContents());

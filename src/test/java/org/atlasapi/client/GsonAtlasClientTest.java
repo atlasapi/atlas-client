@@ -26,7 +26,7 @@ import com.metabroadcast.common.time.DateTimeZones;
 public class GsonAtlasClientTest {
 
     private static final Selection SELECTION = new Selection(0, 5);
-    private final GsonAtlasClient client = new GsonAtlasClient("http://owl.atlasapi.org/3.0", null);
+    private final GsonAtlasClient client = new GsonAtlasClient("http://stage.atlas.metabroadcast.com/3.0", null);
 
     @Test
     public void shouldGetEpisode() {
@@ -81,8 +81,6 @@ public class GsonAtlasClientTest {
 
         for (Description desc : content.getContents()) {
             assertNotNull(desc);
-
-            assertTrue(desc.getTitle().contains("EastEnders"));
         }
     }
     

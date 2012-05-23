@@ -67,7 +67,7 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 	}
 	
 	public CachingJaxbAtlasClient() {
-		this("http://owl.atlasapi.org/3.0", new JaxbStringQueryClient());
+		this("http://stage.atlas.metabroadcast.com/3.0", new JaxbStringQueryClient());
 	}
 	
 	public CachingJaxbAtlasClient(String baseUri) {
