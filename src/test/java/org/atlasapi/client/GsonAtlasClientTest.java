@@ -22,6 +22,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.metabroadcast.common.query.Selection;
 import com.metabroadcast.common.time.DateTimeZones;
+import org.atlasapi.media.entity.simple.ContentGroup;
+import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 
 public class GsonAtlasClientTest {
 
@@ -99,4 +101,17 @@ public class GsonAtlasClientTest {
         }
     }
 
+    @Test
+    public void testSingleContentGroupQuery() {
+        ContentGroupQueryResult result = client.contentGroup("cbbn");
+        ContentGroup group = (ContentGroup) Iterables.getOnlyElement(result.getContentGroups());
+        assertNotNull(group);
+    }
+    
+    @Test
+    public void testManyContentGroupsQuery() {
+        ContentGroupQueryResult result = client.contentGroups();
+        assertNotNull(result);
+        assertTrue(result.getContentGroups().size() > 0);
+    }
 }

@@ -15,11 +15,11 @@ permissions and limitations under the License. */
 package org.atlasapi.client;
 
 import org.atlasapi.client.query.AtlasQuery;
+import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.DiscoverQueryResult;
 import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
-import org.atlasapi.media.entity.simple.TopicQueryResult;
 
 /**
  * Client interface to the URIplay service.
@@ -41,5 +41,8 @@ public interface AtlasClient {
 	PeopleQueryResult people(Iterable<String> uris);
 	
 	ContentQueryResult content(ContentQuery query);
-	
+    
+    ContentGroupQueryResult contentGroup(String id);	
+    
+    ContentGroupQueryResult contentGroups();	
 }

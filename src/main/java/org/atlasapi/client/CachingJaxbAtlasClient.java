@@ -36,6 +36,7 @@ import com.google.common.collect.Sets;
 import com.metabroadcast.common.base.Maybe;
 import com.metabroadcast.common.url.QueryStringParameters;
 import com.metabroadcast.common.url.UrlEncoding;
+import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 
 /**
  * @author Robert Chatley (robert@metabroadcast.com)
@@ -162,6 +163,16 @@ public class CachingJaxbAtlasClient implements AtlasClient {
 		result.setContents(results.values());
 		return result;
 	}
+
+    @Override
+    public ContentGroupQueryResult contentGroup(String id) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ContentGroupQueryResult contentGroups() {
+        throw new UnsupportedOperationException();
+    }
 	
 	@Override
     public ContentQueryResult content(ContentQuery query) {
