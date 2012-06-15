@@ -3,7 +3,7 @@ package org.atlasapi.client.query;
 import org.atlasapi.content.criteria.AtomicQuery;
 import org.atlasapi.content.criteria.ContentQuery;
 import org.atlasapi.content.criteria.attribute.Attributes;
-import org.atlasapi.media.entity.Publisher;
+import org.atlasapi.media.content.Publisher;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
