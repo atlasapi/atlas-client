@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.atlasapi.content.criteria.ContentQueryBuilder;
 import org.atlasapi.content.criteria.attribute.Attributes;
-import org.atlasapi.media.entity.MediaType;
+import org.atlasapi.media.content.MediaType;
 import org.junit.Test;
 
 import com.metabroadcast.common.query.Selection;

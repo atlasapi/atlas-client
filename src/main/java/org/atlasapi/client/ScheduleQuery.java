@@ -5,8 +5,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.atlasapi.media.entity.Channel;
-import org.atlasapi.media.entity.Publisher;
+import org.atlasapi.media.content.Channel;
+import org.atlasapi.media.content.Publisher;
 import org.atlasapi.output.Annotation;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;

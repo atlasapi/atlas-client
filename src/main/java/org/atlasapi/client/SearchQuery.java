@@ -5,7 +5,7 @@ import java.text.NumberFormat;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.atlasapi.media.entity.Publisher;
+import org.atlasapi.media.content.Publisher;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;

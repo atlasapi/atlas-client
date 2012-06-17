@@ -5,8 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.atlasapi.media.entity.Channel;
-import org.atlasapi.media.entity.Publisher;
+import org.atlasapi.media.content.Channel;
+import org.atlasapi.media.content.Publisher;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
 import org.atlasapi.media.entity.simple.Item;
