@@ -30,7 +30,6 @@ public class ContentQuery {
     private final Optional<Selection> selection;
     
     private ContentQuery(Iterable<String> uris, Iterable<String> ids, Iterable<Annotation> annotations, Optional<Selection> selection) {
-        checkArgument(Iterables.isEmpty(uris) ^ Iterables.isEmpty(ids));
         this.uris = ImmutableSet.copyOf(uris);
         this.ids = ImmutableSet.copyOf(ids);
         this.annotations = ImmutableSet.copyOf(annotations);
