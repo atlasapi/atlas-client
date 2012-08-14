@@ -10,9 +10,13 @@ import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
+import com.google.common.net.HostSpecifier;
 import com.metabroadcast.common.url.QueryStringParameters;
 import com.metabroadcast.common.url.UrlEncoding;
 import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GsonAtlasClient implements AtlasClient {
     
@@ -20,11 +24,18 @@ public class GsonAtlasClient implements AtlasClient {
     private final GsonQueryClient client = new GsonQueryClient();
     private final Joiner joiner = Joiner.on(",");
     private final String baseUri;
-    private final String apiKey;
+    private final Optional<String> apiKey;
+    private final Logger log = LoggerFactory.getLogger(this.getClass().getName());
     
+    public GsonAtlasClient(HostSpecifier atlasHost, Optional<String> apiKey) {
+        this.apiKey = apiKey;
+        this.baseUri = String.format("http://%s/3.0", atlasHost);
+    }
+    
+    @Deprecated
     public GsonAtlasClient(String baseUri, String apiKey) {
         this.baseUri = baseUri;
-        this.apiKey = apiKey;
+        this.apiKey = Optional.fromNullable(apiKey);
         this.queryStringBuilder.setApiKey(apiKey);
     }
 
@@ -49,15 +60,15 @@ public class GsonAtlasClient implements AtlasClient {
     }
     
     private String apiKeyQueryPart() {
-        if (this.apiKey != null) {
-            return "&apiKey="+this.apiKey;
+        if (apiKey.isPresent()) {
+            return "&apiKey=" + apiKey.get();
         }
         return "";
     }
     
     public QueryStringParameters withApiKey(QueryStringParameters parameters) {
-        if (apiKey != null) {
-            parameters.add("apiKey", apiKey);
+        if (apiKey.isPresent()) {
+            parameters.add("apiKey", apiKey.get());
         }
         return parameters;
     }
@@ -71,8 +82,8 @@ public class GsonAtlasClient implements AtlasClient {
     @Override
     public ScheduleQueryResult scheduleFor(ScheduleQuery query) {
         QueryStringParameters params = query.toParams();
-        if (apiKey != null) {
-            params.add("apiKey", apiKey);
+        if (apiKey.isPresent()) {
+            params.add("apiKey", apiKey.get());
         }
         return client.scheduleQuery(baseUri + "/schedule.json?" + params.toQueryString());
     }
@@ -80,8 +91,8 @@ public class GsonAtlasClient implements AtlasClient {
     @Override
     public ContentQueryResult search(SearchQuery query) {
         QueryStringParameters params = query.toParams();
-        if (apiKey != null) {
-            params.add("apiKey", apiKey);
+        if (apiKey.isPresent()) {
+            params.add("apiKey", apiKey.get());
         }
         return client.contentQuery(baseUri + "/search.json?" + params.toQueryString());
     }
