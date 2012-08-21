@@ -9,6 +9,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.atlasapi.media.entity.simple.ChannelGroupQueryResult;
+import org.atlasapi.media.entity.simple.ChannelQueryResult;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
@@ -23,7 +25,6 @@ import com.metabroadcast.common.http.HttpStatusCode;
 import com.metabroadcast.common.http.SimpleHttpClient;
 import com.metabroadcast.common.http.SimpleHttpClientBuilder;
 import com.metabroadcast.common.http.SimpleHttpRequest;
-import org.atlasapi.media.entity.simple.ContentGroup;
 import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 
 class JaxbStringQueryClient implements StringQueryClient {
@@ -96,5 +97,15 @@ class JaxbStringQueryClient implements StringQueryClient {
     @Override
     public TopicQueryResult topicQuery(String queryUri) {
         return (TopicQueryResult) queryInternal(queryUri);
+    }
+
+    @Override
+    public ChannelQueryResult channelQuery(String queryUri) {
+        return (ChannelQueryResult) queryInternal(queryUri);
+    }
+
+    @Override
+    public ChannelGroupQueryResult channelGroupQuery(String queryUri) {
+        return (ChannelGroupQueryResult) queryInternal(queryUri);
     }
 }
