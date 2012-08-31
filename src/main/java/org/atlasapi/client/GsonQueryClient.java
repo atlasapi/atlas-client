@@ -196,7 +196,7 @@ public class GsonQueryClient implements StringQueryClient {
         @Override
         public Description deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             JsonObject jsonObj = json.getAsJsonObject();
-            if (jsonObj.has("locations") || jsonObj.has("broadcasts") || jsonObj.has("people")) {
+            if (jsonObj.has("locations") || jsonObj.has("broadcasts")) {
                 return context.deserialize(json, Item.class);
             } else {
                 return context.deserialize(json, Playlist.class);
