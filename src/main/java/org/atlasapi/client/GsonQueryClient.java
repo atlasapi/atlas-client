@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 import org.atlasapi.media.entity.simple.ContentIdentifier;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
@@ -17,6 +18,8 @@ import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 import org.atlasapi.media.entity.simple.TopicQueryResult;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
@@ -38,8 +41,6 @@ import com.metabroadcast.common.http.SimpleHttpClientBuilder;
 import com.metabroadcast.common.http.SimpleHttpRequest;
 import com.metabroadcast.common.intl.Countries;
 import com.metabroadcast.common.intl.Country;
-import org.atlasapi.media.entity.simple.ContentGroup;
-import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 
 public class GsonQueryClient implements StringQueryClient {
     
@@ -47,10 +48,12 @@ public class GsonQueryClient implements StringQueryClient {
     private static final String USER_AGENT = "Mozilla/5.0 (compatible; atlas-java-client/1.0; +http://atlasapi.org)";
     private static final int NOT_FOUND = 404;
     private final SimpleHttpClient httpClient = new SimpleHttpClientBuilder().withUserAgent(USER_AGENT).withSocketTimeout(1, TimeUnit.MINUTES).build();
+    private static Logger log = LoggerFactory.getLogger(GsonQueryClient.class);
     
     @Override
     public ContentQueryResult contentQuery(String queryUri) {
         try {
+            log.trace("Performing Atlas content query, uri = {}", queryUri);
             return gson.fromJson(httpClient.getContentsOf(queryUri), ContentQueryResult.class);
         } catch (HttpStatusCodeException e) {
             if (NOT_FOUND == e.getStatusCode()) {
@@ -65,6 +68,7 @@ public class GsonQueryClient implements StringQueryClient {
     @Override
     public ContentGroupQueryResult contentGroupQuery(String queryUri) {
         try {
+            log.trace("Performing Atlas contentGroup query, uri = {}", queryUri);
             return gson.fromJson(httpClient.getContentsOf(queryUri), ContentGroupQueryResult.class);
         } catch (HttpStatusCodeException e) {
             if (NOT_FOUND == e.getStatusCode()) {
@@ -79,6 +83,7 @@ public class GsonQueryClient implements StringQueryClient {
     @Override
     public ScheduleQueryResult scheduleQuery(String queryUri) {
         try {
+            log.trace("Performing Atlas schedule query, uri = {}", queryUri);
             return gson.fromJson(httpClient.getContentsOf(queryUri), ScheduleQueryResult.class);
         } catch (HttpStatusCodeException e) {
             if (NOT_FOUND == e.getStatusCode()) {
@@ -93,6 +98,7 @@ public class GsonQueryClient implements StringQueryClient {
     @Override
     public PeopleQueryResult peopleQuery(String queryUri) {
         try {
+            log.trace("Performing Atlas people query, uri = {}", queryUri);
             return gson.fromJson(httpClient.getContentsOf(queryUri), PeopleQueryResult.class);
         } catch (HttpStatusCodeException e) {
             if (NOT_FOUND == e.getStatusCode()) {
@@ -107,6 +113,7 @@ public class GsonQueryClient implements StringQueryClient {
     @Override
     public TopicQueryResult topicQuery(String queryUri) {
         try {
+            log.trace("Performing Atlas topic query, uri = {}", queryUri);
             return httpClient.get(SimpleHttpRequest.httpRequestFrom(queryUri, new HttpResponseTransformer<TopicQueryResult>() {
 
                 @Override
