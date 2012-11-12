@@ -18,6 +18,8 @@ import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.Playlist;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 import org.atlasapi.media.entity.simple.TopicQueryResult;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.slf4j.Logger;
@@ -46,7 +48,16 @@ import com.metabroadcast.common.intl.Country;
 
 public class GsonQueryClient implements StringQueryClient {
     
-    private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).registerTypeAdapter(Date.class, new DateDeserializer()).registerTypeAdapter(Long.class, new LongDeserializer()).registerTypeAdapter(Boolean.class, new BooleanDeserializer()).registerTypeAdapter(Description.class, new DescriptionDeserializer()).registerTypeAdapter(ContentIdentifier.class, new ContentIdentifierDeserializer()).registerTypeAdapter(Country.class, new CountryDeserializer()).create();
+    private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .registerTypeAdapter(Date.class, new DateDeserializer())
+                .registerTypeAdapter(Long.class, new LongDeserializer())
+                .registerTypeAdapter(Boolean.class, new BooleanDeserializer())
+                .registerTypeAdapter(Description.class, new DescriptionDeserializer())
+                .registerTypeAdapter(ContentIdentifier.class, new ContentIdentifierDeserializer())
+                .registerTypeAdapter(Country.class, new CountryDeserializer())
+                .registerTypeAdapter(DateTime.class, new DateTimeDeserializer())
+                .create();
+    
     private static final String USER_AGENT = "Mozilla/5.0 (compatible; atlas-java-client/1.0; +http://atlasapi.org)";
     private static final int NOT_FOUND = 404;
     private final SimpleHttpClient httpClient = new SimpleHttpClientBuilder().withUserAgent(USER_AGENT).withSocketTimeout(1, TimeUnit.MINUTES).build();
@@ -197,6 +208,13 @@ public class GsonQueryClient implements StringQueryClient {
             return boolMap.get(json.getAsJsonPrimitive().getAsString());
         }
     }
+    
+    private class DateTimeDeserializer implements JsonDeserializer<DateTime> {
+        public DateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+            throws JsonParseException {
+          return new DateTime(json.getAsJsonPrimitive().getAsString(), DateTimeZone.UTC);
+        }
+      }
     
     public static class DescriptionDeserializer implements JsonDeserializer<Description> {
         
