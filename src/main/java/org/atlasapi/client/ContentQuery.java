@@ -59,15 +59,14 @@ public class ContentQuery {
             ContentQuery other = (ContentQuery) obj;
             return Objects.equal(this.uris, other.uris) 
                     && Objects.equal(this.ids, other.ids)
-                    && Objects.equal(this.annotations, other.annotations)
-                    && Objects.equal(this.selection, other.selection);
+                    && Objects.equal(this.annotations, other.annotations);
         }
         return false;
     }
     
     @Override
     public int hashCode() {
-        return Objects.hashCode(uris, ids, annotations, selection);
+        return Objects.hashCode(uris, ids, annotations);
     }
     
     @Override
