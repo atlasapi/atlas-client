@@ -27,6 +27,9 @@ public class SearchQuery {
     private final Maybe<Float> titleWeighting;
     private final Maybe<Float> broadcastWeighting;
     private final Maybe<Float> catchupWeighting;
+    private final Maybe<String> type;
+    private final Maybe<Boolean> topLevelOnly;
+    private final Maybe<Boolean> currentBroadcastsOnly;
     
     public SearchQuery(SearchQueryBuilder builder) {
         Preconditions.checkNotNull(builder.query, "Search query must not be null");
@@ -37,6 +40,9 @@ public class SearchQuery {
         this.titleWeighting = builder.titleWeighting;
         this.broadcastWeighting = builder.broadcastWeighting;
         this.catchupWeighting = builder.catchupWeighting;
+        this.type = builder.type;
+        this.topLevelOnly = builder.topLevelOnly;
+        this.currentBroadcastsOnly = builder.currentBroadcastsOnly;
     }
     
     public QueryStringParameters toParams() {
@@ -63,6 +69,15 @@ public class SearchQuery {
         if (catchupWeighting.hasValue()) {
             params.add("catchupWeighting", fractionFormat.format(catchupWeighting.requireValue()));
         }
+        if (type.hasValue()) {
+            params.add("type", type.requireValue());
+        }
+        if (currentBroadcastsOnly.hasValue()) {
+            params.add("currentBroadcastsOnly", currentBroadcastsOnly.requireValue().toString());
+        }
+        if (topLevelOnly.hasValue()) {
+            params.add("topLevelOnly", topLevelOnly.requireValue().toString());
+        }
         return params;
     }
 
@@ -74,6 +89,9 @@ public class SearchQuery {
         private Maybe<Float> titleWeighting = Maybe.nothing();
         private Maybe<Float> broadcastWeighting = Maybe.nothing();
         private Maybe<Float> catchupWeighting = Maybe.nothing();
+        private Maybe<String> type = Maybe.nothing();
+        private Maybe<Boolean> topLevelOnly = Maybe.nothing();
+        private Maybe<Boolean> currentBroadcastsOnly = Maybe.nothing();
 
         private SearchQueryBuilder() {
         }
@@ -109,6 +127,21 @@ public class SearchQuery {
         
         public SearchQueryBuilder withCatchupWeighting(float catchupWeighting) {
             this.catchupWeighting = Maybe.just(catchupWeighting);
+            return this;
+        }
+        
+        public SearchQueryBuilder withType(String type) {
+            this.type = Maybe.just(type);
+            return this;
+        }
+        
+        public SearchQueryBuilder withCurrentBroadcastsOnly(boolean currentBroadcastsOnly) {
+            this.currentBroadcastsOnly = Maybe.just(currentBroadcastsOnly);
+            return this;
+        }
+        
+        public SearchQueryBuilder withTopLevelOnly(boolean topLevelOnly) {
+            this.topLevelOnly = Maybe.just(topLevelOnly);
             return this;
         }
     }
