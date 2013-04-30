@@ -17,11 +17,11 @@ public class EnumAttributeBuilder<E extends Enum<E>> {
         this.attribute = attribute;
     }
     
-    public AtlasQuery equalTo(E... values) {
-        return chain.add(attribute.createQuery(Operators.EQUALS, ImmutableList.copyOf(values)));
-    }
-    
-    public AtlasQuery in(List<E> values) {
-        return chain.add(attribute.createQuery(Operators.EQUALS, ImmutableList.copyOf(values)));
-    }
+//    public AtlasQuery equalTo(E... values) {
+//        return chain.add(attribute.createQuery(Operators.EQUALS, ImmutableList.copyOf(values)));
+//    }
+//    
+//    public AtlasQuery in(List<E> values) {
+//        return chain.add(attribute.createQuery(Operators.EQUALS, ImmutableList.copyOf(values)));
+//    }
 }

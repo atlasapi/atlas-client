@@ -30,8 +30,8 @@ public class GsonTopicClient implements AtlasTopicClient {
 
     public GsonTopicClient(HostSpecifier atlasHost, Optional<String> apiKey) {
         this.apiKey = apiKey;
-        this.topicPattern = String.format("http://%s/3.0/topics/%%s.json", atlasHost);
-        this.topicContentPattern = String.format("http://%s/3.0/topics/%%s/content.json", atlasHost);
+        this.topicPattern = String.format("http://%s/4.0/topics/%%s.json", atlasHost);
+        this.topicContentPattern = String.format("http://%s/4.0/topics/%%s/content.json", atlasHost);
         this.stringQueryClient = new GsonQueryClient();
     }
 

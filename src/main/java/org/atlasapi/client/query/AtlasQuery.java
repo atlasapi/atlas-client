@@ -4,6 +4,7 @@ import org.atlasapi.content.criteria.AtomicQuery;
 import org.atlasapi.content.criteria.ContentQuery;
 import org.atlasapi.content.criteria.attribute.Attributes;
 import org.atlasapi.media.entity.Publisher;
+import org.atlasapi.media.entity.simple.PublisherDetails;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -39,9 +40,9 @@ public class AtlasQuery {
 //		return new BooleanAttributeBuilder(this, Attributes.LOCATION_AVAILABLE);
 //	}
 	
-	public EnumAttributeBuilder<Publisher> publisher() {
-		return new EnumAttributeBuilder<Publisher>(this, Attributes.DESCRIPTION_PUBLISHER);
-	}
+	//public EnumAttributeBuilder<Publisher> source() {
+	//	return new EnumAttributeBuilder<Publisher>(this, Attributes.DESCRIPTION_PUBLISHER);
+	//}
 	
 	public AtlasQuery withSelection(Selection selection) {
 		return copyWith(conjuncts, selection);

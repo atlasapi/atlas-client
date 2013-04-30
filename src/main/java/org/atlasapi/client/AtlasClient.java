@@ -15,7 +15,7 @@ permissions and limitations under the License. */
 package org.atlasapi.client;
 
 import org.atlasapi.client.query.AtlasQuery;
-import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
+//import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.DiscoverQueryResult;
 import org.atlasapi.media.entity.simple.PeopleQueryResult;
@@ -42,7 +42,7 @@ public interface AtlasClient {
 	
 	ContentQueryResult content(ContentQuery query);
     
-    ContentGroupQueryResult contentGroup(String id);	
+    //ContentGroupQueryResult contentGroup(String id);	
     
-    ContentGroupQueryResult contentGroups();	
+    //ContentGroupQueryResult contentGroups();	
 }

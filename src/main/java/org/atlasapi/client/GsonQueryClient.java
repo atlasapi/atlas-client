@@ -38,8 +38,8 @@ import com.metabroadcast.common.http.SimpleHttpClientBuilder;
 import com.metabroadcast.common.http.SimpleHttpRequest;
 import com.metabroadcast.common.intl.Countries;
 import com.metabroadcast.common.intl.Country;
-import org.atlasapi.media.entity.simple.ContentGroup;
-import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
+//import org.atlasapi.media.entity.simple.ContentGroup;
+//import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 
 public class GsonQueryClient implements StringQueryClient {
     
@@ -51,6 +51,7 @@ public class GsonQueryClient implements StringQueryClient {
     @Override
     public ContentQueryResult contentQuery(String queryUri) {
         try {
+            System.out.println(queryUri);
             return gson.fromJson(httpClient.getContentsOf(queryUri), ContentQueryResult.class);
         } catch (HttpStatusCodeException e) {
             if (NOT_FOUND == e.getStatusCode()) {
@@ -62,19 +63,34 @@ public class GsonQueryClient implements StringQueryClient {
         }
     }
     
-    @Override
-    public ContentGroupQueryResult contentGroupQuery(String queryUri) {
+  
+    public Description singleContentQuery(String queryUri) {
         try {
-            return gson.fromJson(httpClient.getContentsOf(queryUri), ContentGroupQueryResult.class);
+            System.out.println(queryUri);
+            return gson.fromJson(httpClient.getContentsOf(queryUri), Description.class);
         } catch (HttpStatusCodeException e) {
             if (NOT_FOUND == e.getStatusCode()) {
-                return new ContentGroupQueryResult();
+                return null;
             }
             throw new RuntimeException(e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+    
+//    @Override
+//    public ContentGroupQueryResult contentGroupQuery(String queryUri) {
+//        try {
+//            return gson.fromJson(httpClient.getContentsOf(queryUri), ContentGroupQueryResult.class);
+//        } catch (HttpStatusCodeException e) {
+//            if (NOT_FOUND == e.getStatusCode()) {
+//                return new ContentGroupQueryResult();
+//            }
+//            throw new RuntimeException(e);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
     
     @Override
     public ScheduleQueryResult scheduleQuery(String queryUri) {

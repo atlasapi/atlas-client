@@ -10,8 +10,8 @@ import org.junit.Test;
 
 import com.google.common.collect.Iterables;
 import java.util.Arrays;
-import org.atlasapi.media.entity.simple.ContentGroup;
-import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
+//import org.atlasapi.media.entity.simple.ContentGroup;
+//import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 
 public class JaxbAtlasClientTest {
 
@@ -26,22 +26,22 @@ public class JaxbAtlasClientTest {
         assertNotNull(result);
     }
     
-    @Test
-    public void testSingleContentGroupQuery() {
-        AtlasClient client = new JaxbAtlasClient("http://stage.atlas.metabroadcast.com/3.0");
-        
-        ContentGroupQueryResult result = client.contentGroup("cbbn");
-        ContentGroup group = (ContentGroup) Iterables.getOnlyElement(result.getContentGroups());
-        assertNotNull(group);
-    }
+//    @Test
+//    public void testSingleContentGroupQuery() {
+//        AtlasClient client = new JaxbAtlasClient("http://stage.atlas.metabroadcast.com/3.0");
+//        
+//        ContentGroupQueryResult result = client.contentGroup("cbbn");
+//        ContentGroup group = (ContentGroup) Iterables.getOnlyElement(result.getContentGroups());
+//        assertNotNull(group);
+//    }
     
-    @Test
-    public void testManyContentGroupsQuery() {
-        AtlasClient client = new JaxbAtlasClient("http://stage.atlas.metabroadcast.com/3.0");
-        
-        ContentGroupQueryResult result = client.contentGroups();
-        assertNotNull(result);
-        assertTrue(result.getContentGroups().size() > 0);
-    }
+//    @Test
+//    public void testManyContentGroupsQuery() {
+//        AtlasClient client = new JaxbAtlasClient("http://stage.atlas.metabroadcast.com/3.0");
+//        
+//        ContentGroupQueryResult result = client.contentGroups();
+//        assertNotNull(result);
+//        assertTrue(result.getContentGroups().size() > 0);
+//    }
 
 }

@@ -23,8 +23,8 @@ import com.metabroadcast.common.http.HttpStatusCode;
 import com.metabroadcast.common.http.SimpleHttpClient;
 import com.metabroadcast.common.http.SimpleHttpClientBuilder;
 import com.metabroadcast.common.http.SimpleHttpRequest;
-import org.atlasapi.media.entity.simple.ContentGroup;
-import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
+//import org.atlasapi.media.entity.simple.ContentGroup;
+//import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 
 class JaxbStringQueryClient implements StringQueryClient {
 
@@ -36,7 +36,8 @@ class JaxbStringQueryClient implements StringQueryClient {
     
     public JaxbStringQueryClient() {
         try {
-            context = JAXBContext.newInstance(ContentQueryResult.class, ContentGroupQueryResult.class, ScheduleQueryResult.class, PeopleQueryResult.class);
+            // ContentGroupQueryResult.class, 
+            context = JAXBContext.newInstance(ContentQueryResult.class, ScheduleQueryResult.class, PeopleQueryResult.class);
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         }
@@ -83,10 +84,10 @@ class JaxbStringQueryClient implements StringQueryClient {
         return (ContentQueryResult) queryInternal(queryUri);
     }
     
-    @Override
-    public ContentGroupQueryResult contentGroupQuery(String queryUri) {
-        return (ContentGroupQueryResult) queryInternal(queryUri);
-    }
+//    @Override
+//    public ContentGroupQueryResult contentGroupQuery(String queryUri) {
+//        return (ContentGroupQueryResult) queryInternal(queryUri);
+//    }
 
     @Override
     public PeopleQueryResult peopleQuery(String queryUri) {

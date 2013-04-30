@@ -1,5 +1,8 @@
 package org.atlasapi.client;
 
+import static com.google.common.base.Functions.toStringFunction;
+import static com.metabroadcast.common.text.MoreStrings.TO_LOWER;
+
 import java.util.List;
 
 import org.atlasapi.client.query.AtlasQuery;
@@ -8,11 +11,16 @@ import org.atlasapi.media.entity.simple.Description;
 import org.atlasapi.media.entity.simple.DiscoverQueryResult;
 import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
+import org.atlasapi.output.Annotation;
 
+import com.google.common.base.Functions;
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.metabroadcast.common.url.QueryStringParameters;
 import com.metabroadcast.common.url.UrlEncoding;
-import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
+//import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
+import com.metabroadcast.common.url.Urls;
 
 public class GsonAtlasClient implements AtlasClient {
     
@@ -21,11 +29,13 @@ public class GsonAtlasClient implements AtlasClient {
     private final Joiner joiner = Joiner.on(",");
     private final String baseUri;
     private final String apiKey;
+    private final String singleContentUrl;
     
     public GsonAtlasClient(String baseUri, String apiKey) {
         this.baseUri = baseUri;
         this.apiKey = apiKey;
         this.queryStringBuilder.setApiKey(apiKey);
+        this.singleContentUrl = String.format("%s/content/%%s.json?", baseUri);
     }
 
     @Override
@@ -38,15 +48,22 @@ public class GsonAtlasClient implements AtlasClient {
         return client.contentQuery(baseUri + "/content.json?" + withApiKey(query.toQueryStringParameters()).toQueryString());
     }
     
-    @Override
-    public ContentGroupQueryResult contentGroup(String id) {
-        return client.contentGroupQuery(baseUri + "/content_groups/" + id + ".json?" + apiKeyQueryPart());
+    public Description contentFor(String contentId, Annotation... annotations) {
+        List<String> annotationStrings = Lists.transform(ImmutableList.copyOf(annotations), Functions.compose(TO_LOWER, toStringFunction()));
+        String queryString = Urls.appendParameters(String.format(singleContentUrl, contentId), "annotations", joiner.join(annotationStrings));
+        queryString = apiKey != null ? Urls.appendParameters(queryString, "apiKey", apiKey) : queryString;
+        return client.singleContentQuery(queryString);
     }
     
-    @Override
-    public ContentGroupQueryResult contentGroups() {
-        return client.contentGroupQuery(baseUri + "/content_groups.json?" +  apiKeyQueryPart());
-    }
+//    @Override
+//    public ContentGroupQueryResult contentGroup(String id) {
+//        return client.contentGroupQuery(baseUri + "/content_groups/" + id + ".json?" + apiKeyQueryPart());
+//    }
+//    
+//    @Override
+//    public ContentGroupQueryResult contentGroups() {
+//        return client.contentGroupQuery(baseUri + "/content_groups.json?" +  apiKeyQueryPart());
+//    }
     
     private String apiKeyQueryPart() {
         if (this.apiKey != null) {

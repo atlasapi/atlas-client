@@ -9,7 +9,7 @@ import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 import com.google.common.base.Joiner;
 import com.metabroadcast.common.url.QueryStringParameters;
 import com.metabroadcast.common.url.UrlEncoding;
-import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
+//import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 
 public class JaxbAtlasClient implements AtlasClient {
     private QueryStringBuilder queryStringBuilder = new QueryStringBuilder();
@@ -70,15 +70,15 @@ public class JaxbAtlasClient implements AtlasClient {
         return queryClient.contentQuery(baseUri + "/content.xml?" + withApiKey(query.toQueryStringParameters()).toQueryString()); 
     }
     
-    @Override
-    public ContentGroupQueryResult contentGroup(String id) {
-        return queryClient.contentGroupQuery(baseUri + "/content_groups/" + id + ".xml?" + apiKeyQueryPart());
-    }
-    
-    @Override
-    public ContentGroupQueryResult contentGroups() {
-        return queryClient.contentGroupQuery(baseUri + "/content_groups.xml?" +  apiKeyQueryPart());
-    }
+//    @Override
+//    public ContentGroupQueryResult contentGroup(String id) {
+//        return queryClient.contentGroupQuery(baseUri + "/content_groups/" + id + ".xml?" + apiKeyQueryPart());
+//    }
+//    
+//    @Override
+//    public ContentGroupQueryResult contentGroups() {
+//        return queryClient.contentGroupQuery(baseUri + "/content_groups.xml?" +  apiKeyQueryPart());
+//    }
 
     @Override
     public ContentQueryResult search(SearchQuery query) {

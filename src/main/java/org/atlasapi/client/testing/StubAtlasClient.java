@@ -14,7 +14,7 @@ import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 
 import com.google.common.collect.Maps;
-import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
+//import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 
 public class StubAtlasClient implements AtlasClient {
     
@@ -39,15 +39,15 @@ public class StubAtlasClient implements AtlasClient {
         return result;
 	}
 
-    @Override
-    public ContentGroupQueryResult contentGroup(String id) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public ContentGroupQueryResult contentGroups() {
-        throw new UnsupportedOperationException();
-    }
+//    @Override
+//    public ContentGroupQueryResult contentGroup(String id) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    @Override
+//    public ContentGroupQueryResult contentGroups() {
+//        throw new UnsupportedOperationException();
+//    }
 
 	@Override
 	public ScheduleQueryResult scheduleFor(ScheduleQuery query) {
