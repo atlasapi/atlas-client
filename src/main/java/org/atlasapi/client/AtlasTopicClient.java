@@ -13,7 +13,6 @@ public interface AtlasTopicClient {
     
     Topic topic(String topicId);
     
-    //TODO: encapsulate parameters into TopicQuery
-    ContentQueryResult contentFor(String topicId, Optional<Selection> selection, Annotation...annotations);
+    ContentQueryResult contentFor(TopicQuery query);
     
 }

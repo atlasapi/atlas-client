@@ -1,5 +1,6 @@
 package org.atlasapi.client;
 
+import java.util.List;
 import java.util.Set;
 
 import org.atlasapi.output.Annotation;
@@ -7,8 +8,10 @@ import org.atlasapi.output.Annotation;
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.metabroadcast.common.url.QueryStringParameters;
 
@@ -23,13 +26,16 @@ public class ContentQuery {
     private final Set<String> uris;
     private final Set<String> ids;
     private final Set<Annotation> annotations;
+    private final Set<String> rawAnnotations;
     
-    private ContentQuery(Iterable<String> uris, Iterable<String> ids, Iterable<Annotation> annotations) {
+    private ContentQuery(Iterable<String> uris, Iterable<String> ids, Iterable<Annotation> annotations, Iterable<String> rawAnnotations) {
         this.uris = ImmutableSet.copyOf(uris);
         this.ids = ImmutableSet.copyOf(ids);
         this.annotations = ImmutableSet.copyOf(annotations);
+        this.rawAnnotations = ImmutableSet.copyOf(rawAnnotations);
     }
     
+  
     public static ContentQueryBuilder builder() {
         return new ContentQueryBuilder();
     }
@@ -43,8 +49,11 @@ public class ContentQuery {
         if (!ids.isEmpty()) {
             parameters.add(IDS_PARAMETER, JOINER.join(ids));
         }
-        if (!annotations.isEmpty()) {
-            parameters.add(ANNOTATIONS_PARAMETER, JOINER.join(Iterables.transform(annotations, Annotation.TO_KEY)));
+        if (!annotations.isEmpty() || !rawAnnotations.isEmpty()) {
+            List<String> annotationStrings = Lists.newArrayList();
+            annotationStrings.addAll(Lists.transform(ImmutableList.copyOf(annotations), Annotation.TO_KEY));
+            annotationStrings.addAll(rawAnnotations);            
+            parameters.add(ANNOTATIONS_PARAMETER, JOINER.join(annotationStrings));
         }
         
         return parameters;
@@ -79,6 +88,7 @@ public class ContentQuery {
         Set<String> urls = Sets.newHashSet();
         Set<Annotation> annotations = Sets.newHashSet();
         Set<String> ids = Sets.newHashSet();
+        Set<String> rawAnnotations;
         
         public ContentQueryBuilder withUrls(Iterable<String> urls) {
             Preconditions.checkArgument(this.ids.isEmpty(), "Cannot set urls and ids on a ContentQuery");
@@ -99,8 +109,13 @@ public class ContentQuery {
             return withAnnotations(ImmutableSet.copyOf(annotations));
         }
         
+        public ContentQueryBuilder withRawAnnotations(String... rawAnnotations) {
+            this.rawAnnotations = ImmutableSet.copyOf(rawAnnotations);
+            return this;
+        }
+        
         public ContentQueryBuilder withIds(Iterable<String> ids) {
-            Preconditions.checkArgument(this.urls.isEmpty(), "Cannot set urls and ids on a ContentQuery");
+//            Preconditions.checkArgument(this.urls.isEmpty(), "Cannot set urls and ids on a ContentQuery");
             Iterables.addAll(this.ids, ids);
             return this;
         }
@@ -110,7 +125,7 @@ public class ContentQuery {
         }
 
         public ContentQuery build() {
-            return new ContentQuery(urls, ids, annotations);
+            return new ContentQuery(urls, ids, annotations, rawAnnotations);
         }
     }
     

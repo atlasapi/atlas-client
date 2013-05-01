@@ -11,7 +11,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.net.HostSpecifier;
-import com.metabroadcast.common.query.Selection;
 import com.metabroadcast.common.url.Urls;
 
 public class GsonTopicClient implements AtlasTopicClient {
@@ -37,11 +36,13 @@ public class GsonTopicClient implements AtlasTopicClient {
     }
 
     @Override
-    public ContentQueryResult contentFor(String topicId, Optional<Selection> selection, Annotation... annotations) {
-        List<String> annotationStrings = Lists.transform(ImmutableList.copyOf(annotations), Annotation.TO_KEY);
-        String queryString = Urls.appendParameters(String.format(topicContentPattern, topicId), "annotations", joiner.join(annotationStrings));
+    public ContentQueryResult contentFor(TopicQuery query) {
+        List<String> annotationStrings = Lists.newArrayList();
+        annotationStrings.addAll(Lists.transform(ImmutableList.copyOf(query.getAnnotations()), Annotation.TO_KEY));
+        annotationStrings.addAll(query.getRawAnnotations());
+        String queryString = Urls.appendParameters(String.format(topicContentPattern, query.getTopicId()), "annotations", joiner.join(annotationStrings));
         queryString = apiKey.isPresent() ? Urls.appendParameters(queryString, "apiKey", apiKey.get()) : queryString;
-        queryString = selection.isPresent() ? selection.get().appendToUrl(queryString) : queryString;
+        queryString = query.getSelection().isPresent() ? query.getSelection().get().appendToUrl(queryString) : queryString;
         return stringQueryClient.contentQuery(queryString);
     }
     

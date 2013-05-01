@@ -48,15 +48,15 @@ public class GsonAtlasClient implements AtlasClient {
         return client.contentQuery(baseUri + "/content.json?" + withApiKey(query.toQueryStringParameters()).toQueryString());
     }
     
-    public Description contentFor(String contentId, Annotation... annotations) {
-        // TODO fix this to deal with diff content types being returned
-        List<String> annotationStrings = Lists.transform(ImmutableList.copyOf(annotations), Annotation.TO_KEY);
-        String queryString = Urls.appendParameters(String.format(singleContentUrl, contentId), "annotations", joiner.join(annotationStrings));
-        queryString = apiKey != null ? Urls.appendParameters(queryString, "apiKey", apiKey) : queryString;
-        ContentQueryResult result = client.contentQuery(queryString);
-   
-        return result.getContents().size() > 0 ? result.getContents().get(0) : null;
-    }
+//    public Description contentFor(String contentId, Annotation... annotations) {
+//        // TODO fix this to deal with diff content types being returned
+//        List<String> annotationStrings = Lists.transform(ImmutableList.copyOf(annotations), Annotation.TO_KEY);
+//        String queryString = Urls.appendParameters(String.format(singleContentUrl, contentId), "annotations", joiner.join(annotationStrings));
+//        queryString = apiKey != null ? Urls.appendParameters(queryString, "apiKey", apiKey) : queryString;
+//        ContentQueryResult result = client.contentQuery(queryString);
+//   
+//        return result.getContents().size() > 0 ? result.getContents().get(0) : null;
+//    }
     
 //    @Override
 //    public ContentGroupQueryResult contentGroup(String id) {
