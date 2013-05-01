@@ -4,7 +4,7 @@ import org.atlasapi.content.criteria.AtomicQuery;
 import org.atlasapi.content.criteria.ContentQuery;
 import org.atlasapi.content.criteria.attribute.Attributes;
 import org.atlasapi.media.entity.Publisher;
-import org.atlasapi.media.entity.simple.PublisherDetails;
+import org.atlasapi.media.entity.simple.SourceDetails;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;

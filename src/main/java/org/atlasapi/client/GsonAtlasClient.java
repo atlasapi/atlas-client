@@ -35,7 +35,7 @@ public class GsonAtlasClient implements AtlasClient {
         this.baseUri = baseUri;
         this.apiKey = apiKey;
         this.queryStringBuilder.setApiKey(apiKey);
-        this.singleContentUrl = String.format("%s/content/%%s.json?", baseUri);
+        this.singleContentUrl = String.format("%s/content.json?id=%%s", baseUri);
     }
 
     @Override
@@ -49,10 +49,13 @@ public class GsonAtlasClient implements AtlasClient {
     }
     
     public Description contentFor(String contentId, Annotation... annotations) {
-        List<String> annotationStrings = Lists.transform(ImmutableList.copyOf(annotations), Functions.compose(TO_LOWER, toStringFunction()));
+        // TODO fix this to deal with diff content types being returned
+        List<String> annotationStrings = Lists.transform(ImmutableList.copyOf(annotations), Annotation.TO_KEY);
         String queryString = Urls.appendParameters(String.format(singleContentUrl, contentId), "annotations", joiner.join(annotationStrings));
         queryString = apiKey != null ? Urls.appendParameters(queryString, "apiKey", apiKey) : queryString;
-        return client.singleContentQuery(queryString);
+        ContentQueryResult result = client.contentQuery(queryString);
+   
+        return result.getContents().size() > 0 ? result.getContents().get(0) : null;
     }
     
 //    @Override

@@ -51,26 +51,10 @@ public class GsonQueryClient implements StringQueryClient {
     @Override
     public ContentQueryResult contentQuery(String queryUri) {
         try {
-            System.out.println(queryUri);
             return gson.fromJson(httpClient.getContentsOf(queryUri), ContentQueryResult.class);
         } catch (HttpStatusCodeException e) {
             if (NOT_FOUND == e.getStatusCode()) {
                 return new ContentQueryResult();
-            }
-            throw new RuntimeException(e);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-    
-  
-    public Description singleContentQuery(String queryUri) {
-        try {
-            System.out.println(queryUri);
-            return gson.fromJson(httpClient.getContentsOf(queryUri), Description.class);
-        } catch (HttpStatusCodeException e) {
-            if (NOT_FOUND == e.getStatusCode()) {
-                return null;
             }
             throw new RuntimeException(e);
         } catch (Exception e) {
@@ -137,7 +121,7 @@ public class GsonQueryClient implements StringQueryClient {
     
     public static class DateDeserializer implements JsonDeserializer<Date> {
 
-        private static final DateTimeFormatter fmt = ISODateTimeFormat.dateTimeNoMillis();
+        private static final DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
 
         @Override
         public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
