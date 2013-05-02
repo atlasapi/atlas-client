@@ -177,7 +177,7 @@ public class GsonQueryClient implements StringQueryClient {
         @Override
         public ContentIdentifier deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             JsonObject jsonObj = json.getAsJsonObject();
-            return ContentIdentifier.identifierFrom(jsonObj.get("uri").getAsString(), jsonObj.get("type").getAsString());
+            return ContentIdentifier.identifierFrom(jsonObj.get("id").getAsString(), jsonObj.get("type").getAsString());
         }
     }
     

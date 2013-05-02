@@ -88,7 +88,7 @@ public class ContentQuery {
         Set<String> urls = Sets.newHashSet();
         Set<Annotation> annotations = Sets.newHashSet();
         Set<String> ids = Sets.newHashSet();
-        Set<String> rawAnnotations;
+        Set<String> rawAnnotations = Sets.newHashSet();;
         
         public ContentQueryBuilder withUrls(Iterable<String> urls) {
             Preconditions.checkArgument(this.ids.isEmpty(), "Cannot set urls and ids on a ContentQuery");

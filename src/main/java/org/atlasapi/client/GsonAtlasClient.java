@@ -40,7 +40,7 @@ public class GsonAtlasClient implements AtlasClient {
 
     @Override
     public ContentQueryResult content(Iterable<String> ids) {
-        return client.contentQuery(baseUri + "/content.json?uri=" +  joiner.join(UrlEncoding.encode(ids)) + apiKeyQueryPart());
+        return client.contentQuery(baseUri + "/content.json?id=" +  joiner.join(UrlEncoding.encode(ids)) + apiKeyQueryPart());
     }
     
     @Override
