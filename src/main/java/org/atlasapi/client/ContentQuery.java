@@ -51,7 +51,7 @@ public class ContentQuery {
         }
         if (!annotations.isEmpty() || !rawAnnotations.isEmpty()) {
             List<String> annotationStrings = Lists.newArrayList();
-            annotationStrings.addAll(Lists.transform(ImmutableList.copyOf(annotations), Annotation.TO_KEY));
+            annotationStrings.addAll(Lists.transform(ImmutableList.copyOf(annotations), Annotation.toKeyFunction()));
             annotationStrings.addAll(rawAnnotations);            
             parameters.add(ANNOTATIONS_PARAMETER, JOINER.join(annotationStrings));
         }

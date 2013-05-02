@@ -38,7 +38,7 @@ public class GsonTopicClient implements AtlasTopicClient {
     @Override
     public ContentQueryResult contentFor(TopicQuery query) {
         List<String> annotationStrings = Lists.newArrayList();
-        annotationStrings.addAll(Lists.transform(ImmutableList.copyOf(query.getAnnotations()), Annotation.TO_KEY));
+        annotationStrings.addAll(Lists.transform(ImmutableList.copyOf(query.getAnnotations()), Annotation.toKeyFunction()));
         annotationStrings.addAll(query.getRawAnnotations());
         String queryString = Urls.appendParameters(String.format(topicContentPattern, query.getTopicId()), "annotations", joiner.join(annotationStrings));
         queryString = apiKey.isPresent() ? Urls.appendParameters(queryString, "apiKey", apiKey.get()) : queryString;
