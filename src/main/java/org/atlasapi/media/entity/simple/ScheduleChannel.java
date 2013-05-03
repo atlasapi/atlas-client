@@ -13,14 +13,14 @@ import com.google.common.collect.Lists;
 public class ScheduleChannel {
 	
     private Channel channel;
-    private List<Item> content = Lists.newArrayList();
+    private List<Item> items = Lists.newArrayList();
     
     public List<Item> getItems() {
-        return content;
+        return items;
     }
     
     public void setItems(List<Item> items) {
-        this.content = items;
+        this.items = items;
     }
     
     public void setChannel(Channel channel) {
@@ -39,21 +39,21 @@ public class ScheduleChannel {
         if (that instanceof ScheduleChannel) {
             ScheduleChannel other = (ScheduleChannel) that;
             return Objects.equal(channel, other.channel) 
-                && Objects.equal(content, other.content);
+                && Objects.equal(items, other.items);
         }
         return false;
     }
     
     @Override
     public int hashCode() {
-        return Objects.hashCode(channel, content);
+        return Objects.hashCode(channel, items);
     }
     
     @Override
     public String toString() {
         return Objects.toStringHelper(ScheduleChannel.class)
             .add("channel", channel)
-            .add("content", content)
+            .add("content", items)
             .toString();
     }
 

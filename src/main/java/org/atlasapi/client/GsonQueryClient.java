@@ -125,7 +125,8 @@ public class GsonQueryClient implements StringQueryClient {
 
         @Override
         public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            String jsonString = json.getAsJsonPrimitive().getAsString();
+            // handle v3 style times
+            String jsonString = json.getAsJsonPrimitive().getAsString().replaceAll(":(\\d\\d)Z", ":$1.000Z");
             if (Strings.isNullOrEmpty(jsonString)) {
                 return null;
             }
