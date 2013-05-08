@@ -10,18 +10,24 @@ import com.metabroadcast.common.query.Selection;
 
 public class TopicQuery {
     private final String topicId;
+    private final Optional<String> uri;
     private final Optional<Selection> selection;
     private final Collection<Annotation> annotations;
     private final Collection<String> rawAnnotations;
     
     private TopicQuery(Builder builder) {
         this.topicId = builder.getTopicId();
+        this.uri = Optional.fromNullable(builder.getUri());
         this.selection = builder.getSelection();
         this.annotations = builder.getAnnotations();
         this.rawAnnotations = builder.getRawAnnotations();
     }
     public String getTopicId() {
         return topicId;
+    }
+    
+    public Optional<String> getUri() {
+        return uri;
     }
     
     public Optional<Selection> getSelection() {
@@ -42,6 +48,7 @@ public class TopicQuery {
     
     public static class Builder {
         private String topicId;
+        private String uri;
         private Optional<Selection> selection;
         private Collection<Annotation> annotations;
         private Collection<String> rawAnnotations;
@@ -54,6 +61,10 @@ public class TopicQuery {
         
         public String getTopicId() {
             return topicId;
+        }
+        
+        public String getUri() {
+            return uri;
         }
         
         public Optional<Selection> getSelection() {
@@ -70,6 +81,11 @@ public class TopicQuery {
         
         public Builder withTopicId(String topicId) {
             this.topicId = topicId;
+            return this;
+        }
+        
+        public Builder withUri(String uri) {
+            this.uri = uri;
             return this;
         }
         

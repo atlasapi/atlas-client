@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Topic;
+import org.atlasapi.media.entity.simple.TopicQueryResult;
 import org.atlasapi.output.Annotation;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
@@ -17,6 +18,7 @@ public class GsonTopicClient implements AtlasTopicClient {
 
     private final String topicPattern;
     private final String topicContentPattern;
+    private final String topicUriContentPattern;
     private final GsonQueryClient stringQueryClient;
 
     private final Joiner joiner = Joiner.on(',');
@@ -26,6 +28,7 @@ public class GsonTopicClient implements AtlasTopicClient {
         this.apiKey = apiKey;
         this.topicPattern = String.format("http://%s/4.0/topics/%%s.json", atlasHost);
         this.topicContentPattern = String.format("http://%s/4.0/topics/%%s/content.json", atlasHost);
+        this.topicUriContentPattern = String.format("http://%s/4.0/topics.json", atlasHost);
         this.stringQueryClient = new GsonQueryClient();
     }
 
@@ -40,10 +43,35 @@ public class GsonTopicClient implements AtlasTopicClient {
         List<String> annotationStrings = Lists.newArrayList();
         annotationStrings.addAll(Lists.transform(ImmutableList.copyOf(query.getAnnotations()), Annotation.toKeyFunction()));
         annotationStrings.addAll(query.getRawAnnotations());
-        String queryString = Urls.appendParameters(String.format(topicContentPattern, query.getTopicId()), "annotations", joiner.join(annotationStrings));
+        String queryString = "";
+        if (query.getUri().isPresent()) {
+            queryString = this.topicUriContentPattern;
+            queryString = Urls.appendParameters(queryString, "aliases.value", query.getUri().get());
+        } else {
+            queryString = String.format(topicContentPattern, query.getTopicId());
+        }
+        queryString = Urls.appendParameters(queryString, "annotations", joiner.join(annotationStrings));
         queryString = apiKey.isPresent() ? Urls.appendParameters(queryString, "apiKey", apiKey.get()) : queryString;
         queryString = query.getSelection().isPresent() ? query.getSelection().get().appendToUrl(queryString) : queryString;
         return stringQueryClient.contentQuery(queryString);
+    }
+    
+    @Override
+    public TopicQueryResult topicsFor(TopicQuery query) {
+        List<String> annotationStrings = Lists.newArrayList();
+        annotationStrings.addAll(Lists.transform(ImmutableList.copyOf(query.getAnnotations()), Annotation.toKeyFunction()));
+        annotationStrings.addAll(query.getRawAnnotations());
+        String queryString = "";
+        if (query.getUri().isPresent()) {
+            queryString = this.topicUriContentPattern;
+            queryString = Urls.appendParameters(queryString, "aliases.value", query.getUri().get());
+        } else {
+            queryString = String.format(topicContentPattern, query.getTopicId());
+        }
+        queryString = Urls.appendParameters(queryString, "annotations", joiner.join(annotationStrings));
+        queryString = apiKey.isPresent() ? Urls.appendParameters(queryString, "apiKey", apiKey.get()) : queryString;
+        queryString = query.getSelection().isPresent() ? query.getSelection().get().appendToUrl(queryString) : queryString;
+        return stringQueryClient.topicQuery(queryString);
     }
     
 }

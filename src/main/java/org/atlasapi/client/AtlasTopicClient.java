@@ -2,6 +2,7 @@ package org.atlasapi.client;
 
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Topic;
+import org.atlasapi.media.entity.simple.TopicQueryResult;
 import org.atlasapi.output.Annotation;
 
 import com.google.common.base.Optional;
@@ -14,5 +15,7 @@ public interface AtlasTopicClient {
     Topic topic(String topicId);
     
     ContentQueryResult contentFor(TopicQuery query);
+
+    TopicQueryResult topicsFor(TopicQuery query);
     
 }
