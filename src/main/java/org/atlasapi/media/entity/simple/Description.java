@@ -179,12 +179,12 @@ public abstract class Description extends Aliased {
         this.longDescription = longDescription;
     }
 
-    public ImmutableSet<String> identifiers() {
-        Builder<String> ids = ImmutableSet.builder();
+    public ImmutableSet<Alias> identifiers() {
+        Builder<Alias> ids = ImmutableSet.builder();
         ids.addAll(aliases);
-        ids.add(uri);
+        ids.add(new Alias("uri", uri));
         if (curie != null) {
-            ids.add(curie);
+            ids.add(new Alias("uri", curie));
         }
         return ids.build();
     }

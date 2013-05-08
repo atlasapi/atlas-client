@@ -10,7 +10,7 @@ import com.google.common.collect.Sets;
 
 public abstract class Aliased extends Identified {
 
-	protected Set<String> aliases = Sets.newHashSet();
+	protected Set<Alias> aliases = Sets.newHashSet();
 	
 	public Aliased(String uri) {
 		super(uri);
@@ -18,13 +18,13 @@ public abstract class Aliased extends Identified {
 	
 	public Aliased() { /* required for XML/JSON tools */	}
 	
-	public void setAliases(Set<String> aliases) {
+	public void setAliases(Set<Alias> aliases) {
 		this.aliases = aliases;
 	}
 	
 	@XmlElementWrapper(name="aliases")
 	@XmlElement(name="alias")
-	public Set<String> getAliases() {
+	public Set<Alias> getAliases() {
 		return aliases;
 	}
 	

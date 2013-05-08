@@ -3,6 +3,7 @@ package org.atlasapi.media.entity.testing;
 import java.util.List;
 import java.util.Set;
 
+import org.atlasapi.media.entity.simple.Alias;
 import org.atlasapi.media.entity.simple.ContentIdentifier;
 import org.atlasapi.media.entity.simple.Item;
 import org.atlasapi.media.entity.simple.ContentIdentifier.ItemIdentifier;
@@ -21,7 +22,7 @@ public class PlaylistTestDataBuilder {
     private String uri;
     private String curie;
     
-    private Set<String> aliases;
+    private Set<Alias> aliases;
     private List<Item> clips;
     
     private String mediaType;

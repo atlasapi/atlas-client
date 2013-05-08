@@ -53,11 +53,11 @@ public class Person extends Description {
 		this.name = name;
 	}
 	
-	public Set<String> getProfileLinks() {
+	public Set<Alias> getProfileLinks() {
         return aliases;
     }
 	
-	public void setProfileLinks(Set<String> profileLinks) {
+	public void setProfileLinks(Set<Alias> profileLinks) {
         this.setAliases(profileLinks);
     }
 	

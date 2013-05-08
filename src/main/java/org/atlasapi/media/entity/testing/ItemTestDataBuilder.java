@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.atlasapi.media.entity.simple.Alias;
 import org.atlasapi.media.entity.simple.BrandSummary;
 import org.atlasapi.media.entity.simple.Broadcast;
 import org.atlasapi.media.entity.simple.Item;
@@ -24,7 +25,7 @@ public class ItemTestDataBuilder {
     private String uri;
     private String curie;
     
-    private Set<String> aliases;
+    private Set<Alias> aliases;
     private BrandSummary brand;
     private SortedSet<Broadcast> broadcasts;
     private List<Item> clips;
@@ -188,7 +189,7 @@ public class ItemTestDataBuilder {
         return this;
     }
     
-    public ItemTestDataBuilder withAliases(String... aliases) {
+    public ItemTestDataBuilder withAliases(Alias... aliases) {
         this.aliases = ImmutableSet.copyOf(aliases);
         return this;
     }
