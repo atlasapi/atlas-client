@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.atlasapi.media.entity.simple.Alias;
 import org.atlasapi.media.entity.simple.ContentIdentifier;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
@@ -43,7 +44,7 @@ import com.metabroadcast.common.intl.Country;
 
 public class GsonQueryClient implements StringQueryClient {
     
-    private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).registerTypeAdapter(Date.class, new DateDeserializer()).registerTypeAdapter(Long.class, new LongDeserializer()).registerTypeAdapter(Boolean.class, new BooleanDeserializer()).registerTypeAdapter(Description.class, new DescriptionDeserializer()).registerTypeAdapter(ContentIdentifier.class, new ContentIdentifierDeserializer()).registerTypeAdapter(Country.class, new CountryDeserializer()).create();
+    private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).registerTypeAdapter(Date.class, new DateDeserializer()).registerTypeAdapter(Long.class, new LongDeserializer()).registerTypeAdapter(Boolean.class, new BooleanDeserializer()).registerTypeAdapter(Description.class, new DescriptionDeserializer()).registerTypeAdapter(ContentIdentifier.class, new ContentIdentifierDeserializer()).registerTypeAdapter(Country.class, new CountryDeserializer()).registerTypeAdapter(Alias.class, new AliasDeserializer()).create();
     private static final String USER_AGENT = "Mozilla/5.0 (compatible; atlas-java-client/1.0; +http://atlasapi.org)";
     private static final int NOT_FOUND = 404;
     private final SimpleHttpClient httpClient = new SimpleHttpClientBuilder().withUserAgent(USER_AGENT).withSocketTimeout(1, TimeUnit.MINUTES).build();
@@ -187,6 +188,18 @@ public class GsonQueryClient implements StringQueryClient {
         @Override
         public Country deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             return Countries.fromCode(json.getAsJsonObject().get("code").getAsString());
+        }
+    }
+    
+    public static class AliasDeserializer implements JsonDeserializer<Alias> {
+        
+        @Override
+        public Alias deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            if (json.isJsonObject()) {
+                return new Alias(json.getAsJsonObject().get("namespace").getAsString(), json.getAsJsonObject().get("value").getAsString());
+            } else {
+                return new Alias("uri", json.getAsString()); 
+            }
         }
     }
 }
