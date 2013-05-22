@@ -3,10 +3,15 @@ package org.atlasapi.client;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import org.atlasapi.client.ContentQuery.ContentQueryBuilder;
 import org.atlasapi.media.entity.Channel;
 import org.atlasapi.media.entity.Publisher;
+import org.atlasapi.media.entity.simple.ContentIdentifier;
+import org.atlasapi.media.entity.simple.ContentIdentifier.EpisodeIdentifier;
+import org.atlasapi.media.entity.simple.ContentIdentifier.SeriesIdentifier;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
 import org.atlasapi.media.entity.simple.Item;
@@ -14,6 +19,8 @@ import org.atlasapi.media.entity.simple.Location;
 import org.atlasapi.media.entity.simple.Playlist;
 import org.atlasapi.media.entity.simple.ScheduleChannel;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
+import org.hamcrest.Matchers;
+import org.hamcrest.core.Is;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.junit.Test;
@@ -24,11 +31,12 @@ import com.metabroadcast.common.query.Selection;
 import com.metabroadcast.common.time.DateTimeZones;
 import org.atlasapi.media.entity.simple.ContentGroup;
 import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
+import org.atlasapi.output.Annotation;
 
 public class GsonAtlasClientTest {
 
     private static final Selection SELECTION = new Selection(0, 5);
-    private final GsonAtlasClient client = new GsonAtlasClient("http://stage.atlas.metabroadcast.com/3.0", null);
+    private final GsonAtlasClient client = new GsonAtlasClient("http://atlas.metabroadcast.com/3.0", null);
 
     @Test
     public void shouldGetEpisode() {
@@ -49,6 +57,32 @@ public class GsonAtlasClientTest {
         }
     }
 
+    @Test
+    public void shouldDeserializeSeries() {
+        ContentQuery query = new ContentQueryBuilder()
+                .withAnnotations(Annotation.SERIES, Annotation.SUB_ITEMS)
+                .withUrls("http://www.bbc.co.uk/programmes/b018ttws")
+                .build();
+        
+        ContentQueryResult content = client.content(query);
+        
+        boolean foundSeries = false;
+        for (Description desc : content.getContents()) {
+            if (desc.getUri().equals("http://www.bbc.co.uk/programmes/b018ttws")) {
+                Playlist playlist = (Playlist) desc;
+                for (SeriesIdentifier series : playlist.getSeriesList()) {
+                    if (series.getUri().equals("http://www.bbc.co.uk/programmes/b00t4pgh")) {
+                        foundSeries = true;
+                        assertEquals(Integer.valueOf(1), series.getSeriesNumber());
+                    }
+                }
+                ContentIdentifier first = Iterables.getFirst(playlist.getContent(), null);
+                assertThat(first, Matchers.instanceOf(EpisodeIdentifier.class));
+            }
+        }
+        assertTrue(foundSeries);
+    }
+    
     @Test
     public void shouldGetPlaylist() {
         ContentQueryResult content = client.content(ImmutableSet.of("http://www.bbc.co.uk/programmes/b007sh7m"));
