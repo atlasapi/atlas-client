@@ -38,7 +38,6 @@ import com.metabroadcast.common.http.SimpleHttpClientBuilder;
 import com.metabroadcast.common.http.SimpleHttpRequest;
 import com.metabroadcast.common.intl.Countries;
 import com.metabroadcast.common.intl.Country;
-import org.atlasapi.media.entity.simple.ContentGroup;
 import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 
 public class GsonQueryClient implements StringQueryClient {
@@ -177,7 +176,18 @@ public class GsonQueryClient implements StringQueryClient {
         @Override
         public ContentIdentifier deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             JsonObject jsonObj = json.getAsJsonObject();
-            return ContentIdentifier.identifierFrom(jsonObj.get("uri").getAsString(), jsonObj.get("type").getAsString());
+            String uri = jsonObj.get("uri").getAsString();
+            String type = jsonObj.get("type").getAsString();
+            JsonElement idElement = jsonObj.get("id");
+            String id = idElement != null ? idElement.getAsString() : null;
+            
+            if ("series".equals(type)) {
+                JsonElement seriesElement = jsonObj.get("seriesNumber");
+                Integer seriesNumber = seriesElement != null ? seriesElement.getAsInt() : null;
+                return ContentIdentifier.seriesIdentifierFrom(id, uri, seriesNumber);
+            } else {
+                return ContentIdentifier.identifierFrom(id, uri, type);
+            }
         }
     }
     
