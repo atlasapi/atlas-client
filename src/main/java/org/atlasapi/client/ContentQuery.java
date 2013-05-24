@@ -6,10 +6,12 @@ import org.atlasapi.output.Annotation;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
+import com.metabroadcast.common.query.Selection;
 import com.metabroadcast.common.url.QueryStringParameters;
 
 public class ContentQuery {
@@ -23,11 +25,13 @@ public class ContentQuery {
     private final Set<String> uris;
     private final Set<String> ids;
     private final Set<Annotation> annotations;
+    private final Optional<Selection> selection;
     
-    private ContentQuery(Iterable<String> uris, Iterable<String> ids, Iterable<Annotation> annotations) {
+    private ContentQuery(Iterable<String> uris, Iterable<String> ids, Iterable<Annotation> annotations, Optional<Selection> selection) {
         this.uris = ImmutableSet.copyOf(uris);
         this.ids = ImmutableSet.copyOf(ids);
         this.annotations = ImmutableSet.copyOf(annotations);
+        this.selection = selection;
     }
     
     public static ContentQueryBuilder builder() {
@@ -45,6 +49,11 @@ public class ContentQuery {
         }
         if (!annotations.isEmpty()) {
             parameters.add(ANNOTATIONS_PARAMETER, JOINER.join(Iterables.transform(annotations, Annotation.TO_KEY)));
+        }
+        
+        if (selection.isPresent()) {
+            parameters.add(Selection.LIMIT_REQUEST_PARAM, "" + selection.get().getLimit());
+            parameters.add(Selection.START_INDEX_REQUEST_PARAM, "" + selection.get().getOffset());
         }
         
         return parameters;
@@ -79,6 +88,7 @@ public class ContentQuery {
         Set<String> urls = Sets.newHashSet();
         Set<Annotation> annotations = Sets.newHashSet();
         Set<String> ids = Sets.newHashSet();
+        Optional<Selection> selection = Optional.absent();
         
         public ContentQueryBuilder withUrls(Iterable<String> urls) {
             Preconditions.checkArgument(this.ids.isEmpty(), "Cannot set urls and ids on a ContentQuery");
@@ -108,9 +118,14 @@ public class ContentQuery {
         public ContentQueryBuilder withIds(String... ids) {
             return withIds(ImmutableSet.copyOf(ids));
         }
+        
+        public ContentQueryBuilder withSelection(Selection selection) {
+            this.selection = Optional.fromNullable(selection);
+            return this;
+        }
 
         public ContentQuery build() {
-            return new ContentQuery(urls, ids, annotations);
+            return new ContentQuery(urls, ids, annotations, selection);
         }
     }
     
