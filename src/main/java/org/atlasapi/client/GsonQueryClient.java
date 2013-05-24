@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.atlasapi.media.entity.simple.ChannelGroupQueryResult;
+import org.atlasapi.media.entity.simple.ChannelQueryResult;
 import org.atlasapi.media.entity.simple.ContentIdentifier;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
@@ -111,6 +113,36 @@ public class GsonQueryClient implements StringQueryClient {
                 @Override
                 public TopicQueryResult transform(HttpResponsePrologue prologue, InputStream body) throws HttpException, Exception {
                     return gson.fromJson(new InputStreamReader(body, Charsets.UTF_8), TopicQueryResult.class);
+                }
+            }));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public ChannelQueryResult channelQuery(String queryUri) {
+        try {
+            return httpClient.get(SimpleHttpRequest.httpRequestFrom(queryUri, new HttpResponseTransformer<ChannelQueryResult>() {
+
+                @Override
+                public ChannelQueryResult transform(HttpResponsePrologue prologue, InputStream body) throws HttpException, Exception {
+                    return gson.fromJson(new InputStreamReader(body, Charsets.UTF_8), ChannelQueryResult.class);
+                }
+            }));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public ChannelGroupQueryResult channelGroupQuery(String queryUri) {
+        try {
+            return httpClient.get(SimpleHttpRequest.httpRequestFrom(queryUri, new HttpResponseTransformer<ChannelGroupQueryResult>() {
+
+                @Override
+                public ChannelGroupQueryResult transform(HttpResponsePrologue prologue, InputStream body) throws HttpException, Exception {
+                    return gson.fromJson(new InputStreamReader(body, Charsets.UTF_8), ChannelGroupQueryResult.class);
                 }
             }));
         } catch (Exception e) {
