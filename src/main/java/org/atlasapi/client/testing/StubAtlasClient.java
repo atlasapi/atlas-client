@@ -11,6 +11,7 @@ import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
 import org.atlasapi.media.entity.simple.DiscoverQueryResult;
 import org.atlasapi.media.entity.simple.PeopleQueryResult;
+import org.atlasapi.media.entity.simple.Person;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 
 import com.google.common.collect.Maps;
@@ -61,7 +62,11 @@ public class StubAtlasClient implements AtlasClient {
 
     @Override
     public PeopleQueryResult people(Iterable<String> uris) {
-        throw new UnsupportedOperationException();
+        PeopleQueryResult result = new PeopleQueryResult();
+        for (String uri : uris) {
+            result.add((Person) contentMap.get(uri));
+        }
+        return result;
     }
 
     @Override
