@@ -39,7 +39,7 @@ public class GsonTopicClient implements AtlasTopicClient {
             queryParams.add("apiKey", apiKey.get());
         }
         
-        String queryString = Urls.appendParameters(topicsPattern, query.toQueryStringParameters());
+        String queryString = Urls.appendParameters(topicsPattern, queryParams);
         return stringQueryClient.topicQuery(queryString);
     }
 
