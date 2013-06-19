@@ -37,7 +37,7 @@ class JaxbStringQueryClient implements StringQueryClient {
     
     public JaxbStringQueryClient() {
         try {
-            context = JAXBContext.newInstance(ContentQueryResult.class, ContentGroupQueryResult.class, ScheduleQueryResult.class, PeopleQueryResult.class);
+            context = JAXBContext.newInstance(ContentQueryResult.class, ContentGroupQueryResult.class, ScheduleQueryResult.class, PeopleQueryResult.class, ChannelQueryResult.class);
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         }

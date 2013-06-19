@@ -58,6 +58,25 @@ public class ChannelQuery {
                 .add(REGIONS_PARAMETER, regions)
                 .toString();
     }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj instanceof ChannelQuery) {
+            ChannelQuery other = (ChannelQuery) obj;
+            return Objects.equal(this.platforms, other.platforms)
+                    && Objects.equal(this.regions, other.regions)
+                    && Objects.equal(this.selection, other.selection);
+        }
+        return false;
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(platforms, regions, selection);
+    }
 
     public static class ChannelQueryBuilder {
         Set<String> platforms = Sets.newHashSet();
