@@ -6,6 +6,7 @@ import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
+import org.atlasapi.media.entity.simple.Topic;
 import org.atlasapi.media.entity.simple.TopicQueryResult;
 
 interface StringQueryClient {
@@ -19,6 +20,8 @@ interface StringQueryClient {
 	PeopleQueryResult peopleQuery(String queryUri);
 	
 	TopicQueryResult topicQuery(String queryUri);
+	
+	void postTopic(String queryUri, Topic topic);
 	
 	ChannelQueryResult channelQuery(String queryUri);
 	

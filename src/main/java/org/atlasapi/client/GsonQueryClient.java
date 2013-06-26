@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.atlasapi.media.entity.simple.ChannelGroupQueryResult;
 import org.atlasapi.media.entity.simple.ChannelQueryResult;
+import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 import org.atlasapi.media.entity.simple.ContentIdentifier;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
@@ -16,6 +17,7 @@ import org.atlasapi.media.entity.simple.Item;
 import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.Playlist;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
+import org.atlasapi.media.entity.simple.Topic;
 import org.atlasapi.media.entity.simple.TopicQueryResult;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -32,15 +34,17 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.metabroadcast.common.http.HttpException;
+import com.metabroadcast.common.http.HttpResponse;
 import com.metabroadcast.common.http.HttpResponsePrologue;
 import com.metabroadcast.common.http.HttpResponseTransformer;
 import com.metabroadcast.common.http.HttpStatusCodeException;
+import com.metabroadcast.common.http.Payload;
 import com.metabroadcast.common.http.SimpleHttpClient;
 import com.metabroadcast.common.http.SimpleHttpClientBuilder;
 import com.metabroadcast.common.http.SimpleHttpRequest;
+import com.metabroadcast.common.http.StringPayload;
 import com.metabroadcast.common.intl.Countries;
 import com.metabroadcast.common.intl.Country;
-import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 
 public class GsonQueryClient implements StringQueryClient {
     
@@ -115,6 +119,19 @@ public class GsonQueryClient implements StringQueryClient {
                     return gson.fromJson(new InputStreamReader(body, Charsets.UTF_8), TopicQueryResult.class);
                 }
             }));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void postTopic(String queryUri, Topic topic) {
+        try {
+            Payload topicPayload = new StringPayload(gson.toJson(topic, Topic.class));
+            HttpResponse response = httpClient.post(queryUri, topicPayload);
+            if (response.statusCode() >= 400) {
+                throw new RuntimeException("Error POSTing topic " + topic.getTitle() + " " + topic.getNamespace() + " " + topic.getValue() + " code: " + response.statusCode() + ", message: " + response.statusLine());
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
