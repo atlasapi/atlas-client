@@ -47,7 +47,12 @@ public class GsonQueryClient implements StringQueryClient {
     private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).registerTypeAdapter(Date.class, new DateDeserializer()).registerTypeAdapter(Long.class, new LongDeserializer()).registerTypeAdapter(Boolean.class, new BooleanDeserializer()).registerTypeAdapter(Description.class, new DescriptionDeserializer()).registerTypeAdapter(ContentIdentifier.class, new ContentIdentifierDeserializer()).registerTypeAdapter(Country.class, new CountryDeserializer()).create();
     private static final String USER_AGENT = "Mozilla/5.0 (compatible; atlas-java-client/1.0; +http://atlasapi.org)";
     private static final int NOT_FOUND = 404;
-    private final SimpleHttpClient httpClient = new SimpleHttpClientBuilder().withUserAgent(USER_AGENT).withSocketTimeout(1, TimeUnit.MINUTES).build();
+    private final SimpleHttpClient httpClient = new SimpleHttpClientBuilder()
+            .withUserAgent(USER_AGENT)
+            .withRequestCompressedResponses()
+            .withPoolConnections()
+            .withSocketTimeout(1, TimeUnit.MINUTES)
+            .build();
     
     @Override
     public ContentQueryResult contentQuery(String queryUri) {
