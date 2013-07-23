@@ -9,6 +9,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.metabroadcast.common.query.Selection;
@@ -86,7 +87,7 @@ public class ContentQuery {
     public static class ContentQueryBuilder {
         
         Set<String> urls = Sets.newHashSet();
-        Set<Annotation> annotations = Sets.newHashSet();
+        ImmutableSortedSet.Builder<Annotation> annotations = ImmutableSortedSet.naturalOrder();
         Set<String> ids = Sets.newHashSet();
         Optional<Selection> selection = Optional.absent();
         
@@ -101,7 +102,7 @@ public class ContentQuery {
         }
         
         public ContentQueryBuilder withAnnotations(Iterable<Annotation> annotations) {
-            Iterables.addAll(this.annotations, annotations);
+            this.annotations.addAll(annotations);
             return this;
         }
         
@@ -125,7 +126,7 @@ public class ContentQuery {
         }
 
         public ContentQuery build() {
-            return new ContentQuery(urls, ids, annotations, selection);
+            return new ContentQuery(urls, ids, annotations.build(), selection);
         }
     }
     
