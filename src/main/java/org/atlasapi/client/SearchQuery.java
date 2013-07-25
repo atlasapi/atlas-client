@@ -2,14 +2,19 @@ package org.atlasapi.client;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.atlasapi.media.entity.Publisher;
+import org.atlasapi.output.Annotation;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.metabroadcast.common.base.Maybe;
@@ -17,6 +22,8 @@ import com.metabroadcast.common.query.Selection;
 import com.metabroadcast.common.url.QueryStringParameters;
 
 public class SearchQuery {
+
+    private static final String ANNOTATIONS_PARAMETER = "annotations";
     
     private final Joiner CSV = Joiner.on(',');
     private final NumberFormat fractionFormat = DecimalFormat.getNumberInstance();
@@ -30,6 +37,7 @@ public class SearchQuery {
     private final Maybe<String> type;
     private final Maybe<Boolean> topLevelOnly;
     private final Maybe<Boolean> currentBroadcastsOnly;
+    private final Set<Annotation> annotations;
     
     public SearchQuery(SearchQueryBuilder builder) {
         Preconditions.checkNotNull(builder.query, "Search query must not be null");
@@ -43,6 +51,7 @@ public class SearchQuery {
         this.type = builder.type;
         this.topLevelOnly = builder.topLevelOnly;
         this.currentBroadcastsOnly = builder.currentBroadcastsOnly;
+        this.annotations = builder.annotations;
     }
     
     public QueryStringParameters toParams() {
@@ -78,6 +87,10 @@ public class SearchQuery {
         if (topLevelOnly.hasValue()) {
             params.add("topLevelOnly", topLevelOnly.requireValue().toString());
         }
+        if (!annotations.isEmpty()) {
+            params.add(ANNOTATIONS_PARAMETER, CSV.join(Iterables.transform(annotations, Annotation.TO_KEY)));
+        }
+        
         return params;
     }
 
@@ -92,6 +105,7 @@ public class SearchQuery {
         private Maybe<String> type = Maybe.nothing();
         private Maybe<Boolean> topLevelOnly = Maybe.nothing();
         private Maybe<Boolean> currentBroadcastsOnly = Maybe.nothing();
+        private ImmutableSortedSet<Annotation> annotations = ImmutableSortedSet.of();
 
         private SearchQueryBuilder() {
         }
@@ -144,6 +158,20 @@ public class SearchQuery {
             this.topLevelOnly = Maybe.just(topLevelOnly);
             return this;
         }
+
+        public SearchQueryBuilder withAnnotations(Iterable<Annotation> annotations) {
+            this.annotations = ImmutableSortedSet.copyOf(annotations);
+            return this;
+        }
+        
+        public SearchQueryBuilder withAnnotations(Annotation...annotations) {
+            return withAnnotations(Arrays.asList(annotations));
+        }
+
+        public SearchQueryBuilder withAnnotations(ImmutableCollection.Builder<Annotation> annotations) {
+            return withAnnotations(annotations.build());
+        }
+        
     }
 
     public static SearchQueryBuilder builder() {
