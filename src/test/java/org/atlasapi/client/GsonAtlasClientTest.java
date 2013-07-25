@@ -110,7 +110,12 @@ public class GsonAtlasClientTest {
     
     @Test
     public void shouldSearch() {
-        SearchQuery search = SearchQuery.builder().withPublishers(ImmutableSet.of(Publisher.BBC)).withQuery("EastEnders").withSelection(SELECTION).build();
+        SearchQuery search = SearchQuery.builder()
+            .withPublishers(ImmutableSet.of(Publisher.BBC))
+            .withQuery("EastEnders")
+            .withSelection(SELECTION)
+            .withAnnotations(Annotation.DESCRIPTION)
+            .build();
         ContentQueryResult content = client.search(search);
         assertFalse(content.getContents().isEmpty());
 
