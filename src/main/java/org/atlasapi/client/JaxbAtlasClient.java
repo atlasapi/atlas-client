@@ -9,6 +9,7 @@ import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 import com.google.common.base.Joiner;
 import com.metabroadcast.common.url.QueryStringParameters;
 import com.metabroadcast.common.url.UrlEncoding;
+
 import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 
 public class JaxbAtlasClient implements AtlasClient {
@@ -100,4 +101,10 @@ public class JaxbAtlasClient implements AtlasClient {
         }
         return parameters;
     }
+    
+    @Override
+    public PeopleQueryResult people(PeopleQuery query) {
+        return queryClient.peopleQuery(baseUri + "/people.xml?" + withApiKey(query.toQueryStringParameters()).toQueryString());
+    }
+    
 }
