@@ -5,11 +5,14 @@ import static org.atlasapi.output.Annotation.UPCOMING;
 import static org.junit.Assert.*;
 
 import org.atlasapi.media.entity.simple.ContentQueryResult;
+import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.Playlist;
 import org.junit.Test;
 
 import com.google.common.collect.Iterables;
+
 import java.util.Arrays;
+
 import org.atlasapi.media.entity.simple.ContentGroup;
 import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 
@@ -44,4 +47,17 @@ public class JaxbAtlasClientTest {
         assertTrue(result.getContentGroups().size() > 0);
     }
 
+    @Test
+    public void testShouldGetPeople() {
+
+        AtlasClient client = new JaxbAtlasClient("http://atlas.metabroadcast.com/3.0");
+        
+        String queryUri = "http://www.bbc.co.uk/people/84371";
+        PeopleQuery query = PeopleQuery.builder()
+                .withUrls(queryUri)
+                .build();
+        PeopleQueryResult people = client.people(query);
+        assertNotNull(people);
+        assertEquals(queryUri, Iterables.getOnlyElement(people.getPeople()).getUri());
+    }
 }
