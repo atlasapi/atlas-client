@@ -14,6 +14,7 @@ import com.google.common.base.Optional;
 import com.google.common.net.HostSpecifier;
 import com.metabroadcast.common.url.QueryStringParameters;
 import com.metabroadcast.common.url.UrlEncoding;
+
 import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,4 +103,10 @@ public class GsonAtlasClient implements AtlasClient {
         
         return client.peopleQuery(baseUri + "/people.json?uri=" +  joiner.join(UrlEncoding.encode(uris)) + apiKeyQueryPart());
     }
+    
+    @Override
+    public PeopleQueryResult people(PeopleQuery query) {
+        return client.peopleQuery(baseUri + "/people.json?" + withApiKey(query.toQueryStringParameters()).toQueryString());
+    }
+    
 }

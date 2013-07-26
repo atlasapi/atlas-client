@@ -18,6 +18,7 @@ import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
 import org.atlasapi.media.entity.simple.Item;
 import org.atlasapi.media.entity.simple.Location;
+import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.Playlist;
 import org.atlasapi.media.entity.simple.ScheduleChannel;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
@@ -151,5 +152,16 @@ public class GsonAtlasClientTest {
         ContentGroupQueryResult result = client.contentGroups();
         assertNotNull(result);
         assertTrue(result.getContentGroups().size() > 0);
+    }
+    
+    @Test
+    public void testShouldGetPeople() {
+        String queryUri = "http://www.bbc.co.uk/people/84371";
+        PeopleQuery query = PeopleQuery.builder()
+                .withUrls(queryUri)
+                .build();
+        PeopleQueryResult people = client.people(query);
+        assertNotNull(people);
+        assertEquals(queryUri, Iterables.getOnlyElement(people.getPeople()).getUri());
     }
 }
