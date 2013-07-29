@@ -40,6 +40,8 @@ public interface AtlasClient {
 
 	PeopleQueryResult people(Iterable<String> uris);
 	
+	PeopleQueryResult people(PeopleQuery query);
+	
 	ContentQueryResult content(ContentQuery query);
     
     ContentGroupQueryResult contentGroup(String id);	

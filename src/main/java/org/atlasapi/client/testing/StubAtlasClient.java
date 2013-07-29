@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.atlasapi.client.AtlasClient;
 import org.atlasapi.client.ContentQuery;
+import org.atlasapi.client.PeopleQuery;
 import org.atlasapi.client.ScheduleQuery;
 import org.atlasapi.client.SearchQuery;
 import org.atlasapi.client.query.AtlasQuery;
@@ -15,6 +16,7 @@ import org.atlasapi.media.entity.simple.Person;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 
 import com.google.common.collect.Maps;
+
 import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 
 public class StubAtlasClient implements AtlasClient {
@@ -67,6 +69,11 @@ public class StubAtlasClient implements AtlasClient {
             result.add((Person) contentMap.get(uri));
         }
         return result;
+    }
+
+    @Override
+    public PeopleQueryResult people(PeopleQuery query) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
