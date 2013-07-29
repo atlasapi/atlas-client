@@ -9,6 +9,8 @@ import static org.junit.Assert.assertTrue;
 import org.atlasapi.client.ContentQuery.ContentQueryBuilder;
 import org.atlasapi.media.entity.Channel;
 import org.atlasapi.media.entity.Publisher;
+import org.atlasapi.media.entity.simple.ContentGroup;
+import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 import org.atlasapi.media.entity.simple.ContentIdentifier;
 import org.atlasapi.media.entity.simple.ContentIdentifier.EpisodeIdentifier;
 import org.atlasapi.media.entity.simple.ContentIdentifier.SeriesIdentifier;
@@ -19,8 +21,8 @@ import org.atlasapi.media.entity.simple.Location;
 import org.atlasapi.media.entity.simple.Playlist;
 import org.atlasapi.media.entity.simple.ScheduleChannel;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
+import org.atlasapi.output.Annotation;
 import org.hamcrest.Matchers;
-import org.hamcrest.core.Is;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.junit.Test;
@@ -29,9 +31,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.metabroadcast.common.query.Selection;
 import com.metabroadcast.common.time.DateTimeZones;
-import org.atlasapi.media.entity.simple.ContentGroup;
-import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
-import org.atlasapi.output.Annotation;
 
 public class GsonAtlasClientTest {
 
