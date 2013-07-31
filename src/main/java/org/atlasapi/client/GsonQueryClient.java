@@ -77,9 +77,9 @@ public class GsonQueryClient implements StringQueryClient {
             if (NOT_FOUND == e.getStatusCode()) {
                 return new ContentQueryResult();
             }
-            throw new RuntimeException(e);
+            throw new RuntimeException("Problem with content query " + queryUri, e);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Problem with content query " + queryUri, e);
         }
     }
     
@@ -91,9 +91,9 @@ public class GsonQueryClient implements StringQueryClient {
             if (NOT_FOUND == e.getStatusCode()) {
                 return new ContentGroupQueryResult();
             }
-            throw new RuntimeException(e);
+            throw new RuntimeException("Problem with content query " + queryUri, e);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Problem with content query " + queryUri, e);
         }
     }
     
@@ -105,9 +105,9 @@ public class GsonQueryClient implements StringQueryClient {
             if (NOT_FOUND == e.getStatusCode()) {
                 return new ScheduleQueryResult();
             }
-            throw new RuntimeException(e);
+            throw new RuntimeException("Problem with schedule query " + queryUri, e);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Problem with schedule query " + queryUri, e);
         }
     }
     
@@ -119,9 +119,9 @@ public class GsonQueryClient implements StringQueryClient {
             if (NOT_FOUND == e.getStatusCode()) {
                 return new PeopleQueryResult();
             }
-            throw new RuntimeException(e);
+            throw new RuntimeException("Problem with people query " + queryUri, e);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Problem with people query " + queryUri, e);
         }
     }
     
@@ -136,7 +136,7 @@ public class GsonQueryClient implements StringQueryClient {
                 }
             }));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Problem with topic query " + queryUri, e);
         }
     }
 
@@ -164,7 +164,7 @@ public class GsonQueryClient implements StringQueryClient {
                 }
             }));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Problem with channel query " + queryUri, e);
         }
     }
 
@@ -179,7 +179,7 @@ public class GsonQueryClient implements StringQueryClient {
                 }
             }));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Problem with channel group query " + queryUri, e);
         }
     }
     
