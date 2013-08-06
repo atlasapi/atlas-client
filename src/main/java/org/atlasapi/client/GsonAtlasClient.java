@@ -51,11 +51,13 @@ public class GsonAtlasClient implements AtlasClient {
     }
     
     @Override
+    @Deprecated
     public ContentGroupQueryResult contentGroup(String id) {
         return client.contentGroupQuery(baseUri + "/content_groups/" + id + ".json?" + apiKeyQueryPart());
     }
     
     @Override
+    @Deprecated
     public ContentGroupQueryResult contentGroups() {
         return client.contentGroupQuery(baseUri + "/content_groups.json?" +  apiKeyQueryPart());
     }
