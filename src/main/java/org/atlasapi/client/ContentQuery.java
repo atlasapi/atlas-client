@@ -69,19 +69,23 @@ public class ContentQuery {
             ContentQuery other = (ContentQuery) obj;
             return Objects.equal(this.uris, other.uris) 
                     && Objects.equal(this.ids, other.ids)
-                    && Objects.equal(this.annotations, other.annotations);
+                    && Objects.equal(this.annotations, other.annotations)
+                    && Objects.equal(this.selection, other.selection);
         }
         return false;
     }
     
     @Override
     public int hashCode() {
-        return Objects.hashCode(uris, ids, annotations);
+        return Objects.hashCode(uris, ids, annotations, selection);
     }
     
     @Override
     public String toString() {
-        return Objects.toStringHelper(ContentQuery.class).add("uris", uris).add("annotations", annotations).toString();
+        return Objects.toStringHelper(ContentQuery.class)
+                .add("uris", uris)
+                .add("annotations", annotations)
+                .add("selection", selection).toString();
     }
     
     public static class ContentQueryBuilder {
