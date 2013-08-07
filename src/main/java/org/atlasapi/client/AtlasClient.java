@@ -44,7 +44,9 @@ public interface AtlasClient {
 	
 	ContentQueryResult content(ContentQuery query);
     
+	@Deprecated
     ContentGroupQueryResult contentGroup(String id);	
     
+	@Deprecated
     ContentGroupQueryResult contentGroups();	
 }
