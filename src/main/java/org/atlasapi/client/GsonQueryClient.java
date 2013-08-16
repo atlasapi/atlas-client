@@ -1,5 +1,6 @@
 package org.atlasapi.client;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
@@ -7,6 +8,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.atlasapi.media.entity.simple.Broadcast;
 import org.atlasapi.media.entity.simple.ChannelGroupQueryResult;
 import org.atlasapi.media.entity.simple.ChannelQueryResult;
 import org.atlasapi.media.entity.simple.ContentIdentifier;
@@ -32,6 +34,11 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapter;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import com.metabroadcast.common.http.HttpException;
 import com.metabroadcast.common.http.HttpResponsePrologue;
 import com.metabroadcast.common.http.HttpResponseTransformer;
@@ -55,6 +62,7 @@ public class GsonQueryClient implements StringQueryClient {
         .registerTypeAdapter(ContentIdentifier.class, new ContentIdentifierDeserializer())
         .registerTypeAdapter(Country.class, new CountryDeserializer())
         .registerTypeAdapter(DateTime.class, new DateTimeDeserializer())
+        .registerTypeAdapterFactory(new BroadcastFondlingTypeAdapterFactory())
         .create();
     
     private static final String USER_AGENT = "Mozilla/5.0 (compatible; atlas-java-client/1.0; +http://atlasapi.org)";
@@ -167,6 +175,37 @@ public class GsonQueryClient implements StringQueryClient {
         }
     }
     
+    private static final class BroadcastFondlingTypeAdapterFactory implements TypeAdapterFactory {
+
+        @Override
+        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+            if (!type.getRawType().equals(Broadcast.class)) {
+                return null;
+            }
+            final TypeAdapter<T> delegate = gson.getDelegateAdapter(this, type);
+            return new TypeAdapter<T>() {
+
+                @Override
+                public void write(JsonWriter out, T value) throws IOException {
+                    delegate.write(out, value);
+                }
+
+                @Override
+                public T read(JsonReader in) throws IOException {
+                    T read = delegate.read(in);
+                    if (read instanceof Broadcast) {
+                        Broadcast broadcast = (Broadcast) read;
+                        if (broadcast.getChannel() != null && broadcast.getBroadcastOn() != null) {
+                            broadcast.getChannel().setUri(broadcast.getBroadcastOn());
+                        }
+                    }
+                    return read;
+                }
+                
+            };
+        }
+    }
+
     public static final class DateTimeDeserializer implements JsonDeserializer<DateTime> {
         
         private static final DateTimeFormatter formatter
