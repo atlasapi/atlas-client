@@ -2,10 +2,13 @@ package org.atlasapi.client;
 
 import java.util.Set;
 
+import org.atlasapi.output.Annotation;
+
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.metabroadcast.common.query.Selection;
@@ -17,16 +20,20 @@ public class ChannelQuery {
 
     private static final String PLATFORMS_PARAMETER = "platforms";
     private static final String REGIONS_PARAMETER = "regions";
+    private static final String ANNOTATIONS_PARAMETER = "annotations";
 
     private final Set<String> platforms;
     private final Set<String> regions;
+    private final Set<Annotation> annotations;
+    
     private final Optional<Selection> selection;
 
     private ChannelQuery(Iterable<String> platforms,
-            Iterable<String> regions, Optional<Selection> selection) {
+            Iterable<String> regions, Optional<Selection> selection, Set<Annotation> annotations) {
         this.platforms = ImmutableSet.copyOf(platforms);
         this.regions = ImmutableSet.copyOf(regions);
         this.selection = selection;
+        this.annotations = ImmutableSortedSet.copyOf(annotations);
     }
 
     public static ChannelQueryBuilder builder() {
@@ -44,8 +51,11 @@ public class ChannelQuery {
         }
 
         if (selection.isPresent()) {
-            parameters.add(Selection.LIMIT_REQUEST_PARAM, "" + selection.get().getLimit());
-            parameters.add(Selection.START_INDEX_REQUEST_PARAM, "" + selection.get().getOffset());
+            parameters.addAll(selection.get().asQueryStringParameters());
+        }
+        
+        if (!annotations.isEmpty()) {
+            parameters.add(ANNOTATIONS_PARAMETER, JOINER.join(Iterables.transform(annotations, Annotation.TO_KEY)));
         }
 
         return parameters;
@@ -56,6 +66,8 @@ public class ChannelQuery {
         return Objects.toStringHelper(ChannelQuery.class)
                 .add(PLATFORMS_PARAMETER, platforms)
                 .add(REGIONS_PARAMETER, regions)
+                .add(ANNOTATIONS_PARAMETER, annotations)
+                .add("selection", selection)
                 .toString();
     }
     
@@ -68,6 +80,7 @@ public class ChannelQuery {
             ChannelQuery other = (ChannelQuery) obj;
             return Objects.equal(this.platforms, other.platforms)
                     && Objects.equal(this.regions, other.regions)
+                    && Objects.equal(this.annotations, other.annotations)
                     && Objects.equal(this.selection, other.selection);
         }
         return false;
@@ -79,9 +92,11 @@ public class ChannelQuery {
     }
 
     public static class ChannelQueryBuilder {
-        Set<String> platforms = Sets.newHashSet();
-        Set<String> regions = Sets.newHashSet();
-        Optional<Selection> selection = Optional.absent();
+        
+        private Set<String> platforms = Sets.newHashSet();
+        private Set<String> regions = Sets.newHashSet();
+        private ImmutableSortedSet<Annotation> annotations = ImmutableSortedSet.of();
+        private Optional<Selection> selection = Optional.absent();
 
         public ChannelQueryBuilder withPlatforms(Iterable<String> platforms) {
             Iterables.addAll(this.platforms, platforms);
@@ -105,9 +120,18 @@ public class ChannelQuery {
             this.selection = Optional.fromNullable(selection);
             return this;
         }
+        
+        public ChannelQueryBuilder withAnnotations(Annotation...annotations) {
+            return withAnnotations(ImmutableSortedSet.copyOf(annotations));
+        }
+        
+        public ChannelQueryBuilder withAnnotations(Iterable<Annotation> annotations) {
+            this.annotations = ImmutableSortedSet.copyOf(annotations);
+            return this;
+        }
 
         public ChannelQuery build() {
-            return new ChannelQuery(platforms, regions, selection);
+            return new ChannelQuery(platforms, regions, selection, annotations);
         }
     }
 }
