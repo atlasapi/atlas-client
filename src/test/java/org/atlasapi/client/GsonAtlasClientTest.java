@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import org.atlasapi.client.ContentQuery.ContentQueryBuilder;
 import org.atlasapi.media.entity.Channel;
 import org.atlasapi.media.entity.Publisher;
+import org.atlasapi.media.entity.simple.Broadcast;
 import org.atlasapi.media.entity.simple.ContentGroup;
 import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 import org.atlasapi.media.entity.simple.ContentIdentifier;
@@ -57,6 +58,31 @@ public class GsonAtlasClientTest {
         }
     }
 
+    @Test
+    public void shouldSetChannelUriOnChannelsOnBroadcastsOnItems() {
+        ContentQuery query = new ContentQueryBuilder()
+            .withAnnotations(Annotation.BROADCASTS)
+            .withUrls("http://www.bbc.co.uk/programmes/b038lfjs")
+            .build();
+        ContentQueryResult content = client.content(query);
+        assertFalse(content.getContents().isEmpty());
+
+        Description desc = Iterables.getOnlyElement(content.getContents());
+        assertNotNull(desc);
+
+        assertEquals("http://www.bbc.co.uk/programmes/b038lfjs", desc.getUri());
+
+        Item item = (Item) desc;
+        assertFalse(item.getBroadcasts().isEmpty());
+
+        for (Broadcast broadcast : item.getBroadcasts()) {
+            org.atlasapi.media.entity.simple.Channel channel = broadcast.getChannel();
+            assertNotNull(channel);
+            assertEquals(broadcast.getBroadcastOn(), channel.getUri());
+        }
+    }
+
+    
     @Test
     public void shouldDeserializeSeries() {
         ContentQuery query = new ContentQueryBuilder()
