@@ -17,6 +17,7 @@ import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
 import org.atlasapi.media.entity.simple.Item;
 import org.atlasapi.media.entity.simple.PeopleQueryResult;
+import org.atlasapi.media.entity.simple.Person;
 import org.atlasapi.media.entity.simple.Playlist;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 import org.atlasapi.media.entity.simple.Topic;
@@ -190,7 +191,19 @@ public class GsonQueryClient implements StringQueryClient {
             throw new RuntimeException("Problem with channel group query " + queryUri, e);
         }
     }
-    
+
+    public void postTopic(String queryString, Person person) {
+        try {
+            StringPayload data = new StringPayload(gson.toJson(person));
+            HttpResponse response = httpClient.post(queryString, data);
+            if (response.statusCode() >= 400) {
+                throw new RuntimeException(String.format("POST %s %s: %s %s", person.getUri(), person.getPublisher(), response.statusCode(), response.statusLine()));
+            }
+        } catch (HttpException e) {
+            throw new RuntimeException(String.format("%s %s %s", queryString, person.getUri(), person.getPublisher()), e);
+        }
+    }
+
     private static final class BroadcastFondlingTypeAdapterFactory implements TypeAdapterFactory {
 
         @Override
@@ -314,4 +327,5 @@ public class GsonQueryClient implements StringQueryClient {
             return Countries.fromCode(json.getAsJsonObject().get("code").getAsString());
         }
     }
+
 }

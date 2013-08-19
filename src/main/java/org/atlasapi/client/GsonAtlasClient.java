@@ -3,23 +3,24 @@ package org.atlasapi.client;
 import java.util.List;
 
 import org.atlasapi.client.query.AtlasQuery;
+import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
 import org.atlasapi.media.entity.simple.DiscoverQueryResult;
 import org.atlasapi.media.entity.simple.PeopleQueryResult;
+import org.atlasapi.media.entity.simple.Person;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.net.HostSpecifier;
 import com.metabroadcast.common.url.QueryStringParameters;
 import com.metabroadcast.common.url.UrlEncoding;
+import com.metabroadcast.common.url.Urls;
 
-import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public class GsonAtlasClient implements AtlasClient {
+public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     
     private final QueryStringBuilder queryStringBuilder = new QueryStringBuilder();
     private final GsonQueryClient client = new GsonQueryClient();
@@ -109,6 +110,17 @@ public class GsonAtlasClient implements AtlasClient {
     @Override
     public PeopleQueryResult people(PeopleQuery query) {
         return client.peopleQuery(baseUri + "/people.json?" + withApiKey(query.toQueryStringParameters()).toQueryString());
+    }
+    
+    @Override
+    public void writePerson(Person person) {
+        QueryStringParameters queryParams = new QueryStringParameters();
+        if (apiKey.isPresent()) {
+            queryParams.add("apiKey", apiKey.get());
+        }
+
+        String queryString = Urls.appendParameters(baseUri + "/people.json?", queryParams);
+        client.postTopic(queryString, person);
     }
     
 }
