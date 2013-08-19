@@ -11,11 +11,13 @@ import java.util.concurrent.TimeUnit;
 import org.atlasapi.media.entity.simple.Broadcast;
 import org.atlasapi.media.entity.simple.ChannelGroupQueryResult;
 import org.atlasapi.media.entity.simple.ChannelQueryResult;
+import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 import org.atlasapi.media.entity.simple.ContentIdentifier;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
 import org.atlasapi.media.entity.simple.Item;
 import org.atlasapi.media.entity.simple.PeopleQueryResult;
+import org.atlasapi.media.entity.simple.Person;
 import org.atlasapi.media.entity.simple.Playlist;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 import org.atlasapi.media.entity.simple.TopicQueryResult;
@@ -40,16 +42,16 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.metabroadcast.common.http.HttpException;
+import com.metabroadcast.common.http.HttpResponse;
 import com.metabroadcast.common.http.HttpResponsePrologue;
 import com.metabroadcast.common.http.HttpResponseTransformer;
 import com.metabroadcast.common.http.HttpStatusCodeException;
 import com.metabroadcast.common.http.SimpleHttpClient;
 import com.metabroadcast.common.http.SimpleHttpClientBuilder;
 import com.metabroadcast.common.http.SimpleHttpRequest;
+import com.metabroadcast.common.http.StringPayload;
 import com.metabroadcast.common.intl.Countries;
 import com.metabroadcast.common.intl.Country;
-
-import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 
 public class GsonQueryClient implements StringQueryClient {
     
@@ -174,7 +176,19 @@ public class GsonQueryClient implements StringQueryClient {
             throw new RuntimeException("Problem with channel group query " + queryUri, e);
         }
     }
-    
+
+    public void postPerson(String queryString, Person person) {
+        try {
+            StringPayload data = new StringPayload(gson.toJson(person));
+            HttpResponse response = httpClient.post(queryString, data);
+            if (response.statusCode() >= 400) {
+                throw new RuntimeException(String.format("POST %s %s: %s %s", person.getUri(), person.getPublisher().getKey(), response.statusCode(), response.statusLine()));
+            }
+        } catch (HttpException e) {
+            throw new RuntimeException(String.format("%s %s %s", queryString, person.getUri(), person.getPublisher().getKey()), e);
+        }
+    }
+
     private static final class BroadcastFondlingTypeAdapterFactory implements TypeAdapterFactory {
 
         @Override
@@ -298,4 +312,5 @@ public class GsonQueryClient implements StringQueryClient {
             return Countries.fromCode(json.getAsJsonObject().get("code").getAsString());
         }
     }
+
 }
