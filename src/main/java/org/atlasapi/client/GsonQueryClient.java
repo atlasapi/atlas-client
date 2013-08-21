@@ -192,15 +192,15 @@ public class GsonQueryClient implements StringQueryClient {
         }
     }
 
-    public void postTopic(String queryString, Person person) {
+    public void postPerson(String queryString, Person person) {
         try {
             StringPayload data = new StringPayload(gson.toJson(person));
             HttpResponse response = httpClient.post(queryString, data);
             if (response.statusCode() >= 400) {
-                throw new RuntimeException(String.format("POST %s %s: %s %s", person.getUri(), person.getPublisher(), response.statusCode(), response.statusLine()));
+                throw new RuntimeException(String.format("POST %s %s: %s %s", person.getUri(), person.getPublisher().getKey(), response.statusCode(), response.statusLine()));
             }
         } catch (HttpException e) {
-            throw new RuntimeException(String.format("%s %s %s", queryString, person.getUri(), person.getPublisher()), e);
+            throw new RuntimeException(String.format("%s %s %s", queryString, person.getUri(), person.getPublisher().getKey()), e);
         }
     }
 
