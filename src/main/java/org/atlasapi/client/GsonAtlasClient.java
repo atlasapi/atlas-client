@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.atlasapi.client.query.AtlasQuery;
 import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
+import org.atlasapi.media.entity.Publisher;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
 import org.atlasapi.media.entity.simple.DiscoverQueryResult;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
+import com.google.common.collect.Iterables;
 import com.google.common.net.HostSpecifier;
 import com.metabroadcast.common.url.QueryStringParameters;
 import com.metabroadcast.common.url.UrlEncoding;
