@@ -14,6 +14,7 @@ import org.atlasapi.media.entity.simple.ChannelQueryResult;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
+import org.atlasapi.media.entity.simple.Topic;
 import org.atlasapi.media.entity.simple.TopicQueryResult;
 
 import com.google.common.base.Charsets;
@@ -107,5 +108,10 @@ class JaxbStringQueryClient implements StringQueryClient {
     @Override
     public ChannelGroupQueryResult channelGroupQuery(String queryUri) {
         return (ChannelGroupQueryResult) queryInternal(queryUri);
+    }
+
+    @Override
+    public void postTopic(String queryUri, Topic topic) {
+        throw new UnsupportedOperationException("Topic POSTing not currently supported via XML");
     }
 }

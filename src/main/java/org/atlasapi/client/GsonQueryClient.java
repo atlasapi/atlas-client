@@ -20,6 +20,7 @@ import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.Person;
 import org.atlasapi.media.entity.simple.Playlist;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
+import org.atlasapi.media.entity.simple.Topic;
 import org.atlasapi.media.entity.simple.TopicQueryResult;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
@@ -46,6 +47,7 @@ import com.metabroadcast.common.http.HttpResponse;
 import com.metabroadcast.common.http.HttpResponsePrologue;
 import com.metabroadcast.common.http.HttpResponseTransformer;
 import com.metabroadcast.common.http.HttpStatusCodeException;
+import com.metabroadcast.common.http.Payload;
 import com.metabroadcast.common.http.SimpleHttpClient;
 import com.metabroadcast.common.http.SimpleHttpClientBuilder;
 import com.metabroadcast.common.http.SimpleHttpRequest;
@@ -144,6 +146,19 @@ public class GsonQueryClient implements StringQueryClient {
             }));
         } catch (Exception e) {
             throw new RuntimeException("Problem with topic query " + queryUri, e);
+        }
+    }
+
+    @Override
+    public void postTopic(String queryUri, Topic topic) {
+        try {
+            Payload topicPayload = new StringPayload(gson.toJson(topic, Topic.class));
+            HttpResponse response = httpClient.post(queryUri, topicPayload);
+            if (response.statusCode() >= 400) {
+                throw new RuntimeException("Error POSTing topic " + topic.getTitle() + " " + topic.getNamespace() + " " + topic.getValue() + " code: " + response.statusCode() + ", message: " + response.statusLine());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
