@@ -7,4 +7,6 @@ public interface AtlasWriteClient {
     
     void writePerson(Person person);
     
+    void updatePerson(Person person);
+    
 }
