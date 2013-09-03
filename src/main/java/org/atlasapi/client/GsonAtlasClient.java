@@ -120,13 +120,22 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     public void writePerson(Person person) {
         checkNotNull(person.getUri(), "Cannot write Person without URI");
         checkNotNull(person.getPublisher(), "Cannot write Person without Publisher");
-        QueryStringParameters queryParams = new QueryStringParameters();
-        if (apiKey.isPresent()) {
-            queryParams.add("apiKey", apiKey.get());
-        }
+        client.postPerson(personResourceUri(), person);
+    }
+    
+    @Override
+    public void updatePerson(Person person) {
+        checkNotNull(person.getUri(), "Cannot update Person without URI");
+        checkNotNull(person.getPublisher(), "Cannot update Person without Publisher");
+        client.putPerson(personResourceUri(), person);
+    }
 
-        String queryString = Urls.appendParameters(baseUri + "/people.json?", queryParams);
-        client.postPerson(queryString, person);
+    private String personResourceUri() {
+        String queryString = baseUri + "/people.json?";
+        if (apiKey.isPresent()) {
+            queryString = Urls.appendParameters(queryString, "apiKey", apiKey.get());
+        }
+        return queryString;
     }
     
 }
