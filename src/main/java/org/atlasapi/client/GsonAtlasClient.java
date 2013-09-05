@@ -1,5 +1,7 @@
 package org.atlasapi.client;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.List;
 
 import org.atlasapi.client.query.AtlasQuery;
@@ -114,13 +116,24 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     
     @Override
     public void writePerson(Person person) {
-        QueryStringParameters queryParams = new QueryStringParameters();
-        if (apiKey.isPresent()) {
-            queryParams.add("apiKey", apiKey.get());
-        }
+        checkNotNull(person.getUri(), "Cannot write Person without URI");
+        checkNotNull(person.getPublisher(), "Cannot write Person without Publisher");
+        client.postPerson(personResourceUri(), person);
+    }
+    
+    @Override
+    public void updatePerson(Person person) {
+        checkNotNull(person.getUri(), "Cannot update Person without URI");
+        checkNotNull(person.getPublisher(), "Cannot update Person without Publisher");
+        client.putPerson(personResourceUri(), person);
+    }
 
-        String queryString = Urls.appendParameters(baseUri + "/people.json?", queryParams);
-        client.postTopic(queryString, person);
+    private String personResourceUri() {
+        String queryString = baseUri + "/people.json?";
+        if (apiKey.isPresent()) {
+            queryString = Urls.appendParameters(queryString, "apiKey", apiKey.get());
+        }
+        return queryString;
     }
     
 }
