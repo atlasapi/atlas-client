@@ -2,6 +2,7 @@ package org.atlasapi.client;
 
 import java.util.Set;
 
+import org.atlasapi.media.entity.Publisher;
 import org.atlasapi.output.Annotation;
 
 import com.google.common.base.Joiner;
@@ -21,16 +22,21 @@ public class PeopleQuery {
     
     private static final String URIS_PARAMETER = "uri";
     private static final String IDS_PARAMETER = "id";
+    private static final String PUBLISHERS_PARAMETER = "publisher";
     private static final String ANNOTATIONS_PARAMETER = "annotations";
     
     private final Set<String> uris;
     private final Set<String> ids;
+    private final Set<Publisher> publishers;
     private final Set<Annotation> annotations;
     private final Optional<Selection> selection;
+
     
-    private PeopleQuery(Iterable<String> uris, Iterable<String> ids, Iterable<Annotation> annotations, Optional<Selection> selection) {
+    private PeopleQuery(Iterable<String> uris, Iterable<String> ids, Iterable<Publisher> publishers, 
+            Iterable<Annotation> annotations, Optional<Selection> selection) {
         this.uris = ImmutableSet.copyOf(uris);
         this.ids = ImmutableSet.copyOf(ids);
+        this.publishers = ImmutableSet.copyOf(publishers);
         this.annotations = ImmutableSet.copyOf(annotations);
         this.selection = selection;
     }
@@ -47,6 +53,9 @@ public class PeopleQuery {
         }
         if (!ids.isEmpty()) {
             parameters.add(IDS_PARAMETER, JOINER.join(ids));
+        }
+        if (!publishers.isEmpty()) {
+            parameters.add(PUBLISHERS_PARAMETER, JOINER.join(publishers));
         }
         if (!annotations.isEmpty()) {
             parameters.add(ANNOTATIONS_PARAMETER, JOINER.join(Iterables.transform(annotations, Annotation.TO_KEY)));
@@ -67,6 +76,7 @@ public class PeopleQuery {
             PeopleQuery other = (PeopleQuery) obj;
             return Objects.equal(this.uris, other.uris) 
                     && Objects.equal(this.ids, other.ids)
+                    && Objects.equal(this.publishers, other.publishers)
                     && Objects.equal(this.annotations, other.annotations);
         }
         return false;
@@ -74,12 +84,16 @@ public class PeopleQuery {
     
     @Override
     public int hashCode() {
-        return Objects.hashCode(uris, ids, annotations);
+        return Objects.hashCode(uris, ids, annotations, publishers);
     }
     
     @Override
     public String toString() {
-        return Objects.toStringHelper(PeopleQuery.class).add("uris", uris).add("annotations", annotations).toString();
+        return Objects.toStringHelper(PeopleQuery.class)
+                    .add("uris", uris)
+                    .add("annotations", annotations)
+                    .add("publishers", publishers)
+                    .toString();
     }
     
     public static class PeopleQueryBuilder {
@@ -88,6 +102,7 @@ public class PeopleQuery {
         ImmutableSortedSet.Builder<Annotation> annotations = ImmutableSortedSet.naturalOrder();
         Set<String> ids = Sets.newHashSet();
         Optional<Selection> selection = Optional.absent();
+        Set<Publisher> publishers = Sets.newHashSet();
         
         public PeopleQueryBuilder withUrls(Iterable<String> urls) {
             Preconditions.checkArgument(this.ids.isEmpty(), "Cannot set urls and ids on a PeopleQuery");
@@ -109,12 +124,22 @@ public class PeopleQuery {
         }
         
         public PeopleQueryBuilder withIds(Iterable<String> ids) {
-            Preconditions.checkArgument(this.urls.isEmpty(), "Cannot set urls and ids on a PeopleQuery");
+            Preconditions.checkArgument(this.urls.isEmpty() && this.publishers.isEmpty(), 
+                    "Can only set one of publishers, ids or urls on a PeopleQuery");
             Iterables.addAll(this.ids, ids);
             return this;
         }
         
+        public PeopleQueryBuilder withPublishers(Iterable<Publisher> publishers) {
+            Preconditions.checkArgument(this.urls.isEmpty() && this.ids.isEmpty(), 
+                    "Can only set one of publishers, ids or urls on a PeopleQuery");
+            Iterables.addAll(this.publishers, publishers);
+            return this;
+        }
+        
         public PeopleQueryBuilder withIds(String... ids) {
+            Preconditions.checkArgument(this.urls.isEmpty() && this.publishers.isEmpty(), 
+                    "Can only set one of publishers, ids or urls on a PeopleQuery");
             return withIds(ImmutableSet.copyOf(ids));
         }
         
@@ -124,7 +149,7 @@ public class PeopleQuery {
         }
 
         public PeopleQuery build() {
-            return new PeopleQuery(urls, ids, annotations.build(), selection);
+            return new PeopleQuery(urls, ids, publishers, annotations.build(), selection);
         }
     }
     
