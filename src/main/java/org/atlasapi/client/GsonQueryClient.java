@@ -325,7 +325,7 @@ public class GsonQueryClient implements StringQueryClient {
             if ("series".equals(type)) {
                 JsonElement seriesElement = jsonObj.get("seriesNumber");
                 Integer seriesNumber = seriesElement != null ? seriesElement.getAsInt() : null;
-                return ContentIdentifier.seriesIdentifierFrom(id, uri, seriesNumber);
+                return ContentIdentifier.seriesIdentifierFrom(uri, id, seriesNumber);
             } else {
                 return ContentIdentifier.identifierFrom(id, uri, type);
             }
