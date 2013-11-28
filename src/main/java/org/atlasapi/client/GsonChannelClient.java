@@ -41,7 +41,7 @@ public class GsonChannelClient implements AtlasChannelClient {
     @Override
     public Optional<ChannelGroup> channelGroup(String channelGroupId) {
         String queryString = apiKey.isPresent() ? Urls.appendParameters(String.format(channelGroupPattern, channelGroupId), "apiKey", apiKey.get()) : String.format(channelGroupPattern, channelGroupId);
-        return Optional.fromNullable(Iterables.getOnlyElement(stringQueryClient.channelGroupQuery(queryString).getChannels(), null));
+        return Optional.fromNullable(Iterables.getOnlyElement(stringQueryClient.channelGroupQuery(queryString).getChannelGroups(), null));
     }
 
     @Override

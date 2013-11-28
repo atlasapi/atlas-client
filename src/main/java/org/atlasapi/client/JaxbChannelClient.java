@@ -52,7 +52,7 @@ public class JaxbChannelClient implements AtlasChannelClient {
 
     @Override
     public Optional<ChannelGroup> channelGroup(String channelGroupId) {
-        return Optional.fromNullable(Iterables.getOnlyElement(queryClient.channelGroupQuery(baseUri + channelGroupPattern + channelGroupId + ".xml").getChannels(), null));   
+        return Optional.fromNullable(Iterables.getOnlyElement(queryClient.channelGroupQuery(baseUri + channelGroupPattern + channelGroupId + ".xml").getChannelGroups(), null));   
     }
 
     @Override
