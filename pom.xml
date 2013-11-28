@@ -11,10 +11,15 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.0.2</version>
+                <version>3.1</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                    <fork>true</fork>
+                    <compilerArgs>
+                        <arg>-J-Xss1M</arg>
+                        <arg>-Xlint:-deprecation</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
         </plugins>
@@ -69,7 +74,13 @@
             <id>metabroadcast-mvn</id>
             <name>Metabroadcast</name>
             <url>http://mvn.metabroadcast.com/all</url>
-            <layout>default</layout>
+            <layout>default</layout> 
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
         </repository>
     </repositories>
 
