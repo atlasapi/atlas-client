@@ -99,6 +99,10 @@ public final class ScheduleQuery {
         }       
 
         public ScheduleQueryBuilder withChannelIds(String... channelIds) {
+            return withChannelIds(ImmutableList.copyOf(channelIds));
+        }
+        
+        public ScheduleQueryBuilder withChannelIds(Iterable<String> channelIds) {
             this.channelIds.addAll(ImmutableList.copyOf(channelIds));
             return this;
         }
