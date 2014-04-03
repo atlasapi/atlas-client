@@ -57,17 +57,28 @@ import com.metabroadcast.common.intl.Country;
 
 public class GsonQueryClient implements StringQueryClient {
     
-    private final Gson gson = new GsonBuilder()
-        .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-        .registerTypeAdapter(Date.class, new DateDeserializer())
-        .registerTypeAdapter(Long.class, new LongDeserializer())
-        .registerTypeAdapter(Boolean.class, new BooleanDeserializer())
-        .registerTypeAdapter(Description.class, new DescriptionDeserializer())
-        .registerTypeAdapter(ContentIdentifier.class, new ContentIdentifierDeserializer())
-        .registerTypeAdapter(Country.class, new CountryDeserializer())
-        .registerTypeAdapter(DateTime.class, new DateTimeDeserializer())
-        .registerTypeAdapterFactory(new BroadcastFondlingTypeAdapterFactory())
-        .create();
+    // We have suspiscions that Gson initialisation is not thread-safe. Making this a 
+    // ThreadLocal for now to see if the intermittent, difficult to reproduce, problem
+    // goes away. See https://groups.google.com/d/msg/google-gson/sWcCXP_oaIQ/1BGTeRtCW2AJ
+    private static final ThreadLocal<Gson> gson = new ThreadLocal<Gson>() {
+        
+        @Override
+        protected Gson initialValue() {
+            return new GsonBuilder()
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .registerTypeAdapter(Date.class, new DateDeserializer())
+                .registerTypeAdapter(Long.class, new LongDeserializer())
+                .registerTypeAdapter(Boolean.class, new BooleanDeserializer())
+                .registerTypeAdapter(Description.class, new DescriptionDeserializer())
+                .registerTypeAdapter(ContentIdentifier.class, new ContentIdentifierDeserializer())
+                .registerTypeAdapter(Country.class, new CountryDeserializer())
+                .registerTypeAdapter(DateTime.class, new DateTimeDeserializer())
+                .registerTypeAdapterFactory(new BroadcastFondlingTypeAdapterFactory())
+                .create();
+        }
+    };
+    
+   
     
     private static final String USER_AGENT = "Mozilla/5.0 (compatible; atlas-java-client/1.0; +http://atlasapi.org)";
     private static final int NOT_FOUND = 404;
@@ -81,7 +92,7 @@ public class GsonQueryClient implements StringQueryClient {
     @Override
     public ContentQueryResult contentQuery(String queryUri) {
         try {
-            return gson.fromJson(httpClient.getContentsOf(queryUri), ContentQueryResult.class);
+            return gson.get().fromJson(httpClient.getContentsOf(queryUri), ContentQueryResult.class);
         } catch (HttpStatusCodeException e) {
             if (NOT_FOUND == e.getStatusCode()) {
                 return new ContentQueryResult();
@@ -95,7 +106,7 @@ public class GsonQueryClient implements StringQueryClient {
     @Override
     public ContentGroupQueryResult contentGroupQuery(String queryUri) {
         try {
-            return gson.fromJson(httpClient.getContentsOf(queryUri), ContentGroupQueryResult.class);
+            return gson.get().fromJson(httpClient.getContentsOf(queryUri), ContentGroupQueryResult.class);
         } catch (HttpStatusCodeException e) {
             if (NOT_FOUND == e.getStatusCode()) {
                 return new ContentGroupQueryResult();
@@ -109,7 +120,7 @@ public class GsonQueryClient implements StringQueryClient {
     @Override
     public ScheduleQueryResult scheduleQuery(String queryUri) {
         try {
-            return gson.fromJson(httpClient.getContentsOf(queryUri), ScheduleQueryResult.class);
+            return gson.get().fromJson(httpClient.getContentsOf(queryUri), ScheduleQueryResult.class);
         } catch (HttpStatusCodeException e) {
             if (NOT_FOUND == e.getStatusCode()) {
                 return new ScheduleQueryResult();
@@ -123,7 +134,7 @@ public class GsonQueryClient implements StringQueryClient {
     @Override
     public PeopleQueryResult peopleQuery(String queryUri) {
         try {
-            return gson.fromJson(httpClient.getContentsOf(queryUri), PeopleQueryResult.class);
+            return gson.get().fromJson(httpClient.getContentsOf(queryUri), PeopleQueryResult.class);
         } catch (HttpStatusCodeException e) {
             if (NOT_FOUND == e.getStatusCode()) {
                 return new PeopleQueryResult();
@@ -141,7 +152,7 @@ public class GsonQueryClient implements StringQueryClient {
 
                 @Override
                 public TopicQueryResult transform(HttpResponsePrologue prologue, InputStream body) throws HttpException, Exception {
-                    return gson.fromJson(new InputStreamReader(body, Charsets.UTF_8), TopicQueryResult.class);
+                    return gson.get().fromJson(new InputStreamReader(body, Charsets.UTF_8), TopicQueryResult.class);
                 }
             }));
         } catch (Exception e) {
@@ -152,7 +163,7 @@ public class GsonQueryClient implements StringQueryClient {
     @Override
     public void postTopic(String queryUri, Topic topic) {
         try {
-            Payload topicPayload = new StringPayload(gson.toJson(topic, Topic.class));
+            Payload topicPayload = new StringPayload(gson.get().toJson(topic, Topic.class));
             HttpResponse response = httpClient.post(queryUri, topicPayload);
             if (response.statusCode() >= 400) {
                 throw new RuntimeException("Error POSTing topic " + topic.getTitle() + " " + topic.getNamespace() + " " + topic.getValue() + " code: " + response.statusCode() + ", message: " + response.statusLine());
@@ -169,7 +180,7 @@ public class GsonQueryClient implements StringQueryClient {
 
                 @Override
                 public ChannelQueryResult transform(HttpResponsePrologue prologue, InputStream body) throws HttpException, Exception {
-                    return gson.fromJson(new InputStreamReader(body, Charsets.UTF_8), ChannelQueryResult.class);
+                    return gson.get().fromJson(new InputStreamReader(body, Charsets.UTF_8), ChannelQueryResult.class);
                 }
             }));
         } catch (Exception e) {
@@ -184,7 +195,7 @@ public class GsonQueryClient implements StringQueryClient {
 
                 @Override
                 public ChannelGroupQueryResult transform(HttpResponsePrologue prologue, InputStream body) throws HttpException, Exception {
-                    return gson.fromJson(new InputStreamReader(body, Charsets.UTF_8), ChannelGroupQueryResult.class);
+                    return gson.get().fromJson(new InputStreamReader(body, Charsets.UTF_8), ChannelGroupQueryResult.class);
                 }
             }));
         } catch (Exception e) {
@@ -194,7 +205,7 @@ public class GsonQueryClient implements StringQueryClient {
 
     public void postPerson(String queryString, Person person) {
         try {
-            StringPayload data = new StringPayload(gson.toJson(person));
+            StringPayload data = new StringPayload(gson.get().toJson(person));
             HttpResponse response = httpClient.post(queryString, data);
             if (response.statusCode() >= 400) {
                 throw new RuntimeException(String.format("POST %s %s: %s %s", person.getUri(), person.getPublisher().getKey(), response.statusCode(), response.statusLine()));
@@ -206,7 +217,7 @@ public class GsonQueryClient implements StringQueryClient {
 
     public void putPerson(String queryString, Person person) {
         try {
-            StringPayload data = new StringPayload(gson.toJson(person));
+            StringPayload data = new StringPayload(gson.get().toJson(person));
             HttpResponse response = httpClient.put(queryString, data);
             if (response.statusCode() >= 400) {
                 throw new RuntimeException(String.format("PUT %s %s: %s %s", person.getUri(), person.getPublisher(), response.statusCode(), response.statusLine()));
@@ -325,7 +336,7 @@ public class GsonQueryClient implements StringQueryClient {
             if ("series".equals(type)) {
                 JsonElement seriesElement = jsonObj.get("seriesNumber");
                 Integer seriesNumber = seriesElement != null ? seriesElement.getAsInt() : null;
-                return ContentIdentifier.seriesIdentifierFrom(id, uri, seriesNumber);
+                return ContentIdentifier.seriesIdentifierFrom(uri, id, seriesNumber);
             } else {
                 return ContentIdentifier.identifierFrom(id, uri, type);
             }
