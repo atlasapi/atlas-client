@@ -2,6 +2,7 @@ package org.atlasapi.client;
 
 import java.util.Set;
 
+import org.atlasapi.media.entity.Publisher;
 import org.atlasapi.output.Annotation;
 
 import com.google.common.base.Joiner;
@@ -22,13 +23,25 @@ public class ContentQuery {
     private static final String URIS_PARAMETER = "uri";
     private static final String IDS_PARAMETER = "id";
     private static final String ANNOTATIONS_PARAMETER = "annotations";
+    private static final String PUBLISHER_PARAMETER = "publisher";
     
     private final Set<String> uris;
     private final Set<String> ids;
     private final Set<Annotation> annotations;
     private final Optional<Selection> selection;
+    private final Optional<Publisher> publisher;
     
-    private ContentQuery(Iterable<String> uris, Iterable<String> ids, Iterable<Annotation> annotations, Optional<Selection> selection) {
+    private ContentQuery(Publisher publisher, Iterable<Annotation> annotations,  Optional<Selection> selection) {
+        this.publisher = Optional.of(publisher);
+        this.uris = ImmutableSet.of();
+        this.ids = ImmutableSet.of();
+        this.annotations = ImmutableSet.copyOf(annotations);
+        this.selection = selection;
+    }
+    
+    private ContentQuery(Iterable<String> uris, Iterable<String> ids, Iterable<Annotation> annotations, 
+            Optional<Selection> selection) {
+        this.publisher = Optional.absent();
         this.uris = ImmutableSet.copyOf(uris);
         this.ids = ImmutableSet.copyOf(ids);
         this.annotations = ImmutableSet.copyOf(annotations);
@@ -50,6 +63,9 @@ public class ContentQuery {
         }
         if (!annotations.isEmpty()) {
             parameters.add(ANNOTATIONS_PARAMETER, JOINER.join(Iterables.transform(annotations, Annotation.TO_KEY)));
+        }
+        if (publisher.isPresent()) {
+            parameters.add(PUBLISHER_PARAMETER, publisher.get().key());
         }
         
         if (selection.isPresent()) {
@@ -94,9 +110,11 @@ public class ContentQuery {
         ImmutableSortedSet.Builder<Annotation> annotations = ImmutableSortedSet.naturalOrder();
         Set<String> ids = Sets.newHashSet();
         Optional<Selection> selection = Optional.absent();
+        Optional<Publisher> publisher = Optional.absent();
         
         public ContentQueryBuilder withUrls(Iterable<String> urls) {
-            Preconditions.checkArgument(this.ids.isEmpty(), "Cannot set urls and ids on a ContentQuery");
+            Preconditions.checkArgument(this.ids.isEmpty() && !this.publisher.isPresent(), 
+                    "Cannot set urls if ids or publisher are set, they're mutually exclusive");
             Iterables.addAll(this.urls, urls);
             return this;
         }
@@ -115,7 +133,8 @@ public class ContentQuery {
         }
         
         public ContentQueryBuilder withIds(Iterable<String> ids) {
-            Preconditions.checkArgument(this.urls.isEmpty(), "Cannot set urls and ids on a ContentQuery");
+            Preconditions.checkArgument(this.urls.isEmpty() && !this.publisher.isPresent(), 
+                    "Cannot set ids if publisher or urls are set, they're mutually exclusive");
             Iterables.addAll(this.ids, ids);
             return this;
         }
@@ -124,12 +143,22 @@ public class ContentQuery {
             return withIds(ImmutableSet.copyOf(ids));
         }
         
+        public ContentQueryBuilder withPublisher(Publisher publisher) {
+            Preconditions.checkArgument(this.urls.isEmpty() && this.ids.isEmpty(),
+                    "Cannot set publisher if urls or ids are set, they're mutually exclusive");
+            this.publisher = Optional.fromNullable(publisher);
+            return this;
+        }
+        
         public ContentQueryBuilder withSelection(Selection selection) {
             this.selection = Optional.fromNullable(selection);
             return this;
         }
 
         public ContentQuery build() {
+            if (publisher.isPresent()) {
+                return new ContentQuery(publisher.get(), annotations.build(), selection);
+            }
             return new ContentQuery(urls, ids, annotations.build(), selection);
         }
     }
