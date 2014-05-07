@@ -1,6 +1,7 @@
 package org.atlasapi.client;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -27,6 +28,8 @@ public final class ScheduleQuery {
 	private final List<String> channels;
 	private final List<String> channelIds;
 	private final Interval interval;
+	private final DateTime start;
+	private final Integer count;
 	private final List<String> publishers;
     private ImmutableSet<Annotation> annotations;
 	
@@ -37,9 +40,13 @@ public final class ScheduleQuery {
 		channels = ImmutableList.copyOf(builder.channels);
 		channelIds = ImmutableList.copyOf(builder.channelIds);
 		
-		checkArgument(builder.start != null, "No start time specified");
-		checkArgument(builder.end != null, "No end time specified");
-		interval = new Interval(builder.start, builder.end);
+		checkArgument( builder.interval != null 
+		                || (builder.start != null && builder.count != null), 
+		              "No schedule period specified");
+		
+		interval = builder.interval;
+		start = builder.start;
+		count = builder.count;
 		
 		publishers = ImmutableList.copyOf(builder.publishers);
 		annotations = builder.annotations;
@@ -53,8 +60,14 @@ public final class ScheduleQuery {
 		if (!channelIds.isEmpty()) {
             params.add("channel_id", CSV.join(channelIds));
         }
-		params.add("from", interval.getStart().toString());
-		params.add("to", interval.getEnd().toString());
+		
+		if (interval != null) {
+		    params.add("from", interval.getStart().toString());
+		    params.add("to", interval.getEnd().toString());
+		} else {
+		    params.add("from", start.toString());
+		    params.add("count", String.valueOf(count));
+		}
 		
 		if (!publishers.isEmpty()) {
 			params.add("publisher", CSV.join(publishers));
@@ -72,8 +85,9 @@ public final class ScheduleQuery {
         private LinkedHashSet<String> publishers = Sets.newLinkedHashSet();
 		private ImmutableSet<Annotation> annotations = ImmutableSet.of();
 		
+		private Interval interval = null;
 		private DateTime start = null;
-		private DateTime end = null;
+        private Integer count = null;
 		
 		private ScheduleQueryBuilder() {}
 
@@ -108,9 +122,16 @@ public final class ScheduleQuery {
         }
 
 		public ScheduleQueryBuilder withOnBetween(Interval interval) {
-			this.start = interval.getStart();
-			this.end = interval.getEnd();
+		    checkState(start == null, "Cannot specify both an interval and number of items");
+			this.interval = interval;
 			return this;
+		}
+		
+		public ScheduleQueryBuilder withStartTimeAndNumberOfItems(DateTime start, int count) {
+		    checkState(interval == null, "Cannot specify both an interval and number of items");
+		    this.start = start;
+		    this.count  = count;
+		    return this;
 		}
 
 		@Deprecated
