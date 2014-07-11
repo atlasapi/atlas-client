@@ -23,7 +23,7 @@ public class GsonChannelClient implements AtlasChannelClient {
         this.apiKey = apiKey;
         this.channelPattern = String.format("http://%s/3.0/channels/%%s.json", atlasHost);
         this.channelsPattern = String.format("http://%s/3.0/channels.json", atlasHost);
-        this.channelGroupPattern = String.format("http://%s/3.0/channel_groups/%%s.json", atlasHost);
+        this.channelGroupPattern = String.format("http://%s/3.0/channel_groups/%%s.json?annotations=channels", atlasHost);
         this.channelGroupsPattern = String.format("http://%s/3.0/channel_groups.json", atlasHost);
         this.stringQueryClient = new GsonQueryClient();
     }
