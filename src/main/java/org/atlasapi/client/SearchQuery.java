@@ -90,7 +90,7 @@ public class SearchQuery {
             params.add("topLevelOnly", topLevelOnly.requireValue().toString());
         }
         if (priorityChannelWeighting.hasValue()) {
-            params.add("priorityChannelWeighting", fractionFormat.format(priorityChannelWeighting.requireValue().toString()));
+            params.add("priorityChannelWeighting", fractionFormat.format(priorityChannelWeighting.requireValue()));
         }
         if (!annotations.isEmpty()) {
             params.add(ANNOTATIONS_PARAMETER, CSV.join(Iterables.transform(annotations, Annotation.TO_KEY)));
