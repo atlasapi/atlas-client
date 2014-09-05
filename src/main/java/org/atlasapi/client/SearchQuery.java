@@ -38,6 +38,7 @@ public class SearchQuery {
     private final Maybe<Boolean> topLevelOnly;
     private final Maybe<Boolean> currentBroadcastsOnly;
     private final Set<Annotation> annotations;
+    private final Maybe<Float> priorityChannelWeighting;
     
     public SearchQuery(SearchQueryBuilder builder) {
         Preconditions.checkNotNull(builder.query, "Search query must not be null");
@@ -52,6 +53,7 @@ public class SearchQuery {
         this.topLevelOnly = builder.topLevelOnly;
         this.currentBroadcastsOnly = builder.currentBroadcastsOnly;
         this.annotations = builder.annotations;
+        this.priorityChannelWeighting = builder.priorityChannelWeighting;
     }
     
     public QueryStringParameters toParams() {
@@ -87,6 +89,9 @@ public class SearchQuery {
         if (topLevelOnly.hasValue()) {
             params.add("topLevelOnly", topLevelOnly.requireValue().toString());
         }
+        if (priorityChannelWeighting.hasValue()) {
+            params.add("priorityChannelWeighting", fractionFormat.format(priorityChannelWeighting.requireValue().toString()));
+        }
         if (!annotations.isEmpty()) {
             params.add(ANNOTATIONS_PARAMETER, CSV.join(Iterables.transform(annotations, Annotation.TO_KEY)));
         }
@@ -106,6 +111,7 @@ public class SearchQuery {
         private Maybe<Boolean> topLevelOnly = Maybe.nothing();
         private Maybe<Boolean> currentBroadcastsOnly = Maybe.nothing();
         private ImmutableSortedSet<Annotation> annotations = ImmutableSortedSet.of();
+        private Maybe<Float> priorityChannelWeighting = Maybe.nothing();
 
         private SearchQueryBuilder() {
         }
@@ -170,6 +176,11 @@ public class SearchQuery {
 
         public SearchQueryBuilder withAnnotations(ImmutableCollection.Builder<Annotation> annotations) {
             return withAnnotations(annotations.build());
+        }
+
+        public SearchQueryBuilder withPriorityChannelWeighting(float priorityChannelWeighting) {
+            this.priorityChannelWeighting  = Maybe.just(priorityChannelWeighting);
+            return this;
         }
         
     }
