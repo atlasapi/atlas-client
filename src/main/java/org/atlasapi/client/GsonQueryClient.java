@@ -28,6 +28,7 @@ import org.joda.time.format.ISODateTimeFormat;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -157,6 +158,19 @@ public class GsonQueryClient implements StringQueryClient {
             }));
         } catch (Exception e) {
             throw new RuntimeException("Problem with topic query " + queryUri, e);
+        }
+    }
+
+    @Override public void postItem(String query, Item item) {
+        try {
+            String json = gson.get().toJson(item);
+            Payload httpBody = new StringPayload(json);
+            HttpResponse resp = httpClient.post(query, httpBody);
+            if (resp.statusCode() != 200) {
+                throw new RuntimeException("Error POSTing item: HTTP " + resp.statusCode() + " received from Atlas");
+            }
+        } catch (HttpException e) {
+            throw Throwables.propagate(e);
         }
     }
 

@@ -21,6 +21,7 @@ import org.atlasapi.media.entity.simple.Item;
 import org.atlasapi.media.entity.simple.Location;
 import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.Playlist;
+import org.atlasapi.media.entity.simple.PublisherDetails;
 import org.atlasapi.media.entity.simple.ScheduleChannel;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 import org.atlasapi.output.Annotation;
@@ -29,8 +30,10 @@ import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.junit.Test;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
+import com.google.common.net.HostSpecifier;
 import com.metabroadcast.common.query.Selection;
 import com.metabroadcast.common.time.DateTimeZones;
 
@@ -189,5 +192,15 @@ public class GsonAtlasClientTest {
         PeopleQueryResult people = client.people(query);
         assertNotNull(people);
         assertEquals(queryUri, Iterables.getOnlyElement(people.getPeople()).getUri());
+    }
+
+    @Test
+    public void testWriteItem() throws Exception {
+        GsonAtlasClient writeClient = new GsonAtlasClient(HostSpecifier.from("atlas.metabroadcast.com"),
+                Optional.fromNullable("8c47545e6d5c4c3c81ba9a818260b7cd"));
+        Item item = new Item("http://metabroadcast.com/atlas-client/test10101");
+        item.setPublisher(new PublisherDetails("scrubbables.bbc.co.uk"));
+        item.setType("item");
+        writeClient.writeItem(item);
     }
 }

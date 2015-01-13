@@ -12,6 +12,7 @@ import javax.xml.bind.Unmarshaller;
 import org.atlasapi.media.entity.simple.ChannelGroupQueryResult;
 import org.atlasapi.media.entity.simple.ChannelQueryResult;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
+import org.atlasapi.media.entity.simple.Item;
 import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 import org.atlasapi.media.entity.simple.Topic;
@@ -26,6 +27,7 @@ import com.metabroadcast.common.http.HttpStatusCode;
 import com.metabroadcast.common.http.SimpleHttpClient;
 import com.metabroadcast.common.http.SimpleHttpClientBuilder;
 import com.metabroadcast.common.http.SimpleHttpRequest;
+
 import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 
 class JaxbStringQueryClient implements StringQueryClient {
@@ -113,5 +115,10 @@ class JaxbStringQueryClient implements StringQueryClient {
     @Override
     public void postTopic(String queryUri, Topic topic) {
         throw new UnsupportedOperationException("Topic POSTing not currently supported via XML");
+    }
+    
+    @Override
+    public void postItem(String query, Item item) {
+    	throw new UnsupportedOperationException("Item POST not currently supported via XML");
     }
 }
