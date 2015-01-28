@@ -149,6 +149,6 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
 
     private String writeItemUri() {
         checkNotNull(apiKey.get(), "An API key must be specified for content write queries");
-        return baseUri.concat("/content.json?").concat(apiKeyQueryPart()).intern();
+        return new StringBuilder(baseUri).append("/content.json?").append(apiKeyQueryPart()).toString();
     }
 }
