@@ -38,6 +38,9 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
@@ -284,7 +287,7 @@ public class GsonQueryClient implements StringQueryClient {
         }
     }
 
-    public static class DateDeserializer implements JsonDeserializer<Date> {
+    public static class DateDeserializer implements JsonDeserializer<Date>, JsonSerializer<Date> {
 
         private static final DateTimeFormatter fmt = ISODateTimeFormat.dateTimeNoMillis();
 
@@ -295,6 +298,12 @@ public class GsonQueryClient implements StringQueryClient {
                 return null;
             }
             return fmt.parseDateTime(jsonString).toDate();
+        }
+
+        @Override public JsonElement serialize(Date date, Type type,
+                JsonSerializationContext jsonSerializationContext) {
+            DateTime dt = new DateTime(date);
+            return new JsonPrimitive(dt.toString(fmt));
         }
     }
     
