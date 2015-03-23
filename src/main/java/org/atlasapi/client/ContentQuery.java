@@ -30,10 +30,18 @@ public class ContentQuery {
     private final Set<Annotation> annotations;
     private final Optional<Selection> selection;
     private final Optional<Publisher> publisher;
-    
-    private ContentQuery(Iterable<String> uris, Iterable<String> ids, Optional<Publisher> publisher, Iterable<Annotation> annotations, 
+
+    private ContentQuery(Publisher publisher, Iterable<Annotation> annotations,  Optional<Selection> selection) {
+        this.publisher = Optional.of(publisher);
+        this.uris = ImmutableSet.of();
+        this.ids = ImmutableSet.of();
+        this.annotations = ImmutableSet.copyOf(annotations);
+        this.selection = selection;
+    }
+
+    private ContentQuery(Iterable<String> uris, Iterable<String> ids, Iterable<Annotation> annotations,
             Optional<Selection> selection) {
-        this.publisher = publisher;
+        this.publisher = Optional.absent();
         this.uris = ImmutableSet.copyOf(uris);
         this.ids = ImmutableSet.copyOf(ids);
         this.annotations = ImmutableSet.copyOf(annotations);
@@ -148,7 +156,10 @@ public class ContentQuery {
         }
 
         public ContentQuery build() {
-            return new ContentQuery(urls, ids, publisher, annotations.build(), selection);
+            if (publisher.isPresent()) {
+                return new ContentQuery(publisher.get(), annotations.build(), selection);
+            }
+            return new ContentQuery(urls, ids, annotations.build(), selection);
         }
     }
     

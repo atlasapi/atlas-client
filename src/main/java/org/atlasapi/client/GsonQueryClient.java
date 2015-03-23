@@ -28,6 +28,7 @@ import org.joda.time.format.ISODateTimeFormat;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -37,6 +38,9 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
@@ -160,6 +164,19 @@ public class GsonQueryClient implements StringQueryClient {
         }
     }
 
+    @Override public void postItem(String query, Item item) {
+        try {
+            String json = gson.get().toJson(item);
+            Payload httpBody = new StringPayload(json);
+            HttpResponse resp = httpClient.post(query, httpBody);
+            if (resp.statusCode() != 200) {
+                throw new RuntimeException("Error POSTing item: HTTP " + resp.statusCode() + " received from Atlas");
+            }
+        } catch (HttpException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
     @Override
     public void postTopic(String queryUri, Topic topic) {
         try {
@@ -270,7 +287,7 @@ public class GsonQueryClient implements StringQueryClient {
         }
     }
 
-    public static class DateDeserializer implements JsonDeserializer<Date> {
+    public static class DateDeserializer implements JsonDeserializer<Date>, JsonSerializer<Date> {
 
         private static final DateTimeFormatter fmt = ISODateTimeFormat.dateTimeNoMillis();
 
@@ -281,6 +298,12 @@ public class GsonQueryClient implements StringQueryClient {
                 return null;
             }
             return fmt.parseDateTime(jsonString).toDate();
+        }
+
+        @Override public JsonElement serialize(Date date, Type type,
+                JsonSerializationContext jsonSerializationContext) {
+            DateTime dt = new DateTime(date);
+            return new JsonPrimitive(dt.toString(fmt));
         }
     }
     
