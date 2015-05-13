@@ -28,6 +28,7 @@ import org.atlasapi.output.Annotation;
 import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.base.Optional;
@@ -169,6 +170,7 @@ public class GsonAtlasClientTest {
         }
     }
 
+    @Ignore  // This no longer produces results without an API key
     @Test
     public void testSingleContentGroupQuery() {
         ContentGroupQueryResult result = client.contentGroup("cbbn");
@@ -176,6 +178,7 @@ public class GsonAtlasClientTest {
         assertNotNull(group);
     }
     
+    @Ignore  // This no longer produces results without an API key
     @Test
     public void testManyContentGroupsQuery() {
         ContentGroupQueryResult result = client.contentGroups();
@@ -183,6 +186,7 @@ public class GsonAtlasClientTest {
         assertTrue(result.getContentGroups().size() > 0);
     }
     
+    @Ignore  // This person is no longer present without an API key
     @Test
     public void testShouldGetPeople() {
         String queryUri = "http://www.bbc.co.uk/people/84371";
