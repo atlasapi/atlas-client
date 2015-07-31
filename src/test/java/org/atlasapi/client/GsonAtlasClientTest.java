@@ -155,7 +155,8 @@ public class GsonAtlasClientTest {
         }
     }
     
-    @Test
+    // BBC schedules are no longer available without an API key
+    @Ignore
     public void shouldRetrieveSchedule() {
         DateTime now = new DateTime(DateTimeZones.UTC);
         ScheduleQuery scheduleQuery = ScheduleQuery.builder().withChannels(Channel.BBC_ONE).withPublishers(ImmutableSet.of(Publisher.BBC)).withOnBetween(new Interval(now, now.plusHours(1))).build();
