@@ -121,4 +121,9 @@ class JaxbStringQueryClient implements StringQueryClient {
     public void postItem(String query, Item item) {
     	throw new UnsupportedOperationException("Item POST not currently supported via XML");
     }
+
+    @Override
+    public void putItem(String query, Item item) {
+        throw new UnsupportedOperationException("Item PUT not currently supported via XML");
+    }
 }

@@ -177,6 +177,19 @@ public class GsonQueryClient implements StringQueryClient {
         }
     }
 
+    @Override public void putItem(String query, Item item) {
+        try {
+            String json = gson.get().toJson(item);
+            Payload httpBody = new StringPayload(json);
+            HttpResponse resp = httpClient.put(query, httpBody);
+            if (resp.statusCode() != 200) {
+                throw new RuntimeException("Error PUTting item: HTTP " + resp.statusCode() + " received from Atlas");
+            }
+        } catch (HttpException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
     @Override
     public void postTopic(String queryUri, Topic topic) {
         try {

@@ -108,7 +108,7 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     @Override
     public PeopleQueryResult people(Iterable<String> uris) {
         
-        return client.peopleQuery(baseUri + "/people.json?uri=" +  joiner.join(UrlEncoding.encode(uris)) + apiKeyQueryPart());
+        return client.peopleQuery(baseUri + "/people.json?uri=" + joiner.join(UrlEncoding.encode(uris)) + apiKeyQueryPart());
     }
     
     @Override
@@ -137,6 +137,15 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
         checkNotNull(Strings.emptyToNull(item.getUri()), "Cannot write an Item without a URI");
         checkNotNull(Strings.emptyToNull(item.getType()), "Cannot write an Item without a type");
         client.postItem(writeItemUri(), item);
+    }
+
+    @Override
+    public void writeItemOverwriteExisting(Item item) {
+        checkNotNull(item, "Cannot write a null item");
+        checkNotNull(item.getPublisher(), "Cannot write an Item without a Publisher");
+        checkNotNull(Strings.emptyToNull(item.getUri()), "Cannot write an Item without a URI");
+        checkNotNull(Strings.emptyToNull(item.getType()), "Cannot write an Item without a type");
+        client.putItem(writeItemUri(), item);
     }
 
     private String personResourceUri() {
