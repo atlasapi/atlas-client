@@ -2,19 +2,19 @@ package org.atlasapi.client;
 
 import static org.atlasapi.output.Annotation.AVAILABLE_LOCATIONS;
 import static org.atlasapi.output.Annotation.UPCOMING;
-import static org.junit.Assert.*;
-
-import org.atlasapi.media.entity.simple.ContentQueryResult;
-import org.atlasapi.media.entity.simple.PeopleQueryResult;
-import org.atlasapi.media.entity.simple.Playlist;
-import org.junit.Test;
-
-import com.google.common.collect.Iterables;
-
-import java.util.Arrays;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.atlasapi.media.entity.simple.ContentGroup;
 import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
+import org.atlasapi.media.entity.simple.ContentQueryResult;
+import org.atlasapi.media.entity.simple.PeopleQueryResult;
+import org.atlasapi.media.entity.simple.Playlist;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import com.google.common.collect.Iterables;
 
 public class JaxbAtlasClientTest {
 
@@ -29,6 +29,7 @@ public class JaxbAtlasClientTest {
         assertNotNull(result);
     }
     
+    @Ignore  // This no longer produces results without an API key
     @Test
     public void testSingleContentGroupQuery() {
         AtlasClient client = new JaxbAtlasClient("http://stage.atlas.metabroadcast.com/3.0");
@@ -38,6 +39,7 @@ public class JaxbAtlasClientTest {
         assertNotNull(group);
     }
     
+    @Ignore  // This no longer produces results without an API key
     @Test
     public void testManyContentGroupsQuery() {
         AtlasClient client = new JaxbAtlasClient("http://stage.atlas.metabroadcast.com/3.0");
@@ -47,6 +49,7 @@ public class JaxbAtlasClientTest {
         assertTrue(result.getContentGroups().size() > 0);
     }
 
+    @Ignore  // This person is no longer present without an API key
     @Test
     public void testShouldGetPeople() {
 
