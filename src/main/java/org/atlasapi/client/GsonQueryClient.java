@@ -90,7 +90,7 @@ public class GsonQueryClient implements StringQueryClient {
             .withUserAgent(USER_AGENT)
             .withRequestCompressedResponses()
             .withPoolConnections()
-            .withSocketTimeout(3, TimeUnit.MINUTES)
+            .withSocketTimeout(4, TimeUnit.MINUTES)
             .build();
     
     @Override
