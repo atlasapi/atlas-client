@@ -2,22 +2,11 @@ package org.atlasapi.client.testing;
 
 import java.util.Map;
 
-import org.atlasapi.client.AtlasClient;
-import org.atlasapi.client.ContentQuery;
-import org.atlasapi.client.PeopleQuery;
-import org.atlasapi.client.ScheduleQuery;
-import org.atlasapi.client.SearchQuery;
+import org.atlasapi.client.*;
 import org.atlasapi.client.query.AtlasQuery;
-import org.atlasapi.media.entity.simple.ContentQueryResult;
-import org.atlasapi.media.entity.simple.Description;
-import org.atlasapi.media.entity.simple.DiscoverQueryResult;
-import org.atlasapi.media.entity.simple.PeopleQueryResult;
-import org.atlasapi.media.entity.simple.Person;
-import org.atlasapi.media.entity.simple.ScheduleQueryResult;
+import org.atlasapi.media.entity.simple.*;
 
 import com.google.common.collect.Maps;
-
-import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 
 public class StubAtlasClient implements AtlasClient {
     
@@ -78,6 +67,11 @@ public class StubAtlasClient implements AtlasClient {
 
     @Override
     public ContentQueryResult content(ContentQuery query) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public EventQueryResult event(EventQuery query) {
         throw new UnsupportedOperationException();
     }
 }

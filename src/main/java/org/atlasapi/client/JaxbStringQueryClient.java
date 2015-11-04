@@ -9,14 +9,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.atlasapi.media.entity.simple.ChannelGroupQueryResult;
-import org.atlasapi.media.entity.simple.ChannelQueryResult;
-import org.atlasapi.media.entity.simple.ContentQueryResult;
-import org.atlasapi.media.entity.simple.Item;
-import org.atlasapi.media.entity.simple.PeopleQueryResult;
-import org.atlasapi.media.entity.simple.ScheduleQueryResult;
-import org.atlasapi.media.entity.simple.Topic;
-import org.atlasapi.media.entity.simple.TopicQueryResult;
+import org.atlasapi.media.entity.simple.*;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
@@ -28,8 +21,6 @@ import com.metabroadcast.common.http.SimpleHttpClient;
 import com.metabroadcast.common.http.SimpleHttpClientBuilder;
 import com.metabroadcast.common.http.SimpleHttpRequest;
 
-import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
-
 class JaxbStringQueryClient implements StringQueryClient {
 
     private static final String USER_AGENT = "Mozilla/5.0 (compatible; atlas-java-client/1.0; +http://atlasapi.org)";
@@ -40,7 +31,7 @@ class JaxbStringQueryClient implements StringQueryClient {
     
     public JaxbStringQueryClient() {
         try {
-            context = JAXBContext.newInstance(ContentQueryResult.class, ContentGroupQueryResult.class, ScheduleQueryResult.class, PeopleQueryResult.class, ChannelQueryResult.class);
+            context = JAXBContext.newInstance(ContentQueryResult.class, ContentGroupQueryResult.class, ScheduleQueryResult.class, PeopleQueryResult.class, ChannelQueryResult.class, EventQueryResult.class);
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         }
@@ -110,6 +101,11 @@ class JaxbStringQueryClient implements StringQueryClient {
     @Override
     public ChannelGroupQueryResult channelGroupQuery(String queryUri) {
         return (ChannelGroupQueryResult) queryInternal(queryUri);
+    }
+
+    @Override
+    public EventQueryResult eventQuery(String eventQuery) {
+        return (EventQueryResult) queryInternal(eventQuery);
     }
 
     @Override

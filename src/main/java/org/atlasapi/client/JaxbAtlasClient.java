@@ -1,16 +1,11 @@
 package org.atlasapi.client;
 
 import org.atlasapi.client.query.AtlasQuery;
-import org.atlasapi.media.entity.simple.ContentQueryResult;
-import org.atlasapi.media.entity.simple.DiscoverQueryResult;
-import org.atlasapi.media.entity.simple.PeopleQueryResult;
-import org.atlasapi.media.entity.simple.ScheduleQueryResult;
+import org.atlasapi.media.entity.simple.*;
 
 import com.google.common.base.Joiner;
 import com.metabroadcast.common.url.QueryStringParameters;
 import com.metabroadcast.common.url.UrlEncoding;
-
-import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 
 public class JaxbAtlasClient implements AtlasClient {
     private QueryStringBuilder queryStringBuilder = new QueryStringBuilder();
@@ -70,7 +65,12 @@ public class JaxbAtlasClient implements AtlasClient {
     public ContentQueryResult content(ContentQuery query) {
         return queryClient.contentQuery(baseUri + "/content.xml?" + withApiKey(query.toQueryStringParameters()).toQueryString()); 
     }
-    
+
+    @Override
+    public EventQueryResult event(EventQuery query) {
+        throw new UnsupportedOperationException();
+    }
+
     @Override
     public ContentGroupQueryResult contentGroup(String id) {
         return queryClient.contentGroupQuery(baseUri + "/content_groups/" + id + ".xml?" + apiKeyQueryPart());

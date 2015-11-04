@@ -5,14 +5,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.List;
 
 import org.atlasapi.client.query.AtlasQuery;
-import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
-import org.atlasapi.media.entity.simple.ContentQueryResult;
-import org.atlasapi.media.entity.simple.Description;
-import org.atlasapi.media.entity.simple.DiscoverQueryResult;
-import org.atlasapi.media.entity.simple.Item;
-import org.atlasapi.media.entity.simple.PeopleQueryResult;
-import org.atlasapi.media.entity.simple.Person;
-import org.atlasapi.media.entity.simple.ScheduleQueryResult;
+import org.atlasapi.media.entity.simple.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +47,12 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     public ContentQueryResult content(ContentQuery query) {
         return client.contentQuery(baseUri + "/content.json?" + withApiKey(query.toQueryStringParameters()).toQueryString());
     }
-    
+
+    @Override
+    public EventQueryResult event(EventQuery query) {
+        return client.eventQuery(baseUri + "/events.json?" + apiKeyQueryPart());
+    }
+
     @Override
     @Deprecated
     public ContentGroupQueryResult contentGroup(String id) {
