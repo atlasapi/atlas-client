@@ -4,3 +4,5 @@
 /.setttings
 target
 .settings
+.idea/
+*.iml

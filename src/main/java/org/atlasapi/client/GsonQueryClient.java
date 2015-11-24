@@ -4,24 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.atlasapi.media.entity.simple.Broadcast;
-import org.atlasapi.media.entity.simple.ChannelGroupQueryResult;
-import org.atlasapi.media.entity.simple.ChannelQueryResult;
-import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
-import org.atlasapi.media.entity.simple.ContentIdentifier;
-import org.atlasapi.media.entity.simple.ContentQueryResult;
-import org.atlasapi.media.entity.simple.Description;
-import org.atlasapi.media.entity.simple.Item;
-import org.atlasapi.media.entity.simple.PeopleQueryResult;
-import org.atlasapi.media.entity.simple.Person;
-import org.atlasapi.media.entity.simple.Playlist;
-import org.atlasapi.media.entity.simple.ScheduleQueryResult;
-import org.atlasapi.media.entity.simple.Topic;
-import org.atlasapi.media.entity.simple.TopicQueryResult;
+import org.atlasapi.media.entity.simple.*;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -164,6 +152,8 @@ public class GsonQueryClient implements StringQueryClient {
         }
     }
 
+
+
     @Override public void postItem(String query, Item item) {
         try {
             String json = gson.get().toJson(item);
@@ -230,6 +220,20 @@ public class GsonQueryClient implements StringQueryClient {
             }));
         } catch (Exception e) {
             throw new RuntimeException("Problem with channel group query " + queryUri, e);
+        }
+    }
+
+    @Override
+    public EventQueryResult eventQuery(String eventQueryUri) {
+        try {
+            return httpClient.get(SimpleHttpRequest.httpRequestFrom(eventQueryUri, new HttpResponseTransformer<EventQueryResult>() {
+                @Override
+                public EventQueryResult transform(HttpResponsePrologue httpResponsePrologue, InputStream inputStream) throws HttpException, Exception {
+                    return gson.get().fromJson(new InputStreamReader(inputStream, Charsets.UTF_8), EventQueryResult.class);
+                }
+            }));
+        } catch (Exception e) {
+            throw new RuntimeException("Problem with event query" + eventQueryUri, e);
         }
     }
 
