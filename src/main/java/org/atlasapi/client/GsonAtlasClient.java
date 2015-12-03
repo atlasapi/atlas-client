@@ -50,7 +50,7 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
 
     @Override
     public EventQueryResult event(EventQuery query) {
-        return client.eventQuery(baseUri + "/events.json?" + apiKeyQueryPart());
+        return client.eventQuery(baseUri + "/events.json?" + withApiKey(query.toQueryStringParameters()).toQueryString());
     }
 
     @Override
