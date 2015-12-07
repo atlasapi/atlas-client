@@ -22,7 +22,7 @@ interface StringQueryClient {
 	
 	TopicQueryResult topicQuery(String queryUri);
 
-	void postItem(String query, Item item);
+	String postItem(String query, Item item);
 
 	void postTopic(String queryUri, Topic topic);
 
