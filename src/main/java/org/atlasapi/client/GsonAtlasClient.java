@@ -129,12 +129,12 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     }
 
     @Override
-    public void writeItem(Item item) {
+    public String writeItem(Item item) {
         checkNotNull(item, "Cannot write a null item");
         checkNotNull(item.getPublisher(), "Cannot write an Item without a Publisher");
         checkNotNull(Strings.emptyToNull(item.getUri()), "Cannot write an Item without a URI");
         checkNotNull(Strings.emptyToNull(item.getType()), "Cannot write an Item without a type");
-        client.postItem(writeItemUri(), item);
+        return client.postItem(writeItemUri(), item);
     }
 
     @Override

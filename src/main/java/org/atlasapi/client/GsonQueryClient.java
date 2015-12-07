@@ -74,6 +74,7 @@ public class GsonQueryClient implements StringQueryClient {
     
     private static final String USER_AGENT = "Mozilla/5.0 (compatible; atlas-java-client/1.0; +http://atlasapi.org)";
     private static final int NOT_FOUND = 404;
+    private static final String LOCATION = "Location";
     private final SimpleHttpClient httpClient = new SimpleHttpClientBuilder()
             .withUserAgent(USER_AGENT)
             .withRequestCompressedResponses()
@@ -154,7 +155,7 @@ public class GsonQueryClient implements StringQueryClient {
 
 
 
-    @Override public void postItem(String query, Item item) {
+    @Override public String postItem(String query, Item item) {
         try {
             String json = gson.get().toJson(item);
             Payload httpBody = new StringPayload(json);
@@ -162,6 +163,7 @@ public class GsonQueryClient implements StringQueryClient {
             if (resp.statusCode() != 200) {
                 throw new RuntimeException("Error POSTing item: HTTP " + resp.statusCode() + " received from Atlas");
             }
+            return resp.header(LOCATION);
         } catch (HttpException e) {
             throw Throwables.propagate(e);
         }
