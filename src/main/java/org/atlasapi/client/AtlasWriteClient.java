@@ -10,7 +10,7 @@ public interface AtlasWriteClient {
     
     void updatePerson(Person person);
 
-    void writeItem(Item item);
+    String writeItem(Item item);
 
     void writeItemOverwriteExisting(Item item);
 }
