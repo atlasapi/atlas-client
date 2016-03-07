@@ -48,12 +48,12 @@ import com.metabroadcast.common.intl.Countries;
 import com.metabroadcast.common.intl.Country;
 
 public class GsonQueryClient implements StringQueryClient {
-    
+
     // We have suspiscions that Gson initialisation is not thread-safe. Making this a 
     // ThreadLocal for now to see if the intermittent, difficult to reproduce, problem
     // goes away. See https://groups.google.com/d/msg/google-gson/sWcCXP_oaIQ/1BGTeRtCW2AJ
     private static final ThreadLocal<Gson> gson = new ThreadLocal<Gson>() {
-        
+
         @Override
         protected Gson initialValue() {
             return new GsonBuilder()
@@ -69,9 +69,9 @@ public class GsonQueryClient implements StringQueryClient {
                 .create();
         }
     };
-    
-   
-    
+
+
+
     private static final String USER_AGENT = "Mozilla/5.0 (compatible; atlas-java-client/1.0; +http://atlasapi.org)";
     private static final int NOT_FOUND = 404;
     private static final String LOCATION = "Location";
@@ -81,7 +81,7 @@ public class GsonQueryClient implements StringQueryClient {
             .withPoolConnections()
             .withSocketTimeout(4, TimeUnit.MINUTES)
             .build();
-    
+
     @Override
     public ContentQueryResult contentQuery(String queryUri) {
         try {
@@ -95,7 +95,7 @@ public class GsonQueryClient implements StringQueryClient {
             throw new RuntimeException("Problem with content query " + queryUri, e);
         }
     }
-    
+
     @Override
     public ContentGroupQueryResult contentGroupQuery(String queryUri) {
         try {
@@ -109,7 +109,7 @@ public class GsonQueryClient implements StringQueryClient {
             throw new RuntimeException("Problem with content query " + queryUri, e);
         }
     }
-    
+
     @Override
     public ScheduleQueryResult scheduleQuery(String queryUri) {
         try {
@@ -123,7 +123,7 @@ public class GsonQueryClient implements StringQueryClient {
             throw new RuntimeException("Problem with schedule query " + queryUri, e);
         }
     }
-    
+
     @Override
     public PeopleQueryResult peopleQuery(String queryUri) {
         try {
@@ -137,7 +137,7 @@ public class GsonQueryClient implements StringQueryClient {
             throw new RuntimeException("Problem with people query " + queryUri, e);
         }
     }
-    
+
     @Override
     public TopicQueryResult topicQuery(String queryUri) {
         try {
@@ -289,20 +289,27 @@ public class GsonQueryClient implements StringQueryClient {
                     }
                     return read;
                 }
-                
+
             };
         }
     }
 
-    public static final class DateTimeDeserializer implements JsonDeserializer<DateTime> {
-        
+    public static final class DateTimeDeserializer implements JsonDeserializer<DateTime>, JsonSerializer<DateTime> {
+
         private static final DateTimeFormatter formatter
-            = ISODateTimeFormat.dateTimeParser().withZoneUTC();
+                = ISODateTimeFormat.dateTimeParser().withZoneUTC();
+        private static final DateTimeFormatter printer = ISODateTimeFormat.dateTime();
 
         @Override
         public DateTime deserialize(JsonElement json, Type typeOfT,
                 JsonDeserializationContext context) throws JsonParseException {
             return formatter.parseDateTime(json.getAsString());
+        }
+
+        @Override
+        public JsonElement serialize(DateTime src, Type typeOfSrc,
+                JsonSerializationContext context) {
+            return new JsonPrimitive(this.printer.print(src));
         }
     }
 
@@ -325,7 +332,7 @@ public class GsonQueryClient implements StringQueryClient {
             return new JsonPrimitive(dt.toString(fmt));
         }
     }
-    
+
     public static class LongDeserializer implements JsonDeserializer<Long> {
 
         @Override
@@ -337,7 +344,7 @@ public class GsonQueryClient implements StringQueryClient {
             return json.getAsLong();
         }
     }
-    
+
     public static class BooleanDeserializer implements JsonDeserializer<Boolean> {
 
         private Map<String, Boolean> boolMap = ImmutableMap.of(
@@ -345,15 +352,15 @@ public class GsonQueryClient implements StringQueryClient {
                 "false", Boolean.FALSE,
                 "1", Boolean.TRUE,
                 "0", Boolean.FALSE);
-        
+
         @Override
         public Boolean deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             return boolMap.get(json.getAsJsonPrimitive().getAsString());
         }
     }
-    
+
     public static class DescriptionDeserializer implements JsonDeserializer<Description> {
-        
+
         @Override
         public Description deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             JsonObject jsonObj = json.getAsJsonObject();
@@ -364,9 +371,9 @@ public class GsonQueryClient implements StringQueryClient {
             }
         }
     }
-    
+
     public static class ContentIdentifierDeserializer implements JsonDeserializer<ContentIdentifier> {
-        
+
         @Override
         public ContentIdentifier deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             JsonObject jsonObj = json.getAsJsonObject();
@@ -374,7 +381,7 @@ public class GsonQueryClient implements StringQueryClient {
             String type = jsonObj.get("type").getAsString();
             JsonElement idElement = jsonObj.get("id");
             String id = idElement != null ? idElement.getAsString() : null;
-            
+
             if ("series".equals(type)) {
                 JsonElement seriesElement = jsonObj.get("seriesNumber");
                 Integer seriesNumber = seriesElement != null ? seriesElement.getAsInt() : null;
@@ -384,9 +391,9 @@ public class GsonQueryClient implements StringQueryClient {
             }
         }
     }
-    
+
     public static class CountryDeserializer implements JsonDeserializer<Country> {
-        
+
         @Override
         public Country deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             return Countries.fromCode(json.getAsJsonObject().get("code").getAsString());
