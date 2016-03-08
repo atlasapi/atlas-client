@@ -298,7 +298,7 @@ public class GsonQueryClient implements StringQueryClient {
 
         private static final DateTimeFormatter formatter
                 = ISODateTimeFormat.dateTimeParser().withZoneUTC();
-        private static final DateTimeFormatter printer = ISODateTimeFormat.dateTime();
+        private static final DateTimeFormatter printer = ISODateTimeFormat.dateTimeNoMillis();
 
         @Override
         public DateTime deserialize(JsonElement json, Type typeOfT,
@@ -309,7 +309,7 @@ public class GsonQueryClient implements StringQueryClient {
         @Override
         public JsonElement serialize(DateTime src, Type typeOfSrc,
                 JsonSerializationContext context) {
-            return new JsonPrimitive(this.printer.print(src));
+            return new JsonPrimitive(printer.print(src));
         }
     }
 
