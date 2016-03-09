@@ -59,7 +59,7 @@ public class GsonTopicClient implements AtlasTopicClient {
     }
 
     @Override
-    public void postTopic(Topic topic) {
+    public String postTopic(Topic topic) {
         QueryStringParameters queryParams = new QueryStringParameters();
         if (apiKey.isPresent()) {
             queryParams.add("apiKey", apiKey.get());
@@ -67,7 +67,7 @@ public class GsonTopicClient implements AtlasTopicClient {
         
         String queryString = Urls.appendParameters(topicsPattern, queryParams);
         log.trace("POSTing Topic to Atlas, " + queryString, topic);
-        stringQueryClient.postTopic(queryString, topic);
+        return stringQueryClient.postTopic(queryString, topic);
     }
     
 }

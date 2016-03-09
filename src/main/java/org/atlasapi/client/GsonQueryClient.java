@@ -179,13 +179,14 @@ public class GsonQueryClient implements StringQueryClient {
     }
 
     @Override
-    public void postTopic(String queryUri, Topic topic) {
+    public String postTopic(String queryUri, Topic topic) {
         try {
             Payload topicPayload = new StringPayload(gson.get().toJson(topic, Topic.class));
             HttpResponse response = httpClient.post(queryUri, topicPayload);
             if (response.statusCode() >= 400) {
                 throw new RuntimeException("Error POSTing topic " + topic.getTitle() + " " + topic.getNamespace() + " " + topic.getValue() + " code: " + response.statusCode() + ", message: " + response.statusLine());
             }
+            return response.header("Location");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

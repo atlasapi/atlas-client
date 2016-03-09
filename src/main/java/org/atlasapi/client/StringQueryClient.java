@@ -24,7 +24,7 @@ interface StringQueryClient {
 
 	String postItem(String query, Item item);
 
-	void postTopic(String queryUri, Topic topic);
+	String postTopic(String queryUri, Topic topic);
 
 	ChannelQueryResult channelQuery(String queryUri);
 	
