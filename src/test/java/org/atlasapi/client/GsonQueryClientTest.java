@@ -16,7 +16,7 @@ public class GsonQueryClientTest {
     @Test
     public void serializeDateTime() {
         DateTime dateTime = new DateTime();
-        GsonQueryClient.DateTimeDeserializer serializer = new GsonQueryClient.DateTimeDeserializer();
+        GsonQueryClient.JodaDateTimeSerializer serializer = new GsonQueryClient.JodaDateTimeSerializer();
         JsonElement element = serializer.serialize(dateTime, DateTime.class, context);
         assertEquals(dateTime.toString(), element.getAsString());
     }

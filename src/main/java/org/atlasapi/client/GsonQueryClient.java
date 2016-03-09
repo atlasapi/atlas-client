@@ -64,7 +64,7 @@ public class GsonQueryClient implements StringQueryClient {
                 .registerTypeAdapter(Description.class, new DescriptionDeserializer())
                 .registerTypeAdapter(ContentIdentifier.class, new ContentIdentifierDeserializer())
                 .registerTypeAdapter(Country.class, new CountryDeserializer())
-                .registerTypeAdapter(DateTime.class, new DateTimeDeserializer())
+                .registerTypeAdapter(DateTime.class, new JodaDateTimeSerializer())
                 .registerTypeAdapterFactory(new BroadcastFondlingTypeAdapterFactory())
                 .create();
         }
@@ -294,7 +294,7 @@ public class GsonQueryClient implements StringQueryClient {
         }
     }
 
-    public static final class DateTimeDeserializer implements JsonDeserializer<DateTime>, JsonSerializer<DateTime> {
+    public static final class JodaDateTimeSerializer implements JsonDeserializer<DateTime>, JsonSerializer<DateTime> {
 
         private static final DateTimeFormatter formatter
                 = ISODateTimeFormat.dateTimeParser().withZoneUTC();
