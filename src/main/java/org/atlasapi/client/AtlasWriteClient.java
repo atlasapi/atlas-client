@@ -12,5 +12,9 @@ public interface AtlasWriteClient {
 
     String writeItem(Item item);
 
+    String writeItemAsync(Item item);
+
     void writeItemOverwriteExisting(Item item);
+
+    void writeItemOverwriteExistingAsync(Item item);
 }
