@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.atlasapi.client.exception.BadResponseException;
 import org.atlasapi.media.entity.simple.Broadcast;
 import org.atlasapi.media.entity.simple.ChannelGroupQueryResult;
 import org.atlasapi.media.entity.simple.ChannelQueryResult;
@@ -175,7 +176,7 @@ public class GsonQueryClient implements StringQueryClient {
             Payload httpBody = new StringPayload(json);
             HttpResponse resp = httpClient.post(query, httpBody);
             if (resp.statusCode() >= 400) {
-                throw new RuntimeException("Error POSTing item: HTTP " + resp.statusCode() + " received from Atlas");
+                throw new BadResponseException("Error POSTing item: HTTP " + resp.statusCode() + " received from Atlas");
             }
             return resp.header(LOCATION);
         } catch (HttpException e) {
@@ -189,7 +190,7 @@ public class GsonQueryClient implements StringQueryClient {
             Payload httpBody = new StringPayload(json);
             HttpResponse resp = httpClient.put(query, httpBody);
             if (resp.statusCode() >= 400) {
-                throw new RuntimeException("Error PUTting item: HTTP " + resp.statusCode() + " received from Atlas");
+                throw new BadResponseException("Error PUTting item: HTTP " + resp.statusCode() + " received from Atlas");
             }
         } catch (HttpException e) {
             throw Throwables.propagate(e);
@@ -202,7 +203,7 @@ public class GsonQueryClient implements StringQueryClient {
             Payload topicPayload = new StringPayload(gson.get().toJson(topic, Topic.class));
             HttpResponse response = httpClient.post(queryUri, topicPayload);
             if (response.statusCode() >= 400) {
-                throw new RuntimeException("Error POSTing topic " + topic.getTitle() + " " + topic.getNamespace() + " " + topic.getValue() + " code: " + response.statusCode() + ", message: " + response.statusLine());
+                throw new BadResponseException("Error POSTing topic " + topic.getTitle() + " " + topic.getNamespace() + " " + topic.getValue() + " code: " + response.statusCode() + ", message: " + response.statusLine());
             }
             return response.header(LOCATION);
         } catch (Exception e) {
@@ -259,7 +260,7 @@ public class GsonQueryClient implements StringQueryClient {
             StringPayload data = new StringPayload(gson.get().toJson(person));
             HttpResponse response = httpClient.post(queryString, data);
             if (response.statusCode() >= 400) {
-                throw new RuntimeException(String.format("POST %s %s: %s %s", person.getUri(), person.getPublisher(), response.statusCode(), response.statusLine()));
+                throw new BadResponseException(String.format("POST %s %s: %s %s", person.getUri(), person.getPublisher(), response.statusCode(), response.statusLine()));
             }
         } catch (HttpException e) {
             throw new RuntimeException(String.format("%s %s %s", queryString, person.getUri(), person.getPublisher()), e);
@@ -271,7 +272,7 @@ public class GsonQueryClient implements StringQueryClient {
             StringPayload data = new StringPayload(gson.get().toJson(person));
             HttpResponse response = httpClient.put(queryString, data);
             if (response.statusCode() >= 400) {
-                throw new RuntimeException(String.format("PUT %s %s: %s %s", person.getUri(), person.getPublisher(), response.statusCode(), response.statusLine()));
+                throw new BadResponseException(String.format("PUT %s %s: %s %s", person.getUri(), person.getPublisher(), response.statusCode(), response.statusLine()));
             }
         } catch (HttpException e) {
             throw new RuntimeException(String.format("%s %s %s", queryString, person.getUri(), person.getPublisher()), e);
