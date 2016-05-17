@@ -15,14 +15,6 @@ public class GsonContentGroupClient implements AtlasContentGroupClient {
     private final String contentGroupContentQueryPattern;
     private final GsonQueryClient client;
 
-    public GsonContentGroupClient(HostSpecifier atlasHost, Optional<String> apiKey) {
-        this.apiKey = apiKey;
-        this.singleContentGroupQueryPattern = String.format("http://%s/3.0/content_groups/%%s.json", atlasHost);
-        this.contentGroupsQuery = String.format("http://%s/3.0/content_groups.json", atlasHost);
-        this.contentGroupContentQueryPattern = String.format("http://%s/3.0/content_groups/%%s/content.json", atlasHost);
-        this.client = new GsonQueryClient();
-    }
-
     public GsonContentGroupClient(HostSpecifier atlasHost, Optional<String> apiKey,
             GsonQueryClient client) {
         this.apiKey = apiKey;
@@ -30,6 +22,10 @@ public class GsonContentGroupClient implements AtlasContentGroupClient {
         this.contentGroupsQuery = String.format("http://%s/3.0/content_groups.json", atlasHost);
         this.contentGroupContentQueryPattern = String.format("http://%s/3.0/content_groups/%%s/content.json", atlasHost);
         this.client = client;
+    }
+
+    public GsonContentGroupClient(HostSpecifier atlasHost, Optional<String> apiKey) {
+        this(atlasHost, apiKey, new GsonQueryClient());
     }
     
     @Override
