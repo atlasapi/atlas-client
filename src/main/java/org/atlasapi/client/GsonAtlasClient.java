@@ -1,7 +1,5 @@
 package org.atlasapi.client;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.List;
 
 import org.atlasapi.client.query.AtlasQuery;
@@ -9,20 +7,24 @@ import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
 import org.atlasapi.media.entity.simple.DiscoverQueryResult;
+import org.atlasapi.media.entity.simple.EventQueryResult;
 import org.atlasapi.media.entity.simple.Item;
 import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.Person;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import com.metabroadcast.common.url.QueryStringParameters;
+import com.metabroadcast.common.url.UrlEncoding;
+import com.metabroadcast.common.url.Urls;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.net.HostSpecifier;
-import com.metabroadcast.common.url.QueryStringParameters;
-import com.metabroadcast.common.url.UrlEncoding;
-import com.metabroadcast.common.url.Urls;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     
@@ -54,7 +56,12 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     public ContentQueryResult content(ContentQuery query) {
         return client.contentQuery(baseUri + "/content.json?" + withApiKey(query.toQueryStringParameters()).toQueryString());
     }
-    
+
+    @Override
+    public EventQueryResult event(EventQuery query) {
+        return client.eventQuery(baseUri + "/events.json?" + withApiKey(query.toQueryStringParameters()).toQueryString());
+    }
+
     @Override
     @Deprecated
     public ContentGroupQueryResult contentGroup(String id) {
@@ -108,7 +115,7 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     @Override
     public PeopleQueryResult people(Iterable<String> uris) {
         
-        return client.peopleQuery(baseUri + "/people.json?uri=" +  joiner.join(UrlEncoding.encode(uris)) + apiKeyQueryPart());
+        return client.peopleQuery(baseUri + "/people.json?uri=" + joiner.join(UrlEncoding.encode(uris)) + apiKeyQueryPart());
     }
     
     @Override
@@ -131,12 +138,39 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     }
 
     @Override
-    public void writeItem(Item item) {
+    public String writeItem(Item item) {
+        return writeItem(item, false);
+    }
+
+    @Override
+    public String writeItemAsync(Item item) {
+        return writeItem(item, true);
+    }
+
+    @Override
+    public void writeItemOverwriteExisting(Item item) {
+        writeItemOverwriteExisting(item, false);
+    }
+
+    @Override
+    public void writeItemOverwriteExistingAsync(Item item) {
+        writeItemOverwriteExisting(item, true);
+    }
+
+    private String writeItem(Item item, boolean async) {
         checkNotNull(item, "Cannot write a null item");
         checkNotNull(item.getPublisher(), "Cannot write an Item without a Publisher");
         checkNotNull(Strings.emptyToNull(item.getUri()), "Cannot write an Item without a URI");
         checkNotNull(Strings.emptyToNull(item.getType()), "Cannot write an Item without a type");
-        client.postItem(writeItemUri(), item);
+        return client.postItem(writeItemUri(async), item);
+    }
+
+    private void writeItemOverwriteExisting(Item item, boolean async) {
+        checkNotNull(item, "Cannot write a null item");
+        checkNotNull(item.getPublisher(), "Cannot write an Item without a Publisher");
+        checkNotNull(Strings.emptyToNull(item.getUri()), "Cannot write an Item without a URI");
+        checkNotNull(Strings.emptyToNull(item.getType()), "Cannot write an Item without a type");
+        client.putItem(writeItemUri(async), item);
     }
 
     private String personResourceUri() {
@@ -147,8 +181,16 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
         return queryString;
     }
 
-    private String writeItemUri() {
+    private String writeItemUri(boolean async) {
         checkNotNull(apiKey.get(), "An API key must be specified for content write queries");
-        return new StringBuilder(baseUri).append("/content.json?").append(apiKeyQueryPart()).toString();
+        StringBuilder uriBuilder = new StringBuilder(baseUri)
+                .append("/content.json?")
+                .append(apiKeyQueryPart());
+
+        if (async) {
+            uriBuilder.append("&async=true");
+        }
+
+        return uriBuilder.toString();
     }
 }

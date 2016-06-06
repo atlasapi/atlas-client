@@ -5,7 +5,6 @@ import org.atlasapi.media.entity.simple.ContentQueryResult;
 
 import com.google.common.base.Optional;
 
-
 public interface AtlasContentGroupClient {
 
     ContentGroupQueryResult contentGroup(String id);

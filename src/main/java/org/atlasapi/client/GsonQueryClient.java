@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.atlasapi.client.exception.BadResponseException;
 import org.atlasapi.media.entity.simple.Broadcast;
 import org.atlasapi.media.entity.simple.ChannelGroupQueryResult;
 import org.atlasapi.media.entity.simple.ChannelQueryResult;
@@ -15,6 +16,7 @@ import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 import org.atlasapi.media.entity.simple.ContentIdentifier;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
+import org.atlasapi.media.entity.simple.EventQueryResult;
 import org.atlasapi.media.entity.simple.Item;
 import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.Person;
@@ -22,9 +24,19 @@ import org.atlasapi.media.entity.simple.Playlist;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 import org.atlasapi.media.entity.simple.Topic;
 import org.atlasapi.media.entity.simple.TopicQueryResult;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
+
+import com.metabroadcast.common.http.HttpException;
+import com.metabroadcast.common.http.HttpResponse;
+import com.metabroadcast.common.http.HttpResponsePrologue;
+import com.metabroadcast.common.http.HttpResponseTransformer;
+import com.metabroadcast.common.http.HttpStatusCodeException;
+import com.metabroadcast.common.http.Payload;
+import com.metabroadcast.common.http.SimpleHttpClient;
+import com.metabroadcast.common.http.SimpleHttpClientBuilder;
+import com.metabroadcast.common.http.SimpleHttpRequest;
+import com.metabroadcast.common.http.StringPayload;
+import com.metabroadcast.common.intl.Countries;
+import com.metabroadcast.common.intl.Country;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
@@ -46,26 +58,17 @@ import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.metabroadcast.common.http.HttpException;
-import com.metabroadcast.common.http.HttpResponse;
-import com.metabroadcast.common.http.HttpResponsePrologue;
-import com.metabroadcast.common.http.HttpResponseTransformer;
-import com.metabroadcast.common.http.HttpStatusCodeException;
-import com.metabroadcast.common.http.Payload;
-import com.metabroadcast.common.http.SimpleHttpClient;
-import com.metabroadcast.common.http.SimpleHttpClientBuilder;
-import com.metabroadcast.common.http.SimpleHttpRequest;
-import com.metabroadcast.common.http.StringPayload;
-import com.metabroadcast.common.intl.Countries;
-import com.metabroadcast.common.intl.Country;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
 public class GsonQueryClient implements StringQueryClient {
-    
+
     // We have suspiscions that Gson initialisation is not thread-safe. Making this a 
     // ThreadLocal for now to see if the intermittent, difficult to reproduce, problem
     // goes away. See https://groups.google.com/d/msg/google-gson/sWcCXP_oaIQ/1BGTeRtCW2AJ
     private static final ThreadLocal<Gson> gson = new ThreadLocal<Gson>() {
-        
+
         @Override
         protected Gson initialValue() {
             return new GsonBuilder()
@@ -76,23 +79,24 @@ public class GsonQueryClient implements StringQueryClient {
                 .registerTypeAdapter(Description.class, new DescriptionDeserializer())
                 .registerTypeAdapter(ContentIdentifier.class, new ContentIdentifierDeserializer())
                 .registerTypeAdapter(Country.class, new CountryDeserializer())
-                .registerTypeAdapter(DateTime.class, new DateTimeDeserializer())
+                .registerTypeAdapter(DateTime.class, new JodaDateTimeSerializer())
                 .registerTypeAdapterFactory(new BroadcastFondlingTypeAdapterFactory())
                 .create();
         }
     };
-    
-   
-    
+
+
+
     private static final String USER_AGENT = "Mozilla/5.0 (compatible; atlas-java-client/1.0; +http://atlasapi.org)";
     private static final int NOT_FOUND = 404;
+    private static final String LOCATION = "Location";
     private final SimpleHttpClient httpClient = new SimpleHttpClientBuilder()
             .withUserAgent(USER_AGENT)
             .withRequestCompressedResponses()
             .withPoolConnections()
-            .withSocketTimeout(1, TimeUnit.MINUTES)
+            .withSocketTimeout(4, TimeUnit.MINUTES)
             .build();
-    
+
     @Override
     public ContentQueryResult contentQuery(String queryUri) {
         try {
@@ -106,7 +110,7 @@ public class GsonQueryClient implements StringQueryClient {
             throw new RuntimeException("Problem with content query " + queryUri, e);
         }
     }
-    
+
     @Override
     public ContentGroupQueryResult contentGroupQuery(String queryUri) {
         try {
@@ -120,7 +124,7 @@ public class GsonQueryClient implements StringQueryClient {
             throw new RuntimeException("Problem with content query " + queryUri, e);
         }
     }
-    
+
     @Override
     public ScheduleQueryResult scheduleQuery(String queryUri) {
         try {
@@ -134,7 +138,7 @@ public class GsonQueryClient implements StringQueryClient {
             throw new RuntimeException("Problem with schedule query " + queryUri, e);
         }
     }
-    
+
     @Override
     public PeopleQueryResult peopleQuery(String queryUri) {
         try {
@@ -148,7 +152,7 @@ public class GsonQueryClient implements StringQueryClient {
             throw new RuntimeException("Problem with people query " + queryUri, e);
         }
     }
-    
+
     @Override
     public TopicQueryResult topicQuery(String queryUri) {
         try {
@@ -164,15 +168,30 @@ public class GsonQueryClient implements StringQueryClient {
         }
     }
 
+
+
     @Override public String postItem(String query, Item item) {
         try {
             String json = gson.get().toJson(item);
             Payload httpBody = new StringPayload(json);
             HttpResponse resp = httpClient.post(query, httpBody);
-            if (resp.statusCode() != 200) {
-                throw new RuntimeException("Error POSTing item: HTTP " + resp.statusCode() + " received from Atlas");
+            if (resp.statusCode() >= 400) {
+                throw new BadResponseException("Error POSTing item: HTTP " + resp.statusCode() + " received from Atlas");
             }
-            return resp.header("Location");
+            return resp.header(LOCATION);
+        } catch (HttpException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
+    @Override public void putItem(String query, Item item) {
+        try {
+            String json = gson.get().toJson(item);
+            Payload httpBody = new StringPayload(json);
+            HttpResponse resp = httpClient.put(query, httpBody);
+            if (resp.statusCode() >= 400) {
+                throw new BadResponseException("Error PUTting item: HTTP " + resp.statusCode() + " received from Atlas");
+            }
         } catch (HttpException e) {
             throw Throwables.propagate(e);
         }
@@ -184,9 +203,9 @@ public class GsonQueryClient implements StringQueryClient {
             Payload topicPayload = new StringPayload(gson.get().toJson(topic, Topic.class));
             HttpResponse response = httpClient.post(queryUri, topicPayload);
             if (response.statusCode() >= 400) {
-                throw new RuntimeException("Error POSTing topic " + topic.getTitle() + " " + topic.getNamespace() + " " + topic.getValue() + " code: " + response.statusCode() + ", message: " + response.statusLine());
+                throw new BadResponseException("Error POSTing topic " + topic.getTitle() + " " + topic.getNamespace() + " " + topic.getValue() + " code: " + response.statusCode() + ", message: " + response.statusLine());
             }
-            return response.header("Location");
+            return response.header(LOCATION);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -222,15 +241,29 @@ public class GsonQueryClient implements StringQueryClient {
         }
     }
 
+    @Override
+    public EventQueryResult eventQuery(String eventQueryUri) {
+        try {
+            return httpClient.get(SimpleHttpRequest.httpRequestFrom(eventQueryUri, new HttpResponseTransformer<EventQueryResult>() {
+                @Override
+                public EventQueryResult transform(HttpResponsePrologue httpResponsePrologue, InputStream inputStream) throws HttpException, Exception {
+                    return gson.get().fromJson(new InputStreamReader(inputStream, Charsets.UTF_8), EventQueryResult.class);
+                }
+            }));
+        } catch (Exception e) {
+            throw new RuntimeException("Problem with event query" + eventQueryUri, e);
+        }
+    }
+
     public void postPerson(String queryString, Person person) {
         try {
             StringPayload data = new StringPayload(gson.get().toJson(person));
             HttpResponse response = httpClient.post(queryString, data);
             if (response.statusCode() >= 400) {
-                throw new RuntimeException(String.format("POST %s %s: %s %s", person.getUri(), person.getPublisher().getKey(), response.statusCode(), response.statusLine()));
+                throw new BadResponseException(String.format("POST %s %s: %s %s", person.getUri(), person.getPublisher(), response.statusCode(), response.statusLine()));
             }
         } catch (HttpException e) {
-            throw new RuntimeException(String.format("%s %s %s", queryString, person.getUri(), person.getPublisher().getKey()), e);
+            throw new RuntimeException(String.format("%s %s %s", queryString, person.getUri(), person.getPublisher()), e);
         }
     }
 
@@ -239,7 +272,7 @@ public class GsonQueryClient implements StringQueryClient {
             StringPayload data = new StringPayload(gson.get().toJson(person));
             HttpResponse response = httpClient.put(queryString, data);
             if (response.statusCode() >= 400) {
-                throw new RuntimeException(String.format("PUT %s %s: %s %s", person.getUri(), person.getPublisher(), response.statusCode(), response.statusLine()));
+                throw new BadResponseException(String.format("PUT %s %s: %s %s", person.getUri(), person.getPublisher(), response.statusCode(), response.statusLine()));
             }
         } catch (HttpException e) {
             throw new RuntimeException(String.format("%s %s %s", queryString, person.getUri(), person.getPublisher()), e);
@@ -272,20 +305,27 @@ public class GsonQueryClient implements StringQueryClient {
                     }
                     return read;
                 }
-                
+
             };
         }
     }
 
-    public static final class DateTimeDeserializer implements JsonDeserializer<DateTime> {
-        
+    public static final class JodaDateTimeSerializer implements JsonDeserializer<DateTime>, JsonSerializer<DateTime> {
+
         private static final DateTimeFormatter formatter
-            = ISODateTimeFormat.dateTimeParser().withZoneUTC();
+                = ISODateTimeFormat.dateTimeParser().withZoneUTC();
+        private static final DateTimeFormatter printer = ISODateTimeFormat.dateTime();
 
         @Override
         public DateTime deserialize(JsonElement json, Type typeOfT,
                 JsonDeserializationContext context) throws JsonParseException {
             return formatter.parseDateTime(json.getAsString());
+        }
+
+        @Override
+        public JsonElement serialize(DateTime src, Type typeOfSrc,
+                JsonSerializationContext context) {
+            return new JsonPrimitive(printer.print(src));
         }
     }
 
@@ -308,7 +348,7 @@ public class GsonQueryClient implements StringQueryClient {
             return new JsonPrimitive(dt.toString(fmt));
         }
     }
-    
+
     public static class LongDeserializer implements JsonDeserializer<Long> {
 
         @Override
@@ -320,7 +360,7 @@ public class GsonQueryClient implements StringQueryClient {
             return json.getAsLong();
         }
     }
-    
+
     public static class BooleanDeserializer implements JsonDeserializer<Boolean> {
 
         private Map<String, Boolean> boolMap = ImmutableMap.of(
@@ -328,15 +368,15 @@ public class GsonQueryClient implements StringQueryClient {
                 "false", Boolean.FALSE,
                 "1", Boolean.TRUE,
                 "0", Boolean.FALSE);
-        
+
         @Override
         public Boolean deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             return boolMap.get(json.getAsJsonPrimitive().getAsString());
         }
     }
-    
+
     public static class DescriptionDeserializer implements JsonDeserializer<Description> {
-        
+
         @Override
         public Description deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             JsonObject jsonObj = json.getAsJsonObject();
@@ -347,9 +387,9 @@ public class GsonQueryClient implements StringQueryClient {
             }
         }
     }
-    
+
     public static class ContentIdentifierDeserializer implements JsonDeserializer<ContentIdentifier> {
-        
+
         @Override
         public ContentIdentifier deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             JsonObject jsonObj = json.getAsJsonObject();
@@ -357,7 +397,7 @@ public class GsonQueryClient implements StringQueryClient {
             String type = jsonObj.get("type").getAsString();
             JsonElement idElement = jsonObj.get("id");
             String id = idElement != null ? idElement.getAsString() : null;
-            
+
             if ("series".equals(type)) {
                 JsonElement seriesElement = jsonObj.get("seriesNumber");
                 Integer seriesNumber = seriesElement != null ? seriesElement.getAsInt() : null;
@@ -367,9 +407,9 @@ public class GsonQueryClient implements StringQueryClient {
             }
         }
     }
-    
+
     public static class CountryDeserializer implements JsonDeserializer<Country> {
-        
+
         @Override
         public Country deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             return Countries.fromCode(json.getAsJsonObject().get("code").getAsString());

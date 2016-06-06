@@ -1,14 +1,6 @@
 package org.atlasapi.client;
 
-import org.atlasapi.media.entity.simple.ChannelGroupQueryResult;
-import org.atlasapi.media.entity.simple.ChannelQueryResult;
-import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
-import org.atlasapi.media.entity.simple.ContentQueryResult;
-import org.atlasapi.media.entity.simple.Item;
-import org.atlasapi.media.entity.simple.PeopleQueryResult;
-import org.atlasapi.media.entity.simple.ScheduleQueryResult;
-import org.atlasapi.media.entity.simple.Topic;
-import org.atlasapi.media.entity.simple.TopicQueryResult;
+import org.atlasapi.media.entity.simple.*;
 
 interface StringQueryClient {
 	
@@ -24,10 +16,14 @@ interface StringQueryClient {
 
 	String postItem(String query, Item item);
 
+	void putItem(String query, Item item);
+
 	String postTopic(String queryUri, Topic topic);
 
 	ChannelQueryResult channelQuery(String queryUri);
 	
 	ChannelGroupQueryResult channelGroupQuery(String queryUri);
+
+	EventQueryResult eventQuery(String eventQuery);
 	
 }

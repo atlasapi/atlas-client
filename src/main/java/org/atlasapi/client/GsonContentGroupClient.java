@@ -15,10 +15,6 @@ public class GsonContentGroupClient implements AtlasContentGroupClient {
     private final String contentGroupContentQueryPattern;
     private final GsonQueryClient client;
 
-    public GsonContentGroupClient(HostSpecifier atlasHost, Optional<String> apiKey) {
-        this(atlasHost, apiKey, new GsonQueryClient());
-    }
-
     public GsonContentGroupClient(HostSpecifier atlasHost, Optional<String> apiKey,
             GsonQueryClient client) {
         this.apiKey = apiKey;
@@ -28,6 +24,10 @@ public class GsonContentGroupClient implements AtlasContentGroupClient {
         this.client = client;
     }
 
+    public GsonContentGroupClient(HostSpecifier atlasHost, Optional<String> apiKey) {
+        this(atlasHost, apiKey, new GsonQueryClient());
+    }
+    
     @Override
     public ContentGroupQueryResult contentGroup(String id) {
         return this.contentGroup(id, apiKey);
@@ -40,7 +40,7 @@ public class GsonContentGroupClient implements AtlasContentGroupClient {
                 apiKey
         ));
     }
-
+    
     @Override
     public ContentGroupQueryResult contentGroups() {
         return this.contentGroups(apiKey);
@@ -53,7 +53,7 @@ public class GsonContentGroupClient implements AtlasContentGroupClient {
                 apiKey
         ));
     }
-
+    
     @Override
     public ContentQueryResult contentFor(String contentGroupId, Optional<ContentQuery> contentQuery) {
         return this.contentFor(contentGroupId, contentQuery, apiKey);
