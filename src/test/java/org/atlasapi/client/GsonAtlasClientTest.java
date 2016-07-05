@@ -198,14 +198,4 @@ public class GsonAtlasClientTest {
         assertNotNull(people);
         assertEquals(queryUri, Iterables.getOnlyElement(people.getPeople()).getUri());
     }
-
-    @Test
-    public void testWriteItem() throws Exception {
-        GsonAtlasClient writeClient = new GsonAtlasClient(HostSpecifier.from("atlas.metabroadcast.com"),
-                Optional.fromNullable("8c47545e6d5c4c3c81ba9a818260b7cd"));
-        Item item = new Item("http://metabroadcast.com/atlas-client/test10101");
-        item.setPublisher(new PublisherDetails("scrubbables.bbc.co.uk"));
-        item.setType("item");
-        writeClient.writeItem(item);
-    }
 }
