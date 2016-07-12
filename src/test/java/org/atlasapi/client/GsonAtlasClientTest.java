@@ -202,9 +202,9 @@ public class GsonAtlasClientTest {
     @Test
     public void testWriteItem() throws Exception {
         GsonAtlasClient writeClient = new GsonAtlasClient(HostSpecifier.from("atlas.metabroadcast.com"),
-                Optional.fromNullable("8c47545e6d5c4c3c81ba9a818260b7cd"));
+                Optional.fromNullable("317d37310fcf4a22a8e748dc63142a29"));
         Item item = new Item("http://metabroadcast.com/atlas-client/test10101");
-        item.setPublisher(new PublisherDetails("scrubbables.bbc.co.uk"));
+        item.setPublisher(new PublisherDetails("uktv.co.uk"));
         item.setType("item");
         writeClient.writeItem(item);
     }

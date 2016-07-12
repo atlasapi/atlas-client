@@ -119,7 +119,7 @@ class JaxbStringQueryClient implements StringQueryClient {
     }
 
     @Override
-    public void putItem(String query, Item item) {
+    public String putItem(String query, Item item) {
         throw new UnsupportedOperationException("Item PUT not currently supported via XML");
     }
 }

@@ -16,7 +16,7 @@ interface StringQueryClient {
 
 	String postItem(String query, Item item);
 
-	void putItem(String query, Item item);
+	String putItem(String query, Item item);
 
 	String postTopic(String queryUri, Topic topic);
 

@@ -178,13 +178,14 @@ public class GsonQueryClient implements StringQueryClient {
             if (resp.statusCode() >= 400) {
                 throw new BadResponseException("Error POSTing item: HTTP " + resp.statusCode() + " received from Atlas");
             }
-            return resp.header(LOCATION);
+            Wrapper id = gson.get().fromJson(resp.body(), Wrapper.class);
+            return id.getId().getId();
         } catch (HttpException e) {
             throw Throwables.propagate(e);
         }
     }
 
-    @Override public void putItem(String query, Item item) {
+    @Override public String putItem(String query, Item item) {
         try {
             String json = gson.get().toJson(item);
             Payload httpBody = new StringPayload(json);
@@ -192,6 +193,8 @@ public class GsonQueryClient implements StringQueryClient {
             if (resp.statusCode() >= 400) {
                 throw new BadResponseException("Error PUTting item: HTTP " + resp.statusCode() + " received from Atlas");
             }
+            Id id = gson.get().fromJson(resp.body(), Id.class);
+            return id.getId();
         } catch (HttpException e) {
             throw Throwables.propagate(e);
         }
@@ -413,6 +416,32 @@ public class GsonQueryClient implements StringQueryClient {
         @Override
         public Country deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             return Countries.fromCode(json.getAsJsonObject().get("code").getAsString());
+        }
+    }
+
+    private class Wrapper {
+
+        private final Id id;
+
+        public Wrapper(Id id) {
+            this.id = id;
+        }
+
+        public Id getId() {
+            return id;
+        }
+    }
+
+    private class Id {
+
+        private final String id;
+
+        public Id(String id) {
+            this.id = id;
+        }
+
+        public String getId() {
+            return id;
         }
     }
 
