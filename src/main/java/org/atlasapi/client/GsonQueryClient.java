@@ -205,7 +205,8 @@ public class GsonQueryClient implements StringQueryClient {
             if (response.statusCode() >= 400) {
                 throw new BadResponseException("Error POSTing topic " + topic.getTitle() + " " + topic.getNamespace() + " " + topic.getValue() + " code: " + response.statusCode() + ", message: " + response.statusLine());
             }
-            return response.header(LOCATION);
+            Id id = gson.get().fromJson(response.body(), Id.class);
+            return id.getId();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -413,6 +414,32 @@ public class GsonQueryClient implements StringQueryClient {
         @Override
         public Country deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             return Countries.fromCode(json.getAsJsonObject().get("code").getAsString());
+        }
+    }
+
+    private class Wrapper {
+
+        private final Id id;
+
+        public Wrapper(Id id) {
+            this.id = id;
+        }
+
+        public Id getId() {
+            return id;
+        }
+    }
+
+    private class Id {
+
+        private final String id;
+
+        public Id(String id) {
+            this.id = id;
+        }
+
+        public String getId() {
+            return id;
         }
     }
 
