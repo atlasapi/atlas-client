@@ -72,16 +72,16 @@ public class GsonQueryClient implements StringQueryClient {
         @Override
         protected Gson initialValue() {
             return new GsonBuilder()
-                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                .registerTypeAdapter(Date.class, new DateDeserializer())
-                .registerTypeAdapter(Long.class, new LongDeserializer())
-                .registerTypeAdapter(Boolean.class, new BooleanDeserializer())
-                .registerTypeAdapter(Description.class, new DescriptionDeserializer())
-                .registerTypeAdapter(ContentIdentifier.class, new ContentIdentifierDeserializer())
-                .registerTypeAdapter(Country.class, new CountryDeserializer())
-                .registerTypeAdapter(DateTime.class, new JodaDateTimeSerializer())
-                .registerTypeAdapterFactory(new BroadcastFondlingTypeAdapterFactory())
-                .create();
+                    .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                    .registerTypeAdapter(Date.class, new DateDeserializer())
+                    .registerTypeAdapter(Long.class, new LongDeserializer())
+                    .registerTypeAdapter(Boolean.class, new BooleanDeserializer())
+                    .registerTypeAdapter(Description.class, new DescriptionDeserializer())
+                    .registerTypeAdapter(ContentIdentifier.class, new ContentIdentifierDeserializer())
+                    .registerTypeAdapter(Country.class, new CountryDeserializer())
+                    .registerTypeAdapter(DateTime.class, new JodaDateTimeSerializer())
+                    .registerTypeAdapterFactory(new BroadcastFondlingTypeAdapterFactory())
+                    .create();
         }
     };
 
@@ -201,6 +201,32 @@ public class GsonQueryClient implements StringQueryClient {
     }
 
     @Override
+    public TopicUpdateResponse postTopicWithResponse(String queryUri, Topic topic) {
+        try {
+            Payload topicPayload = new StringPayload(gson.get().toJson(topic, Topic.class));
+            HttpResponse response = httpClient.post(queryUri, topicPayload);
+            if (response.statusCode() >= 400) {
+                throw new BadResponseException("Error POSTing topic " + topic.getTitle() + " " + topic.getNamespace() + " " + topic.getValue() + " code: " + response.statusCode() + ", message: " + response.statusLine());
+            }
+            Id id = gson.get().fromJson(response.body(), Id.class);
+
+            return new TopicUpdateResponse(
+                    id.getId(),
+                    response.header(LOCATION)
+            );
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Deprecated
+    @Override
+    /**
+     * This method has been deprecated as it doesn't return Topic ID.
+     * Use {@link #postTopicWithResponse(String queryUri, Topic topic) postTopicWithResponse}
+     * method instead of this method as the other method returns object that contains
+     * Topic ID and location.
+     */
     public String postTopic(String queryUri, Topic topic) {
         try {
             Payload topicPayload = new StringPayload(gson.get().toJson(topic, Topic.class));
@@ -444,5 +470,4 @@ public class GsonQueryClient implements StringQueryClient {
             return id;
         }
     }
-
 }
