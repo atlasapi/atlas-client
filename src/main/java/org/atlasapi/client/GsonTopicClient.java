@@ -71,7 +71,7 @@ public class GsonTopicClient implements AtlasTopicClient {
     }
 
     @Override
-    public TopicResponse postTopicWithResponse(Topic topic) {
+    public TopicUpdateResponse postTopicWithResponse(Topic topic) {
         QueryStringParameters queryParams = new QueryStringParameters();
         if (apiKey.isPresent()) {
             queryParams.add("apiKey", apiKey.get());

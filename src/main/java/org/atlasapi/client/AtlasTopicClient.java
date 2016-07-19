@@ -16,5 +16,5 @@ public interface AtlasTopicClient {
  
     String postTopic(Topic topic);
 
-    TopicResponse postTopicWithResponse(Topic topic);
+    TopicUpdateResponse postTopicWithResponse(Topic topic);
 }

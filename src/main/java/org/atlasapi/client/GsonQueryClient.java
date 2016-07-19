@@ -184,7 +184,7 @@ public class GsonQueryClient implements StringQueryClient {
         }
     }
 
-    @Override public void putItem(String query, Item item) {
+    @Override public String putItem(String query, Item item) {
         try {
             String json = gson.get().toJson(item);
             Payload httpBody = new StringPayload(json);
@@ -192,12 +192,21 @@ public class GsonQueryClient implements StringQueryClient {
             if (resp.statusCode() >= 400) {
                 throw new BadResponseException("Error PUTting item: HTTP " + resp.statusCode() + " received from Atlas");
             }
+            Id id = gson.get().fromJson(resp.body(), Id.class);
+            return id.getId();
         } catch (HttpException e) {
             throw Throwables.propagate(e);
         }
     }
 
+    @Deprecated
     @Override
+    /**
+     * This method has been deprecated as it doesn't return Topic ID.
+     * Use {@link #postTopicWithResponse(String queryUri, Topic topic) postTopicWithResponse}
+     * method instead of this method as the other method returns object that contains
+     * Topic ID and location.
+     */
     public String postTopic(String queryUri, Topic topic) {
         try {
             Payload topicPayload = new StringPayload(gson.get().toJson(topic, Topic.class));
@@ -206,6 +215,27 @@ public class GsonQueryClient implements StringQueryClient {
                 throw new BadResponseException("Error POSTing topic " + topic.getTitle() + " " + topic.getNamespace() + " " + topic.getValue() + " code: " + response.statusCode() + ", message: " + response.statusLine());
             }
             return response.header(LOCATION);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public TopicUpdateResponse postTopicWithResponse(String queryUri, Topic topic) {
+        try {
+            Payload topicPayload = new StringPayload(gson.get().toJson(topic, Topic.class));
+            HttpResponse response = httpClient.post(queryUri, topicPayload);
+            if (response.statusCode() >= 400) {
+                throw new BadResponseException("Error POSTing topic " + topic.getTitle() + " "
+                        + topic.getNamespace() + " " + topic.getValue() + " code: "
+                        + response.statusCode() + ", message: " + response.statusLine());
+            }
+            Id id = gson.get().fromJson(response.body(), Id.class);
+
+            return new TopicUpdateResponse(
+                    id.getId(),
+                    response.header(LOCATION)
+            );
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -416,4 +446,16 @@ public class GsonQueryClient implements StringQueryClient {
         }
     }
 
+    private class Id {
+
+        private final String id;
+
+        public Id(String id) {
+            this.id = id;
+        }
+
+        public String getId() {
+            return id;
+        }
+    }
 }

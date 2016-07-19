@@ -1,11 +1,11 @@
 package org.atlasapi.client;
 
-public class TopicResponse {
+public class TopicUpdateResponse {
 
     private final String id;
     private final String location;
 
-    public TopicResponse(String id, String location) {
+    public TopicUpdateResponse(String id, String location) {
         this.id = id;
         this.location = location;
     }

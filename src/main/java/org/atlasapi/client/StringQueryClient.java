@@ -20,7 +20,7 @@ interface StringQueryClient {
 
 	String postTopic(String queryUri, Topic topic);
 
-	TopicResponse postTopicWithResponse(String queryUri, Topic topic);
+	TopicUpdateResponse postTopicWithResponse(String queryUri, Topic topic);
 
 	ChannelQueryResult channelQuery(String queryUri);
 	

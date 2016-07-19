@@ -114,7 +114,7 @@ class JaxbStringQueryClient implements StringQueryClient {
     }
 
     @Override
-    public TopicResponse postTopicWithResponse(String queryUri, Topic topic) {
+    public TopicUpdateResponse postTopicWithResponse(String queryUri, Topic topic) {
         throw new UnsupportedOperationException("Topic POSTing not currently supported via XML");
     }
     
