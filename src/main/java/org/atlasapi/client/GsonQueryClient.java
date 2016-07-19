@@ -72,16 +72,16 @@ public class GsonQueryClient implements StringQueryClient {
         @Override
         protected Gson initialValue() {
             return new GsonBuilder()
-                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                .registerTypeAdapter(Date.class, new DateDeserializer())
-                .registerTypeAdapter(Long.class, new LongDeserializer())
-                .registerTypeAdapter(Boolean.class, new BooleanDeserializer())
-                .registerTypeAdapter(Description.class, new DescriptionDeserializer())
-                .registerTypeAdapter(ContentIdentifier.class, new ContentIdentifierDeserializer())
-                .registerTypeAdapter(Country.class, new CountryDeserializer())
-                .registerTypeAdapter(DateTime.class, new JodaDateTimeSerializer())
-                .registerTypeAdapterFactory(new BroadcastFondlingTypeAdapterFactory())
-                .create();
+                    .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                    .registerTypeAdapter(Date.class, new DateDeserializer())
+                    .registerTypeAdapter(Long.class, new LongDeserializer())
+                    .registerTypeAdapter(Boolean.class, new BooleanDeserializer())
+                    .registerTypeAdapter(Description.class, new DescriptionDeserializer())
+                    .registerTypeAdapter(ContentIdentifier.class, new ContentIdentifierDeserializer())
+                    .registerTypeAdapter(Country.class, new CountryDeserializer())
+                    .registerTypeAdapter(DateTime.class, new JodaDateTimeSerializer())
+                    .registerTypeAdapterFactory(new BroadcastFondlingTypeAdapterFactory())
+                    .create();
         }
     };
 
@@ -205,8 +205,7 @@ public class GsonQueryClient implements StringQueryClient {
             if (response.statusCode() >= 400) {
                 throw new BadResponseException("Error POSTing topic " + topic.getTitle() + " " + topic.getNamespace() + " " + topic.getValue() + " code: " + response.statusCode() + ", message: " + response.statusLine());
             }
-            Id id = gson.get().fromJson(response.body(), Id.class);
-            return id.getId();
+            return response.header(LOCATION);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -414,32 +413,6 @@ public class GsonQueryClient implements StringQueryClient {
         @Override
         public Country deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             return Countries.fromCode(json.getAsJsonObject().get("code").getAsString());
-        }
-    }
-
-    private class Wrapper {
-
-        private final Id id;
-
-        public Wrapper(Id id) {
-            this.id = id;
-        }
-
-        public Id getId() {
-            return id;
-        }
-    }
-
-    private class Id {
-
-        private final String id;
-
-        public Id(String id) {
-            this.id = id;
-        }
-
-        public String getId() {
-            return id;
         }
     }
 
