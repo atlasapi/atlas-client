@@ -15,4 +15,6 @@ public interface AtlasTopicClient {
     ContentQueryResult contentFor(String topicId, ContentQuery query);
  
     String postTopic(Topic topic);
+
+    TopicUpdateResponse postTopicWithResponse(Topic topic);
 }
