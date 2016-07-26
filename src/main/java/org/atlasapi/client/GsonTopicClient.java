@@ -1,5 +1,6 @@
 package org.atlasapi.client;
 
+import org.atlasapi.client.response.TopicUpdateResponse;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Topic;
 import org.atlasapi.media.entity.simple.TopicQueryResult;

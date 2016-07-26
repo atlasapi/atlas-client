@@ -9,6 +9,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.atlasapi.client.response.ContentResponse;
+import org.atlasapi.client.response.TopicUpdateResponse;
 import org.atlasapi.media.entity.simple.*;
 
 import com.google.common.base.Charsets;
@@ -124,7 +126,17 @@ class JaxbStringQueryClient implements StringQueryClient {
     }
 
     @Override
+    public ContentResponse postItemWithResponse(String query, Item item) {
+        throw new UnsupportedOperationException("Item POST not currently supported via XML");
+    }
+
+    @Override
     public String putItem(String query, Item item) {
         throw new UnsupportedOperationException("Item PUT not currently supported via XML");
+    }
+
+    @Override
+    public ContentResponse putItemWithResponse(String query, Item item) {
+        throw new UnsupportedOperationException("Item POST not currently supported via XML");
     }
 }

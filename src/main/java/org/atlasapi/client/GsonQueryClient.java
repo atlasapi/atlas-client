@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.atlasapi.client.exception.BadResponseException;
+import org.atlasapi.client.response.ContentResponse;
+import org.atlasapi.client.response.TopicUpdateResponse;
 import org.atlasapi.media.entity.simple.Broadcast;
 import org.atlasapi.media.entity.simple.ChannelGroupQueryResult;
 import org.atlasapi.media.entity.simple.ChannelQueryResult;
@@ -24,6 +26,7 @@ import org.atlasapi.media.entity.simple.Playlist;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 import org.atlasapi.media.entity.simple.Topic;
 import org.atlasapi.media.entity.simple.TopicQueryResult;
+import org.atlasapi.media.entity.simple.response.AtlasResponse;
 
 import com.metabroadcast.common.http.HttpException;
 import com.metabroadcast.common.http.HttpResponse;
@@ -170,7 +173,8 @@ public class GsonQueryClient implements StringQueryClient {
 
 
 
-    @Override public String postItem(String query, Item item) {
+    @Override
+    public String postItem(String query, Item item) {
         try {
             String json = gson.get().toJson(item);
             Payload httpBody = new StringPayload(json);
@@ -178,14 +182,33 @@ public class GsonQueryClient implements StringQueryClient {
             if (resp.statusCode() >= 400) {
                 throw new BadResponseException("Error POSTing item: HTTP " + resp.statusCode() + " received from Atlas");
             }
-            Wrapper id = gson.get().fromJson(resp.body(), Wrapper.class);
-            return id.getId().getId();
+            return resp.header(LOCATION);
+
         } catch (HttpException e) {
             throw Throwables.propagate(e);
         }
     }
 
-    @Override public String putItem(String query, Item item) {
+    @Override
+    public ContentResponse postItemWithResponse(String query, Item item) {
+        try {
+            String json = gson.get().toJson(item);
+            Payload httpBody = new StringPayload(json);
+            HttpResponse resp = httpClient.post(query, httpBody);
+            if (resp.statusCode() >= 400) {
+                throw new BadResponseException("Error POSTing item: HTTP " + resp.statusCode() + " received from Atlas");
+            }
+
+            AtlasResponse id = gson.get().fromJson(resp.body(), AtlasResponse.class);
+            return new ContentResponse(id, resp.header(LOCATION));
+
+        } catch (HttpException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
+    @Override
+    public String putItem(String query, Item item) {
         try {
             String json = gson.get().toJson(item);
             Payload httpBody = new StringPayload(json);
@@ -193,8 +216,25 @@ public class GsonQueryClient implements StringQueryClient {
             if (resp.statusCode() >= 400) {
                 throw new BadResponseException("Error PUTting item: HTTP " + resp.statusCode() + " received from Atlas");
             }
-            Id id = gson.get().fromJson(resp.body(), Id.class);
-            return id.getId();
+            return resp.header(LOCATION);
+
+        } catch (HttpException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
+    @Override
+    public ContentResponse putItemWithResponse(String query, Item item) {
+        try {
+            String json = gson.get().toJson(item);
+            Payload httpBody = new StringPayload(json);
+            HttpResponse resp = httpClient.put(query, httpBody);
+            if (resp.statusCode() >= 400) {
+                throw new BadResponseException("Error PUTting item: HTTP " + resp.statusCode() + " received from Atlas");
+            }
+            AtlasResponse id = gson.get().fromJson(resp.body(), AtlasResponse.class);
+            return new ContentResponse(id, resp.header(LOCATION));
+
         } catch (HttpException e) {
             throw Throwables.propagate(e);
         }
@@ -208,7 +248,7 @@ public class GsonQueryClient implements StringQueryClient {
             if (response.statusCode() >= 400) {
                 throw new BadResponseException("Error POSTing topic " + topic.getTitle() + " " + topic.getNamespace() + " " + topic.getValue() + " code: " + response.statusCode() + ", message: " + response.statusLine());
             }
-            Id id = gson.get().fromJson(response.body(), Id.class);
+            AtlasResponse id = gson.get().fromJson(response.body(), AtlasResponse.class);
 
             return new TopicUpdateResponse(
                     id.getId(),
@@ -445,29 +485,5 @@ public class GsonQueryClient implements StringQueryClient {
         }
     }
 
-    private class Wrapper {
 
-        private final Id id;
-
-        public Wrapper(Id id) {
-            this.id = id;
-        }
-
-        public Id getId() {
-            return id;
-        }
-    }
-
-    private class Id {
-
-        private final String id;
-
-        public Id(String id) {
-            this.id = id;
-        }
-
-        public String getId() {
-            return id;
-        }
-    }
 }
