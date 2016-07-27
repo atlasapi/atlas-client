@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import org.atlasapi.client.exception.BadResponseException;
 import org.atlasapi.client.response.ContentResponse;
 import org.atlasapi.client.response.TopicUpdateResponse;
+import org.atlasapi.client.response.WriteResponseWrapper;
 import org.atlasapi.media.entity.simple.Broadcast;
 import org.atlasapi.media.entity.simple.ChannelGroupQueryResult;
 import org.atlasapi.media.entity.simple.ChannelQueryResult;
@@ -199,8 +200,9 @@ public class GsonQueryClient implements StringQueryClient {
                 throw new BadResponseException("Error POSTing item: HTTP " + resp.statusCode() + " received from Atlas");
             }
 
-            AtlasResponse id = gson.get().fromJson(resp.body(), AtlasResponse.class);
-            return new ContentResponse(id, resp.header(LOCATION));
+           WriteResponseWrapper responseWrapper = gson.get().fromJson(resp.body(), WriteResponseWrapper.class);
+            System.out.println(resp.body());
+            return new ContentResponse(responseWrapper.getAtlasResponse(), resp.header(LOCATION));
 
         } catch (HttpException e) {
             throw Throwables.propagate(e);
@@ -232,8 +234,8 @@ public class GsonQueryClient implements StringQueryClient {
             if (resp.statusCode() >= 400) {
                 throw new BadResponseException("Error PUTting item: HTTP " + resp.statusCode() + " received from Atlas");
             }
-            AtlasResponse id = gson.get().fromJson(resp.body(), AtlasResponse.class);
-            return new ContentResponse(id, resp.header(LOCATION));
+            WriteResponseWrapper responseWrapper = gson.get().fromJson(resp.body(), WriteResponseWrapper.class);
+            return new ContentResponse(responseWrapper.getAtlasResponse(), resp.header(LOCATION));
 
         } catch (HttpException e) {
             throw Throwables.propagate(e);
@@ -248,10 +250,10 @@ public class GsonQueryClient implements StringQueryClient {
             if (response.statusCode() >= 400) {
                 throw new BadResponseException("Error POSTing topic " + topic.getTitle() + " " + topic.getNamespace() + " " + topic.getValue() + " code: " + response.statusCode() + ", message: " + response.statusLine());
             }
-            AtlasResponse id = gson.get().fromJson(response.body(), AtlasResponse.class);
+            WriteResponseWrapper responseWrapper = gson.get().fromJson(response.body(), WriteResponseWrapper.class);
 
             return new TopicUpdateResponse(
-                    id.getId(),
+                    responseWrapper.getAtlasResponse().getId(),
                     response.header(LOCATION)
             );
         } catch (Exception e) {
