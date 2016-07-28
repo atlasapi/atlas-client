@@ -1,19 +1,19 @@
 package org.atlasapi.client.response;
 
-import org.atlasapi.media.entity.simple.response.AtlasResponse;
+import org.atlasapi.media.entity.simple.response.WriteResponse;
 
 import com.google.gson.annotations.SerializedName;
 
 public class WriteResponseWrapper {
 
-    @SerializedName("atlasResponse")
-    private final AtlasResponse atlasResponse;
+    @SerializedName("writeResponse")
+    private final WriteResponse writeResponse;
 
-    public WriteResponseWrapper(AtlasResponse atlasResponse) {
-        this.atlasResponse = atlasResponse;
+    public WriteResponseWrapper(WriteResponse writeResponse) {
+        this.writeResponse = writeResponse;
     }
 
-    public AtlasResponse getAtlasResponse() {
-        return atlasResponse;
+    public WriteResponse getAtlasResponse() {
+        return writeResponse;
     }
 }

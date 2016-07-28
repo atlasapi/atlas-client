@@ -1,18 +1,18 @@
 package org.atlasapi.client.response;
 
-import org.atlasapi.media.entity.simple.response.AtlasResponse;
+import org.atlasapi.media.entity.simple.response.WriteResponse;
 
 public class ContentResponse {
 
-    private final AtlasResponse response;
+    private final WriteResponse response;
     private final String location;
 
-    public ContentResponse(AtlasResponse response, String location) {
+    public ContentResponse(WriteResponse response, String location) {
         this.response = response;
         this.location = location;
     }
 
-    public AtlasResponse getResponse() {
+    public WriteResponse getResponse() {
         return response;
     }
 

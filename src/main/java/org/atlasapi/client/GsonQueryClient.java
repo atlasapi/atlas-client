@@ -27,7 +27,6 @@ import org.atlasapi.media.entity.simple.Playlist;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 import org.atlasapi.media.entity.simple.Topic;
 import org.atlasapi.media.entity.simple.TopicQueryResult;
-import org.atlasapi.media.entity.simple.response.AtlasResponse;
 
 import com.metabroadcast.common.http.HttpException;
 import com.metabroadcast.common.http.HttpResponse;
@@ -201,7 +200,6 @@ public class GsonQueryClient implements StringQueryClient {
             }
 
            WriteResponseWrapper responseWrapper = gson.get().fromJson(resp.body(), WriteResponseWrapper.class);
-            System.out.println(resp.body());
             return new ContentResponse(responseWrapper.getAtlasResponse(), resp.header(LOCATION));
 
         } catch (HttpException e) {
@@ -486,6 +484,5 @@ public class GsonQueryClient implements StringQueryClient {
             return Countries.fromCode(json.getAsJsonObject().get("code").getAsString());
         }
     }
-
 
 }

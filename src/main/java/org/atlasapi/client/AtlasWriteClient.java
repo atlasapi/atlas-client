@@ -11,16 +11,23 @@ public interface AtlasWriteClient {
     
     void updatePerson(Person person);
 
+    @Deprecated
     String writeItem(Item item);
 
+    @Deprecated
     String writeItemAsync(Item item);
 
     ContentResponse writeItemWithResponse(Item item);
 
     ContentResponse writeItemWithResponseAsync(Item item);
 
-
+    @Deprecated
     void writeItemOverwriteExisting(Item item);
 
+    @Deprecated
     void writeItemOverwriteExistingAsync(Item item);
+
+    ContentResponse writeItemOverwriteExistingWithResponse(Item item);
+
+    ContentResponse writeItemOverwriteExistingAsyncWithResponse(Item item);
 }
