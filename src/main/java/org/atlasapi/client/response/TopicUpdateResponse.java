@@ -1,4 +1,4 @@
-package org.atlasapi.client;
+package org.atlasapi.client.response;
 
 public class TopicUpdateResponse {
 

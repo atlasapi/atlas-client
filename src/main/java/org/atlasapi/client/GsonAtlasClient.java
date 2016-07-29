@@ -3,6 +3,7 @@ package org.atlasapi.client;
 import java.util.List;
 
 import org.atlasapi.client.query.AtlasQuery;
+import org.atlasapi.client.response.ContentResponse;
 import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
@@ -143,6 +144,17 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     }
 
     @Override
+    public ContentResponse writeItemWithResponse(Item item) {
+        return writeItemWithResponse(item, false);
+
+    }
+
+    @Override
+    public ContentResponse writeItemWithResponseAsync(Item item) {
+        return writeItemWithResponse(item, true);
+    }
+
+    @Override
     public String writeItemAsync(Item item) {
         return writeItem(item, true);
     }
@@ -157,20 +169,34 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
         writeItemOverwriteExisting(item, true);
     }
 
+    @Override
+    public ContentResponse writeItemOverwriteExistingWithResponse(Item item) {
+        return writeItemOverwriteExistingWithResponse(item, false);
+    }
+
+    @Override
+    public ContentResponse writeItemOverwriteExistingAsyncWithResponse(Item item) {
+        return writeItemOverwriteExistingWithResponse(item, true);
+    }
+
+    private ContentResponse writeItemWithResponse(Item item, boolean async) {
+        validateItem(item);
+        return client.postItemWithResponse(writeItemUri(async), item);
+    }
+
     private String writeItem(Item item, boolean async) {
-        checkNotNull(item, "Cannot write a null item");
-        checkNotNull(item.getPublisher(), "Cannot write an Item without a Publisher");
-        checkNotNull(Strings.emptyToNull(item.getUri()), "Cannot write an Item without a URI");
-        checkNotNull(Strings.emptyToNull(item.getType()), "Cannot write an Item without a type");
+        validateItem(item);
         return client.postItem(writeItemUri(async), item);
     }
 
     private void writeItemOverwriteExisting(Item item, boolean async) {
-        checkNotNull(item, "Cannot write a null item");
-        checkNotNull(item.getPublisher(), "Cannot write an Item without a Publisher");
-        checkNotNull(Strings.emptyToNull(item.getUri()), "Cannot write an Item without a URI");
-        checkNotNull(Strings.emptyToNull(item.getType()), "Cannot write an Item without a type");
+        validateItem(item);
         client.putItem(writeItemUri(async), item);
+    }
+
+    private ContentResponse writeItemOverwriteExistingWithResponse(Item item, boolean async) {
+        validateItem(item);
+        return client.putItemWithResponse(writeItemUri(async), item);
     }
 
     private String personResourceUri() {
@@ -192,5 +218,13 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
         }
 
         return uriBuilder.toString();
+    }
+
+    private void validateItem(Item item) {
+        checkNotNull(item, "Cannot write a null item");
+        checkNotNull(item.getPublisher(), "Cannot write an Item without a Publisher");
+        checkNotNull(Strings.emptyToNull(item.getUri()), "Cannot write an Item without a URI");
+        checkNotNull(Strings.emptyToNull(item.getType()), "Cannot write an Item without a type");
+
     }
 }
