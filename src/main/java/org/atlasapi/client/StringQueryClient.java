@@ -9,6 +9,7 @@ import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.EventQueryResult;
 import org.atlasapi.media.entity.simple.Item;
 import org.atlasapi.media.entity.simple.PeopleQueryResult;
+import org.atlasapi.media.entity.simple.Playlist;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 import org.atlasapi.media.entity.simple.Topic;
 import org.atlasapi.media.entity.simple.TopicQueryResult;
@@ -42,5 +43,9 @@ interface StringQueryClient {
 	ChannelGroupQueryResult channelGroupQuery(String queryUri);
 
 	EventQueryResult eventQuery(String eventQuery);
+
+    ContentResponse postPlayListWithResponse(String query, Playlist playlist);
+
+    ContentResponse putPlayListWithResponse(String query, Playlist playlist);
 	
 }

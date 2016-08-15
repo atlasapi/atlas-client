@@ -196,7 +196,7 @@ public class GsonQueryClient implements StringQueryClient {
             Payload httpBody = new StringPayload(json);
             HttpResponse resp = httpClient.post(query, httpBody);
             if (resp.statusCode() >= 400) {
-                throw new BadResponseException("Error POSTing item: HTTP " + resp.statusCode() + " received from Atlas");
+                throw new BadResponseException("Error POSTing item: HTTP " + resp.statusCode() + " received from Atlas" + resp.body() + json);
             }
 
            WriteResponseWrapper responseWrapper = gson.get().fromJson(resp.body(), WriteResponseWrapper.class);
@@ -321,6 +321,40 @@ public class GsonQueryClient implements StringQueryClient {
             }));
         } catch (Exception e) {
             throw new RuntimeException("Problem with event query" + eventQueryUri, e);
+        }
+    }
+
+    @Override
+    public ContentResponse postPlayListWithResponse(String query, Playlist playlist) {
+        try {
+            String json = gson.get().toJson(playlist);
+            Payload httpBody = new StringPayload(json);
+            HttpResponse resp = httpClient.post(query, httpBody);
+            if (resp.statusCode() >= 400) {
+                throw new BadResponseException("Error PUTting item: HTTP " + resp.statusCode() + " received from Atlas");
+            }
+            WriteResponseWrapper responseWrapper = gson.get().fromJson(resp.body(), WriteResponseWrapper.class);
+            return new ContentResponse(responseWrapper.getAtlasResponse(), resp.header(LOCATION));
+
+        } catch (HttpException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
+    @Override
+    public ContentResponse putPlayListWithResponse(String query, Playlist playlist) {
+        try {
+            String json = gson.get().toJson(playlist);
+            Payload httpBody = new StringPayload(json);
+            HttpResponse resp = httpClient.put(query, httpBody);
+            if (resp.statusCode() >= 400) {
+                throw new BadResponseException("Error PUTting item: HTTP " + resp.statusCode() + " received from Atlas");
+            }
+            WriteResponseWrapper responseWrapper = gson.get().fromJson(resp.body(), WriteResponseWrapper.class);
+            return new ContentResponse(responseWrapper.getAtlasResponse(), resp.header(LOCATION));
+
+        } catch (HttpException e) {
+            throw Throwables.propagate(e);
         }
     }
 

@@ -111,6 +111,18 @@ class JaxbStringQueryClient implements StringQueryClient {
     }
 
     @Override
+    public ContentResponse postPlayListWithResponse(String query, Playlist playlist) {
+        throw new UnsupportedOperationException("PlayList POSTing not currently supported via XML");
+
+    }
+
+    @Override
+    public ContentResponse putPlayListWithResponse(String query, Playlist playlist) {
+        throw new UnsupportedOperationException("PlayList POSTing not currently supported via XML");
+
+    }
+
+    @Override
     public String postTopic(String queryUri, Topic topic) {
         throw new UnsupportedOperationException("Topic POSTing not currently supported via XML");
     }

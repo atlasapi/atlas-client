@@ -3,7 +3,7 @@ package org.atlasapi.client;
 import org.atlasapi.client.response.ContentResponse;
 import org.atlasapi.media.entity.simple.Item;
 import org.atlasapi.media.entity.simple.Person;
-
+import org.atlasapi.media.entity.simple.Playlist;
 
 public interface AtlasWriteClient {
     
@@ -30,4 +30,8 @@ public interface AtlasWriteClient {
     ContentResponse writeItemOverwriteExistingWithResponse(Item item);
 
     ContentResponse writeItemOverwriteExistingAsyncWithResponse(Item item);
+
+    ContentResponse writePlayListWithResponse(Playlist playlist);
+
+    ContentResponse writePlayListOverwriteExistingWithResponse(Playlist playlist);
 }

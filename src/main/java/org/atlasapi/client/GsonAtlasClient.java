@@ -12,6 +12,7 @@ import org.atlasapi.media.entity.simple.EventQueryResult;
 import org.atlasapi.media.entity.simple.Item;
 import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.Person;
+import org.atlasapi.media.entity.simple.Playlist;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 
 import com.metabroadcast.common.url.QueryStringParameters;
@@ -179,6 +180,27 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
         return writeItemOverwriteExistingWithResponse(item, true);
     }
 
+    @Override
+    public ContentResponse writePlayListWithResponse(Playlist playlist) {
+        return writePlayListWithResponse(playlist, false);
+    }
+
+    @Override
+    public ContentResponse writePlayListOverwriteExistingWithResponse(Playlist playlist) {
+        return writePlayListOverwriteExistingWithResponse(playlist, false);
+    }
+
+    private ContentResponse writePlayListWithResponse(Playlist playlist, boolean async) {
+        validatePlayList(playlist);
+        return client.postPlayListWithResponse(writeItemUri(async), playlist);
+    }
+
+    private ContentResponse writePlayListOverwriteExistingWithResponse(Playlist playlist, boolean async) {
+        validatePlayList(playlist);
+        return client.putPlayListWithResponse(writeItemUri(async), playlist);
+    }
+
+
     private ContentResponse writeItemWithResponse(Item item, boolean async) {
         validateItem(item);
         return client.postItemWithResponse(writeItemUri(async), item);
@@ -226,5 +248,12 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
         checkNotNull(Strings.emptyToNull(item.getUri()), "Cannot write an Item without a URI");
         checkNotNull(Strings.emptyToNull(item.getType()), "Cannot write an Item without a type");
 
+    }
+
+    private void validatePlayList(Playlist playlist) {
+        checkNotNull(playlist, "Cannot write a null item");
+        checkNotNull(playlist.getPublisher(), "Cannot write an Item without a Publisher");
+        checkNotNull(Strings.emptyToNull(playlist.getUri()), "Cannot write an Item without a URI");
+        checkNotNull(Strings.emptyToNull(playlist.getType()), "Cannot write an Item without a type");
     }
 }
