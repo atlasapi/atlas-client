@@ -155,49 +155,5 @@ public class GsonAtlasClientTest {
             assertNotNull(desc);
         }
     }
-    
-    // BBC schedules are no longer available without an API key
-    @Ignore
-    public void shouldRetrieveSchedule() {
-        DateTime now = new DateTime(DateTimeZones.UTC);
-        ScheduleQuery scheduleQuery = ScheduleQuery.builder().withChannels(Channel.BBC_ONE).withPublishers(ImmutableSet.of(Publisher.BBC)).withOnBetween(new Interval(now, now.plusHours(1))).build();
-        ScheduleQueryResult schedule = client.scheduleFor(scheduleQuery);
-        
-        ScheduleChannel channel = Iterables.getOnlyElement(schedule.getChannels());
-        assertEquals(Channel.BBC_ONE.key(), channel.getChannelKey());
-        assertFalse(channel.getItems().isEmpty());
-        for (Item item: channel.getItems()) {
-            assertEquals(Publisher.BBC.key(), item.getPublisher().getKey());
-            assertNotNull(item.getTitle());
-        }
-    }
-
-    @Ignore  // This no longer produces results without an API key
-    @Test
-    public void testSingleContentGroupQuery() {
-        ContentGroupQueryResult result = client.contentGroup("cbbn");
-        ContentGroup group = (ContentGroup) Iterables.getOnlyElement(result.getContentGroups());
-        assertNotNull(group);
-    }
-    
-    @Ignore  // This no longer produces results without an API key
-    @Test
-    public void testManyContentGroupsQuery() {
-        ContentGroupQueryResult result = client.contentGroups();
-        assertNotNull(result);
-        assertTrue(result.getContentGroups().size() > 0);
-    }
-    
-    @Ignore  // This person is no longer present without an API key
-    @Test
-    public void testShouldGetPeople() {
-        String queryUri = "http://www.bbc.co.uk/people/84371";
-        PeopleQuery query = PeopleQuery.builder()
-                .withUrls(queryUri)
-                .build();
-        PeopleQueryResult people = client.people(query);
-        assertNotNull(people);
-        assertEquals(queryUri, Iterables.getOnlyElement(people.getPeople()).getUri());
-    }
 
 }
