@@ -7,6 +7,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import org.atlasapi.client.ContentQuery.ContentQueryBuilder;
+import org.atlasapi.client.response.ContentResponse;
 import org.atlasapi.media.entity.Channel;
 import org.atlasapi.media.entity.Publisher;
 import org.atlasapi.media.entity.simple.Broadcast;
@@ -207,5 +208,16 @@ public class GsonAtlasClientTest {
         item.setPublisher(new PublisherDetails("uktv.co.uk"));
         item.setType("item");
         writeClient.writeItem(item);
+    }
+
+    @Test
+    public void testWritePlayList() throws Exception {
+        GsonAtlasClient writeClient = new GsonAtlasClient(HostSpecifier.from("atlas.metabroadcast.com"),
+                Optional.fromNullable("317d37310fcf4a22a8e748dc63142a29"));
+        Playlist item = new Playlist();
+        item.setUri("http://metabroadcast.com/atlas-client/test10102");
+        item.setPublisher(new PublisherDetails("uktv.co.uk"));
+        item.setType("brand");
+        writeClient.writePlayListWithResponse(item);
     }
 }
