@@ -34,4 +34,8 @@ public interface AtlasWriteClient {
     ContentResponse writePlayListWithResponse(Playlist playlist);
 
     ContentResponse writePlayListOverwriteExistingWithResponse(Playlist playlist);
+
+    void unpublishContentById(String id);
+
+    void unpublishContentByUri(String uri);
 }

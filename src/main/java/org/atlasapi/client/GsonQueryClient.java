@@ -382,6 +382,17 @@ public class GsonQueryClient implements StringQueryClient {
         }
     }
 
+    public void unpublishContent(String queryString) {
+        try {
+            HttpResponse response = httpClient.delete(queryString);
+            if (response.statusCode() >= 400) {
+                throw new BadResponseException(String.format("DELETE %s: %s %s", queryString, response.statusCode(), response.statusLine()));
+            }
+        } catch (HttpException e) {
+            throw new RuntimeException(String.format("%s", queryString), e);
+        }
+    }
+
     private static final class BroadcastFondlingTypeAdapterFactory implements TypeAdapterFactory {
 
         @Override
