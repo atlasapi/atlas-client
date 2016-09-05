@@ -36,7 +36,10 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     private final String baseUri;
     private final Optional<String> apiKey;
     private final Logger log = LoggerFactory.getLogger(this.getClass().getName());
-    
+
+    private final String URI = "uri";
+    private final String ID = "id";
+
     public GsonAtlasClient(HostSpecifier atlasHost, Optional<String> apiKey) {
         this.apiKey = apiKey;
         this.baseUri = String.format("http://%s/3.0", atlasHost);
@@ -192,12 +195,12 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
 
     @Override
     public void unpublishContentById(String id) {
-        unpublishContentById(id, false);
+        unpublishContent(ID, id);
     }
 
     @Override
     public void unpublishContentByUri(String uri) {
-        unpublishContentByUri(uri, false);
+        unpublishContent(URI, uri);
     }
 
     private ContentResponse writePlayListWithResponse(Playlist playlist, boolean async) {
@@ -252,31 +255,21 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
         return uriBuilder.toString();
     }
 
-    private void unpublishContentById(String id, boolean async) {
+    private void unpublishContent(String identifierParam, String id) {
         client.unpublishContent(
-                unpublishContentUri(id, false, async)
+                unpublishContentUri(identifierParam, id)
         );
     }
 
-    private void unpublishContentByUri(String uri, boolean async) {
-        client.unpublishContent(
-                unpublishContentUri(uri, true, async)
-        );
-    }
-
-    private String unpublishContentUri(String identifier, Boolean identifierIsUri, Boolean async) {
+    private String unpublishContentUri(String identifierParam, String identifier) {
         checkNotNull(apiKey.get(), "An API key must be specified for content unpublish queries");
-        StringBuilder uriBuilder = new StringBuilder(baseUri)
+        return new StringBuilder(baseUri)
                 .append("/content.json?")
                 .append(apiKeyQueryPart())
-                .append(identifierIsUri ? "&uri=" : "&id=")
-                .append(identifier);
+                .append(identifierParam.equals(URI) ? "&uri=" : "&id=")
+                .append(identifier)
+                .toString();
 
-        if(async) {
-            uriBuilder.append("&async=true");
-        }
-
-        return uriBuilder.toString();
     }
 
     private void validateItem(Item item) {
