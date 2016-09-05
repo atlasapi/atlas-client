@@ -36,7 +36,10 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     private final String baseUri;
     private final Optional<String> apiKey;
     private final Logger log = LoggerFactory.getLogger(this.getClass().getName());
-    
+
+    private final String URI = "uri";
+    private final String ID = "id";
+
     public GsonAtlasClient(HostSpecifier atlasHost, Optional<String> apiKey) {
         this.apiKey = apiKey;
         this.baseUri = String.format("http://%s/3.0", atlasHost);
@@ -190,6 +193,16 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
         return writePlayListOverwriteExistingWithResponse(playlist, false);
     }
 
+    @Override
+    public void unpublishContentById(String id) {
+        unpublishContent(ID, id);
+    }
+
+    @Override
+    public void unpublishContentByUri(String uri) {
+        unpublishContent(URI, uri);
+    }
+
     private ContentResponse writePlayListWithResponse(Playlist playlist, boolean async) {
         validatePlayList(playlist);
         return client.postPlayListWithResponse(writeItemUri(async), playlist);
@@ -240,6 +253,23 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
         }
 
         return uriBuilder.toString();
+    }
+
+    private void unpublishContent(String identifierParam, String id) {
+        client.unpublishContent(
+                unpublishContentUri(identifierParam, id)
+        );
+    }
+
+    private String unpublishContentUri(String identifierParam, String identifier) {
+        checkNotNull(apiKey.get(), "An API key must be specified for content unpublish queries");
+        return new StringBuilder(baseUri)
+                .append("/content.json?")
+                .append(apiKeyQueryPart())
+                .append(identifierParam.equals(URI) ? "&uri=" : "&id=")
+                .append(identifier)
+                .toString();
+
     }
 
     private void validateItem(Item item) {
