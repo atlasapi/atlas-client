@@ -1,8 +1,10 @@
 package org.atlasapi.client;
 
+import java.net.URISyntaxException;
 import java.util.List;
 
 import org.atlasapi.client.query.AtlasQuery;
+import org.atlasapi.client.query.ContentWriteOptions;
 import org.atlasapi.client.response.ContentResponse;
 import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
@@ -22,7 +24,9 @@ import com.metabroadcast.common.url.Urls;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
 import com.google.common.net.HostSpecifier;
+import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -143,54 +147,126 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     }
 
     @Override
+    public ContentResponse writeItem(Item item, ContentWriteOptions options) {
+        validateItem(item);
+
+        if (options.isOverwriteExisting()) {
+            return client.putItem(writeItemUri(options), item);
+        } else {
+            return client.postItem(writeItemUri(options), item);
+        }
+    }
+
+    @Override
+    public ContentResponse writePlaylist(Playlist playlist, ContentWriteOptions options) {
+        validatePlayList(playlist);
+
+        if (options.isOverwriteExisting()) {
+            return client.putPlaylist(writeItemUri(options), playlist);
+        } else {
+            return client.postPlaylist(writeItemUri(options), playlist);
+        }
+    }
+
+    @Override
     public String writeItem(Item item) {
-        return writeItem(item, false);
-    }
-
-    @Override
-    public ContentResponse writeItemWithResponse(Item item) {
-        return writeItemWithResponse(item, false);
-
-    }
-
-    @Override
-    public ContentResponse writeItemWithResponseAsync(Item item) {
-        return writeItemWithResponse(item, true);
+        return writeItem(
+                item,
+                ContentWriteOptions.builder()
+                        .build()
+        )
+                .getLocation();
     }
 
     @Override
     public String writeItemAsync(Item item) {
-        return writeItem(item, true);
+        return writeItem(
+                item,
+                ContentWriteOptions.builder()
+                        .withAsync()
+                        .build()
+        )
+                .getLocation();
+    }
+
+    @Override
+    public ContentResponse writeItemWithResponse(Item item) {
+        return writeItem(
+                item,
+                ContentWriteOptions.builder()
+                        .build()
+        );
+    }
+
+    @Override
+    public ContentResponse writeItemWithResponseAsync(Item item) {
+        return writeItem(
+                item,
+                ContentWriteOptions.builder()
+                        .withAsync()
+                        .build()
+        );
     }
 
     @Override
     public void writeItemOverwriteExisting(Item item) {
-        writeItemOverwriteExisting(item, false);
+        writeItem(
+                item,
+                ContentWriteOptions.builder()
+                        .withOverwriteExisting()
+                        .build()
+        );
     }
 
     @Override
     public void writeItemOverwriteExistingAsync(Item item) {
-        writeItemOverwriteExisting(item, true);
+        writeItem(
+                item,
+                ContentWriteOptions.builder()
+                        .withAsync()
+                        .withOverwriteExisting()
+                        .build()
+        );
     }
 
     @Override
     public ContentResponse writeItemOverwriteExistingWithResponse(Item item) {
-        return writeItemOverwriteExistingWithResponse(item, false);
+        return writeItem(
+                item,
+                ContentWriteOptions.builder()
+                        .withOverwriteExisting()
+                        .build()
+        );
     }
 
     @Override
     public ContentResponse writeItemOverwriteExistingAsyncWithResponse(Item item) {
-        return writeItemOverwriteExistingWithResponse(item, true);
+        return writeItem(
+                item,
+                ContentWriteOptions.builder()
+                        .withAsync()
+                        .withOverwriteExisting()
+                        .build()
+        );
     }
 
     @Override
     public ContentResponse writePlayListWithResponse(Playlist playlist) {
-        return writePlayListWithResponse(playlist, false);
+        return writePlaylist(
+                playlist,
+                ContentWriteOptions.builder()
+                        .build()
+        );
     }
 
     @Override
     public ContentResponse writePlayListOverwriteExistingWithResponse(Playlist playlist) {
-        return writePlayListOverwriteExistingWithResponse(playlist, false);
+        return writePlaylist(
+                playlist,
+                ContentWriteOptions.builder()
+                        .withOverwriteExisting()
+                        .build()
+        );
     }
 
     @Override
@@ -203,37 +279,6 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
         unpublishContent(URI, uri);
     }
 
-    private ContentResponse writePlayListWithResponse(Playlist playlist, boolean async) {
-        validatePlayList(playlist);
-        return client.postPlayListWithResponse(writeItemUri(async), playlist);
-    }
-
-    private ContentResponse writePlayListOverwriteExistingWithResponse(Playlist playlist, boolean async) {
-        validatePlayList(playlist);
-        return client.putPlayListWithResponse(writeItemUri(async), playlist);
-    }
-
-
-    private ContentResponse writeItemWithResponse(Item item, boolean async) {
-        validateItem(item);
-        return client.postItemWithResponse(writeItemUri(async), item);
-    }
-
-    private String writeItem(Item item, boolean async) {
-        validateItem(item);
-        return client.postItem(writeItemUri(async), item);
-    }
-
-    private void writeItemOverwriteExisting(Item item, boolean async) {
-        validateItem(item);
-        client.putItem(writeItemUri(async), item);
-    }
-
-    private ContentResponse writeItemOverwriteExistingWithResponse(Item item, boolean async) {
-        validateItem(item);
-        return client.putItemWithResponse(writeItemUri(async), item);
-    }
-
     private String personResourceUri() {
         String queryString = baseUri + "/people.json?";
         if (apiKey.isPresent()) {
@@ -242,17 +287,27 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
         return queryString;
     }
 
-    private String writeItemUri(boolean async) {
+    private String writeItemUri(ContentWriteOptions options) {
         checkNotNull(apiKey.get(), "An API key must be specified for content write queries");
-        StringBuilder uriBuilder = new StringBuilder(baseUri)
-                .append("/content.json?")
-                .append(apiKeyQueryPart());
 
-        if (async) {
-            uriBuilder.append("&async=true");
+        try {
+            URIBuilder uriBuilder = new URIBuilder(baseUri + "/content.json")
+                    .addParameter("apiKey", apiKey.get());
+
+            if (options.isAsync()) {
+                uriBuilder.addParameter("async", "true");
+            }
+            if (options.getBroadcastAssertions().isPresent()) {
+                uriBuilder.addParameter(
+                        "broadcastAssertions",
+                        options.getBroadcastAssertions().get().toString()
+                );
+            }
+
+            return uriBuilder.build().toString();
+        } catch (URISyntaxException e) {
+            throw Throwables.propagate(e);
         }
-
-        return uriBuilder.toString();
     }
 
     private void unpublishContent(String identifierParam, String id) {

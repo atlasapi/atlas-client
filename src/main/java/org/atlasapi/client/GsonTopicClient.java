@@ -4,14 +4,15 @@ import org.atlasapi.client.response.TopicUpdateResponse;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Topic;
 import org.atlasapi.media.entity.simple.TopicQueryResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import com.metabroadcast.common.url.QueryStringParameters;
+import com.metabroadcast.common.url.Urls;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
 import com.google.common.net.HostSpecifier;
-import com.metabroadcast.common.url.QueryStringParameters;
-import com.metabroadcast.common.url.Urls;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GsonTopicClient implements AtlasTopicClient {
 
@@ -61,14 +62,7 @@ public class GsonTopicClient implements AtlasTopicClient {
 
     @Override
     public String postTopic(Topic topic) {
-        QueryStringParameters queryParams = new QueryStringParameters();
-        if (apiKey.isPresent()) {
-            queryParams.add("apiKey", apiKey.get());
-        }
-        
-        String queryString = Urls.appendParameters(topicsPattern, queryParams);
-        log.trace("POSTing Topic to Atlas, " + queryString, topic);
-        return stringQueryClient.postTopic(queryString, topic);
+        return postTopicWithResponse(topic).getLocation();
     }
 
     @Override
@@ -80,7 +74,6 @@ public class GsonTopicClient implements AtlasTopicClient {
 
         String queryString = Urls.appendParameters(topicsPattern, queryParams);
         log.trace("POSTing Topic to Atlas, " + queryString, topic);
-        return stringQueryClient.postTopicWithResponse(queryString, topic);
+        return stringQueryClient.postTopic(queryString, topic);
     }
-    
 }
