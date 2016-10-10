@@ -9,10 +9,20 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.atlasapi.media.entity.simple.*;
+import org.atlasapi.client.response.ContentResponse;
+import org.atlasapi.client.response.TopicUpdateResponse;
+import org.atlasapi.media.entity.simple.ChannelGroupQueryResult;
+import org.atlasapi.media.entity.simple.ChannelQueryResult;
+import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
+import org.atlasapi.media.entity.simple.ContentQueryResult;
+import org.atlasapi.media.entity.simple.EventQueryResult;
+import org.atlasapi.media.entity.simple.Item;
+import org.atlasapi.media.entity.simple.PeopleQueryResult;
+import org.atlasapi.media.entity.simple.Playlist;
+import org.atlasapi.media.entity.simple.ScheduleQueryResult;
+import org.atlasapi.media.entity.simple.Topic;
+import org.atlasapi.media.entity.simple.TopicQueryResult;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
 import com.metabroadcast.common.http.HttpException;
 import com.metabroadcast.common.http.HttpResponsePrologue;
 import com.metabroadcast.common.http.HttpResponseTransformer;
@@ -20,6 +30,9 @@ import com.metabroadcast.common.http.HttpStatusCode;
 import com.metabroadcast.common.http.SimpleHttpClient;
 import com.metabroadcast.common.http.SimpleHttpClientBuilder;
 import com.metabroadcast.common.http.SimpleHttpRequest;
+
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
 
 class JaxbStringQueryClient implements StringQueryClient {
 
@@ -109,22 +122,29 @@ class JaxbStringQueryClient implements StringQueryClient {
     }
 
     @Override
-    public String postTopic(String queryUri, Topic topic) {
+    public ContentResponse postPlaylist(String query, Playlist playlist) {
+        throw new UnsupportedOperationException("PlayList POSTing not currently supported via XML");
+
+    }
+
+    @Override
+    public ContentResponse putPlaylist(String query, Playlist playlist) {
+        throw new UnsupportedOperationException("PlayList POSTing not currently supported via XML");
+
+    }
+
+    @Override
+    public TopicUpdateResponse postTopic(String queryUri, Topic topic) {
         throw new UnsupportedOperationException("Topic POSTing not currently supported via XML");
     }
 
     @Override
-    public TopicUpdateResponse postTopicWithResponse(String queryUri, Topic topic) {
-        throw new UnsupportedOperationException("Topic POSTing not currently supported via XML");
-    }
-    
-    @Override
-    public String postItem(String query, Item item) {
-    	throw new UnsupportedOperationException("Item POST not currently supported via XML");
+    public ContentResponse postItem(String query, Item item) {
+        throw new UnsupportedOperationException("Item POST not currently supported via XML");
     }
 
     @Override
-    public String putItem(String query, Item item) {
-        throw new UnsupportedOperationException("Item PUT not currently supported via XML");
+    public ContentResponse putItem(String query, Item item) {
+        throw new UnsupportedOperationException("Item POST not currently supported via XML");
     }
 }

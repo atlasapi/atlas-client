@@ -1,8 +1,11 @@
 package org.atlasapi.client;
 
+import java.net.URISyntaxException;
 import java.util.List;
 
 import org.atlasapi.client.query.AtlasQuery;
+import org.atlasapi.client.query.ContentWriteOptions;
+import org.atlasapi.client.response.ContentResponse;
 import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
@@ -11,6 +14,7 @@ import org.atlasapi.media.entity.simple.EventQueryResult;
 import org.atlasapi.media.entity.simple.Item;
 import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.Person;
+import org.atlasapi.media.entity.simple.Playlist;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 
 import com.metabroadcast.common.url.QueryStringParameters;
@@ -20,7 +24,9 @@ import com.metabroadcast.common.url.Urls;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
 import com.google.common.net.HostSpecifier;
+import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +40,10 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     private final String baseUri;
     private final Optional<String> apiKey;
     private final Logger log = LoggerFactory.getLogger(this.getClass().getName());
-    
+
+    private final String URI = "uri";
+    private final String ID = "id";
+
     public GsonAtlasClient(HostSpecifier atlasHost, Optional<String> apiKey) {
         this.apiKey = apiKey;
         this.baseUri = String.format("http://%s/3.0", atlasHost);
@@ -138,39 +147,136 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     }
 
     @Override
+    public ContentResponse writeItem(Item item, ContentWriteOptions options) {
+        validateItem(item);
+
+        if (options.isOverwriteExisting()) {
+            return client.putItem(writeItemUri(options), item);
+        } else {
+            return client.postItem(writeItemUri(options), item);
+        }
+    }
+
+    @Override
+    public ContentResponse writePlaylist(Playlist playlist, ContentWriteOptions options) {
+        validatePlayList(playlist);
+
+        if (options.isOverwriteExisting()) {
+            return client.putPlaylist(writeItemUri(options), playlist);
+        } else {
+            return client.postPlaylist(writeItemUri(options), playlist);
+        }
+    }
+
+    @Override
     public String writeItem(Item item) {
-        return writeItem(item, false);
+        return writeItem(
+                item,
+                ContentWriteOptions.builder()
+                        .build()
+        )
+                .getLocation();
     }
 
     @Override
     public String writeItemAsync(Item item) {
-        return writeItem(item, true);
+        return writeItem(
+                item,
+                ContentWriteOptions.builder()
+                        .withAsync()
+                        .build()
+        )
+                .getLocation();
+    }
+
+    @Override
+    public ContentResponse writeItemWithResponse(Item item) {
+        return writeItem(
+                item,
+                ContentWriteOptions.builder()
+                        .build()
+        );
+    }
+
+    @Override
+    public ContentResponse writeItemWithResponseAsync(Item item) {
+        return writeItem(
+                item,
+                ContentWriteOptions.builder()
+                        .withAsync()
+                        .build()
+        );
     }
 
     @Override
     public void writeItemOverwriteExisting(Item item) {
-        writeItemOverwriteExisting(item, false);
+        writeItem(
+                item,
+                ContentWriteOptions.builder()
+                        .withOverwriteExisting()
+                        .build()
+        );
     }
 
     @Override
     public void writeItemOverwriteExistingAsync(Item item) {
-        writeItemOverwriteExisting(item, true);
+        writeItem(
+                item,
+                ContentWriteOptions.builder()
+                        .withAsync()
+                        .withOverwriteExisting()
+                        .build()
+        );
     }
 
-    private String writeItem(Item item, boolean async) {
-        checkNotNull(item, "Cannot write a null item");
-        checkNotNull(item.getPublisher(), "Cannot write an Item without a Publisher");
-        checkNotNull(Strings.emptyToNull(item.getUri()), "Cannot write an Item without a URI");
-        checkNotNull(Strings.emptyToNull(item.getType()), "Cannot write an Item without a type");
-        return client.postItem(writeItemUri(async), item);
+    @Override
+    public ContentResponse writeItemOverwriteExistingWithResponse(Item item) {
+        return writeItem(
+                item,
+                ContentWriteOptions.builder()
+                        .withOverwriteExisting()
+                        .build()
+        );
     }
 
-    private void writeItemOverwriteExisting(Item item, boolean async) {
-        checkNotNull(item, "Cannot write a null item");
-        checkNotNull(item.getPublisher(), "Cannot write an Item without a Publisher");
-        checkNotNull(Strings.emptyToNull(item.getUri()), "Cannot write an Item without a URI");
-        checkNotNull(Strings.emptyToNull(item.getType()), "Cannot write an Item without a type");
-        client.putItem(writeItemUri(async), item);
+    @Override
+    public ContentResponse writeItemOverwriteExistingAsyncWithResponse(Item item) {
+        return writeItem(
+                item,
+                ContentWriteOptions.builder()
+                        .withAsync()
+                        .withOverwriteExisting()
+                        .build()
+        );
+    }
+
+    @Override
+    public ContentResponse writePlayListWithResponse(Playlist playlist) {
+        return writePlaylist(
+                playlist,
+                ContentWriteOptions.builder()
+                        .build()
+        );
+    }
+
+    @Override
+    public ContentResponse writePlayListOverwriteExistingWithResponse(Playlist playlist) {
+        return writePlaylist(
+                playlist,
+                ContentWriteOptions.builder()
+                        .withOverwriteExisting()
+                        .build()
+        );
+    }
+
+    @Override
+    public void unpublishContentById(String id) {
+        unpublishContent(ID, id);
+    }
+
+    @Override
+    public void unpublishContentByUri(String uri) {
+        unpublishContent(URI, uri);
     }
 
     private String personResourceUri() {
@@ -181,16 +287,58 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
         return queryString;
     }
 
-    private String writeItemUri(boolean async) {
+    private String writeItemUri(ContentWriteOptions options) {
         checkNotNull(apiKey.get(), "An API key must be specified for content write queries");
-        StringBuilder uriBuilder = new StringBuilder(baseUri)
-                .append("/content.json?")
-                .append(apiKeyQueryPart());
 
-        if (async) {
-            uriBuilder.append("&async=true");
+        try {
+            URIBuilder uriBuilder = new URIBuilder(baseUri + "/content.json")
+                    .addParameter("apiKey", apiKey.get());
+
+            if (options.isAsync()) {
+                uriBuilder.addParameter("async", "true");
+            }
+            if (options.getBroadcastAssertions().isPresent()) {
+                uriBuilder.addParameter(
+                        "broadcastAssertions",
+                        options.getBroadcastAssertions().get().toString()
+                );
+            }
+
+            return uriBuilder.build().toString();
+        } catch (URISyntaxException e) {
+            throw Throwables.propagate(e);
         }
+    }
 
-        return uriBuilder.toString();
+    private void unpublishContent(String identifierParam, String id) {
+        client.unpublishContent(
+                unpublishContentUri(identifierParam, id)
+        );
+    }
+
+    private String unpublishContentUri(String identifierParam, String identifier) {
+        checkNotNull(apiKey.get(), "An API key must be specified for content unpublish queries");
+        return new StringBuilder(baseUri)
+                .append("/content.json?")
+                .append(apiKeyQueryPart())
+                .append(identifierParam.equals(URI) ? "&uri=" : "&id=")
+                .append(identifier)
+                .toString();
+
+    }
+
+    private void validateItem(Item item) {
+        checkNotNull(item, "Cannot write a null item");
+        checkNotNull(item.getPublisher(), "Cannot write an Item without a Publisher");
+        checkNotNull(Strings.emptyToNull(item.getUri()), "Cannot write an Item without a URI");
+        checkNotNull(Strings.emptyToNull(item.getType()), "Cannot write an Item without a type");
+
+    }
+
+    private void validatePlayList(Playlist playlist) {
+        checkNotNull(playlist, "Cannot write a null item");
+        checkNotNull(playlist.getPublisher(), "Cannot write an Item without a Publisher");
+        checkNotNull(Strings.emptyToNull(playlist.getUri()), "Cannot write an Item without a URI");
+        checkNotNull(Strings.emptyToNull(playlist.getType()), "Cannot write an Item without a type");
     }
 }

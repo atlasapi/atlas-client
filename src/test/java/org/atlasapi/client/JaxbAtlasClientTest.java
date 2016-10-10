@@ -28,39 +28,5 @@ public class JaxbAtlasClientTest {
         Playlist result = (Playlist) Iterables.getOnlyElement(content.getContents());
         assertNotNull(result);
     }
-    
-    @Ignore  // This no longer produces results without an API key
-    @Test
-    public void testSingleContentGroupQuery() {
-        AtlasClient client = new JaxbAtlasClient("http://stage.atlas.metabroadcast.com/3.0");
-        
-        ContentGroupQueryResult result = client.contentGroup("cbbn");
-        ContentGroup group = (ContentGroup) Iterables.getOnlyElement(result.getContentGroups());
-        assertNotNull(group);
-    }
-    
-    @Ignore  // This no longer produces results without an API key
-    @Test
-    public void testManyContentGroupsQuery() {
-        AtlasClient client = new JaxbAtlasClient("http://stage.atlas.metabroadcast.com/3.0");
-        
-        ContentGroupQueryResult result = client.contentGroups();
-        assertNotNull(result);
-        assertTrue(result.getContentGroups().size() > 0);
-    }
 
-    @Ignore  // This person is no longer present without an API key
-    @Test
-    public void testShouldGetPeople() {
-
-        AtlasClient client = new JaxbAtlasClient("http://atlas.metabroadcast.com/3.0");
-        
-        String queryUri = "http://www.bbc.co.uk/people/84371";
-        PeopleQuery query = PeopleQuery.builder()
-                .withUrls(queryUri)
-                .build();
-        PeopleQueryResult people = client.people(query);
-        assertNotNull(people);
-        assertEquals(queryUri, Iterables.getOnlyElement(people.getPeople()).getUri());
-    }
 }
