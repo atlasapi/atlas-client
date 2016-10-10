@@ -26,17 +26,11 @@ interface StringQueryClient {
 	
 	TopicQueryResult topicQuery(String queryUri);
 
-	String postItem(String query, Item item);
+	ContentResponse postItem(String query, Item item);
 
-	ContentResponse postItemWithResponse(String query, Item item);
+	ContentResponse putItem(String query, Item item);
 
-	String putItem(String query, Item item);
-
-	ContentResponse putItemWithResponse(String query, Item item);
-
-	String postTopic(String queryUri, Topic topic);
-
-	TopicUpdateResponse postTopicWithResponse(String queryUri, Topic topic);
+	TopicUpdateResponse postTopic(String queryUri, Topic topic);
 
 	ChannelQueryResult channelQuery(String queryUri);
 	
@@ -44,8 +38,8 @@ interface StringQueryClient {
 
 	EventQueryResult eventQuery(String eventQuery);
 
-    ContentResponse postPlayListWithResponse(String query, Playlist playlist);
+    ContentResponse postPlaylist(String query, Playlist playlist);
 
-    ContentResponse putPlayListWithResponse(String query, Playlist playlist);
+    ContentResponse putPlaylist(String query, Playlist playlist);
 	
 }
