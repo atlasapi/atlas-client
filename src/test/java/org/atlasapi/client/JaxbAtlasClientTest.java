@@ -5,7 +5,9 @@ import static org.atlasapi.output.Annotation.UPCOMING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
+import com.metabroadcast.applications.client.model.internal.Application;
 import org.atlasapi.media.entity.simple.ContentGroup;
 import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
