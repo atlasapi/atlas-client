@@ -6,9 +6,9 @@ import static org.junit.Assert.assertNotNull;
 
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Playlist;
-import org.junit.Test;
 
 import com.google.common.collect.Iterables;
+import org.junit.Test;
 
 public class JaxbAtlasClientTest {
 
