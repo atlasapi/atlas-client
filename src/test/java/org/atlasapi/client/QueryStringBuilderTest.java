@@ -16,9 +16,7 @@ package org.atlasapi.client;
 
 import static org.atlasapi.content.criteria.ContentQueryBuilder.query;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 
-import com.metabroadcast.applications.client.model.internal.Application;
 import org.atlasapi.content.criteria.ContentQueryBuilder;
 import org.atlasapi.content.criteria.attribute.Attributes;
 import org.atlasapi.media.entity.MediaType;
@@ -34,15 +32,15 @@ public class QueryStringBuilderTest  {
 	public void testTheBuilder() throws Exception {
 		this.builder = new QueryStringBuilder();
 		
-		check(query().equalTo(Attributes.DESCRIPTION_TYPE, MediaType.AUDIO).withApplication(mock(Application.class)), "mediaType=AUDIO");
+		check(query().equalTo(Attributes.DESCRIPTION_TYPE, MediaType.AUDIO), "mediaType=AUDIO");
 		
-		check(query().equalTo(Attributes.DESCRIPTION_GENRE, "a", "b").withApplication(mock(Application.class)), "genre=a,b");
+		check(query().equalTo(Attributes.DESCRIPTION_GENRE, "a", "b"), "genre=a,b");
 	}
 	
 	@Test
 	public void testQueryLimits() throws Exception {
 		this.builder = new QueryStringBuilder();
-		check(query().equalTo(Attributes.DESCRIPTION_GENRE, "funny").withSelection(new Selection(0, 10)).withApplication(mock(Application.class)), "genre=funny&limit=10");
+		check(query().equalTo(Attributes.DESCRIPTION_GENRE, "funny").withSelection(new Selection(0, 10)), "genre=funny&limit=10");
 	}
 	
 	@Test
@@ -50,8 +48,8 @@ public class QueryStringBuilderTest  {
 		this.builder = new QueryStringBuilder();
 		builder.setApiKey("testKey");
 		
-		check(query().equalTo(Attributes.DESCRIPTION_TYPE, MediaType.AUDIO).withApplication(mock(Application.class)), "mediaType=AUDIO&apiKey=testKey");
-		check(query().equalTo(Attributes.DESCRIPTION_GENRE, "a", "b").withApplication(mock(Application.class)), "genre=a,b&apiKey=testKey");
+		check(query().equalTo(Attributes.DESCRIPTION_TYPE, MediaType.AUDIO), "mediaType=AUDIO&apiKey=testKey");
+		check(query().equalTo(Attributes.DESCRIPTION_GENRE, "a", "b"), "genre=a,b&apiKey=testKey");
 	}
 
 	private void check(ContentQueryBuilder query, String expected) {
