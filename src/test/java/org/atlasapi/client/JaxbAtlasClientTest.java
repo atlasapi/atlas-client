@@ -20,7 +20,7 @@ public class JaxbAtlasClientTest {
                 .build();
         
         AtlasClient client = new JaxbAtlasClient(
-                "http://atlas-stage.metabroadcast.com/3.0",
+                "http://atlas.metabroadcast.com/3.0",
                 "59be198386c143a7badb3b20a03ca042"
         );
         
