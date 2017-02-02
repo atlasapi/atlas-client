@@ -1,14 +1,14 @@
 package org.atlasapi.client;
 
-import static org.atlasapi.output.Annotation.AVAILABLE_LOCATIONS;
-import static org.atlasapi.output.Annotation.UPCOMING;
-import static org.junit.Assert.assertNotNull;
-
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Playlist;
 
 import com.google.common.collect.Iterables;
 import org.junit.Test;
+
+import static org.atlasapi.output.Annotation.AVAILABLE_LOCATIONS;
+import static org.atlasapi.output.Annotation.UPCOMING;
+import static org.junit.Assert.assertNotNull;
 
 public class JaxbAtlasClientTest {
 
