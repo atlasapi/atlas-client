@@ -10,7 +10,7 @@ Use maven, add the following to your dependencies:
     <dependency>
        <groupId>org.atlasapi</groupId>
         <artifactId>atlas-client</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>5.0-SNAPSHOT</version>
     </dependency>
 
 The artifacts can be found in the MetaBroadcast public repository, add it to your project using the following snippet:
