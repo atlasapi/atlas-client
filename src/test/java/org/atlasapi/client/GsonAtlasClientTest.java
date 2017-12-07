@@ -1,18 +1,10 @@
 package org.atlasapi.client;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import java.io.Serializable;
 
 import org.atlasapi.client.ContentQuery.ContentQueryBuilder;
-import org.atlasapi.client.response.ContentResponse;
-import org.atlasapi.media.entity.Channel;
 import org.atlasapi.media.entity.Publisher;
 import org.atlasapi.media.entity.simple.Broadcast;
-import org.atlasapi.media.entity.simple.ContentGroup;
-import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 import org.atlasapi.media.entity.simple.ContentIdentifier;
 import org.atlasapi.media.entity.simple.ContentIdentifier.EpisodeIdentifier;
 import org.atlasapi.media.entity.simple.ContentIdentifier.SeriesIdentifier;
@@ -20,29 +12,45 @@ import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
 import org.atlasapi.media.entity.simple.Item;
 import org.atlasapi.media.entity.simple.Location;
-import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.Playlist;
-import org.atlasapi.media.entity.simple.PublisherDetails;
-import org.atlasapi.media.entity.simple.ScheduleChannel;
-import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 import org.atlasapi.output.Annotation;
-import org.hamcrest.Matchers;
-import org.joda.time.DateTime;
-import org.joda.time.Interval;
-import org.junit.Ignore;
-import org.junit.Test;
 
-import com.google.common.base.Optional;
+import com.metabroadcast.common.http.SimpleHttpClient;
+import com.metabroadcast.common.http.SimpleHttpClientBuilder;
+import com.metabroadcast.common.query.Selection;
+
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
-import com.google.common.net.HostSpecifier;
-import com.metabroadcast.common.query.Selection;
-import com.metabroadcast.common.time.DateTimeZones;
+import com.google.gson.Gson;
+import org.hamcrest.Matchers;
+import org.junit.Before;
+import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 public class GsonAtlasClientTest {
 
     private static final Selection SELECTION = new Selection(0, 5);
-    private final GsonAtlasClient client = new GsonAtlasClient("http://atlas.metabroadcast.com/3.0", null);
+
+    private GsonAtlasClient client ;
+
+    @Before
+    public void setUp() throws Exception {
+        //This test is based on a live key (MetaBroadcast Office Equiv - d6d).
+        //We query the application server so as not to expose the key in the code.
+       SimpleHttpClient httpClient = new SimpleHttpClientBuilder().build();
+
+        String json = httpClient.getContentsOf(
+                "http://applications-service.production.svc.cluster.local/1/applications/d6d");
+        Gson gson = new Gson();
+        ApplicationWrapper application = gson.fromJson(json, ApplicationWrapper.class);
+
+        this.client = new GsonAtlasClient("http://atlas.metabroadcast.com/3.0",
+                application.getApplication().getApi_key());
+    }
 
     @Test
     public void shouldGetEpisode() {
@@ -156,4 +164,32 @@ public class GsonAtlasClientTest {
         }
     }
 
-}
+    /**
+     * This class is here because this project does not have access to the Application. We use it
+     * to serialize just the api_key from the applicationServer response, because thats the only
+     * thing we'll be needing for this test.
+     */
+    private class ApplicationWrapper implements Serializable {
+        public Application application;
+
+        public Application getApplication() {
+            return application;
+        }
+
+        public void setApplication(Application application) {
+            this.application = application;
+        }
+
+        private class Application implements Serializable {
+            String api_key;
+
+            public String getApi_key() {
+                return api_key;
+            }
+
+            public void setApi_key(String api_key) {
+                this.api_key = api_key;
+            }
+        }
+    }
+    }
