@@ -6,6 +6,7 @@ import java.util.List;
 import org.atlasapi.client.query.AtlasQuery;
 import org.atlasapi.client.query.ContentWriteOptions;
 import org.atlasapi.client.response.ContentResponse;
+import org.atlasapi.client.response.TopicUpdateResponse;
 import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
@@ -27,6 +28,8 @@ import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.net.HostSpecifier;
 import org.apache.http.client.utils.URIBuilder;
+import org.atlasapi.media.entity.simple.Topic;
+import org.atlasapi.media.entity.simple.TopicQueryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,6 +133,14 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     @Override
     public PeopleQueryResult people(PeopleQuery query) {
         return client.peopleQuery(baseUri + "/people.json?" + withApiKey(query.toQueryStringParameters()).toQueryString());
+    }
+
+    public TopicQueryResult topic(String id) {
+        return client.topicQuery(baseUri + "/topics/" + id + ".json?" + apiKeyQueryPart());
+    }
+
+    public TopicQueryResult topic(TopicQuery query) {
+        return client.topicQuery(baseUri + "/topics.json?" + withApiKey(query.toQueryStringParameters()).toQueryString());
     }
     
     @Override
@@ -270,6 +281,13 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     }
 
     @Override
+    public TopicUpdateResponse writeTopicWithResponse(Topic topic) {
+        validateTopic(topic);
+        String uri = baseUri + "/topics.json?";
+        return client.postTopic(uri, topic);
+    }
+
+    @Override
     public void unpublishContentById(String id) {
         unpublishContent(ID, id);
     }
@@ -336,9 +354,17 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     }
 
     private void validatePlayList(Playlist playlist) {
-        checkNotNull(playlist, "Cannot write a null item");
-        checkNotNull(playlist.getPublisher(), "Cannot write an Item without a Publisher");
-        checkNotNull(Strings.emptyToNull(playlist.getUri()), "Cannot write an Item without a URI");
-        checkNotNull(Strings.emptyToNull(playlist.getType()), "Cannot write an Item without a type");
+        checkNotNull(playlist, "Cannot write a null playlist");
+        checkNotNull(playlist.getPublisher(), "Cannot write a Playlist without a Publisher");
+        checkNotNull(Strings.emptyToNull(playlist.getUri()), "Cannot write a Playlist without a URI");
+        checkNotNull(Strings.emptyToNull(playlist.getType()), "Cannot write a Playlist without a type");
+    }
+
+    private void validateTopic(Topic topic) {
+        checkNotNull(topic, "Cannot write a null topic");
+        checkNotNull(topic.getPublisher(), "Cannot write a Topic without a Publisher");
+        checkNotNull(Strings.emptyToNull(topic.getUri()), "Cannot write a Topic without a URI");
+        checkNotNull(Strings.emptyToNull(topic.getType()), "Cannot write a Topic without a type");
+
     }
 }

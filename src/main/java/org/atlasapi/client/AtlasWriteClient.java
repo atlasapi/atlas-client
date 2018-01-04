@@ -2,9 +2,11 @@ package org.atlasapi.client;
 
 import org.atlasapi.client.query.ContentWriteOptions;
 import org.atlasapi.client.response.ContentResponse;
+import org.atlasapi.client.response.TopicUpdateResponse;
 import org.atlasapi.media.entity.simple.Item;
 import org.atlasapi.media.entity.simple.Person;
 import org.atlasapi.media.entity.simple.Playlist;
+import org.atlasapi.media.entity.simple.Topic;
 
 public interface AtlasWriteClient {
     
@@ -75,6 +77,8 @@ public interface AtlasWriteClient {
      */
     @Deprecated
     ContentResponse writePlayListOverwriteExistingWithResponse(Playlist playlist);
+
+    TopicUpdateResponse writeTopicWithResponse(Topic topic);
 
     void unpublishContentById(String id);
 
