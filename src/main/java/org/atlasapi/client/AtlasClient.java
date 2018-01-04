@@ -41,10 +41,6 @@ public interface AtlasClient {
 	ContentQueryResult content(ContentQuery query);
 
 	EventQueryResult event(EventQuery query);
-
-	TopicQueryResult topic(String id);
-
-	TopicQueryResult topic(TopicQuery query);
     
 	@Deprecated
     ContentGroupQueryResult contentGroup(String id);	
