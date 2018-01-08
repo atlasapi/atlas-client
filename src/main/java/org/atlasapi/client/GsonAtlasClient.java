@@ -284,7 +284,7 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     public TopicUpdateResponse writeTopicWithResponse(Topic topic) {
         checkNotNull(apiKey.get(), "An API key must be specified for topic write queries");
         validateTopic(topic);
-        String uri = baseUri + "/topics.json" + apiKeyQueryPart();
+        String uri = baseUri + "/topics.json?uri=" + UrlEncoding.encode(topic.getUri()) + apiKeyQueryPart();
         return client.postTopic(uri, topic);
     }
 
