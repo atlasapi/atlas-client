@@ -176,8 +176,12 @@ public class GsonQueryClient implements StringQueryClient {
             Payload httpBody = new StringPayload(json);
             HttpResponse resp = httpClient.post(query, httpBody);
             if (resp.statusCode() >= 400) {
-                throw new BadResponseException("Error POSTing item: HTTP " + resp.statusCode()
-                        + " received from Atlas" + resp.body() + json);
+                BadResponseException badResponseException = new BadResponseException(
+                        "Error POSTing item: HTTP " + resp.statusCode()
+                        + " received from Atlas. Body:" + resp.body() + json);
+                badResponseException.setResponse(resp);
+                badResponseException.setQueryInfo(String.format("Query:%s Payload:%s", query,json));
+                throw badResponseException;
             }
 
            WriteResponseWrapper responseWrapper = gson.get()
@@ -196,8 +200,12 @@ public class GsonQueryClient implements StringQueryClient {
             Payload httpBody = new StringPayload(json);
             HttpResponse resp = httpClient.put(query, httpBody);
             if (resp.statusCode() >= 400) {
-                throw new BadResponseException("Error PUTting item: HTTP " + resp.statusCode()
-                        + " received from Atlas");
+                BadResponseException badResponseException = new BadResponseException(
+                        "Error POSTing item: HTTP " + resp.statusCode()
+                        + " received from Atlas. Body:" + resp.body() + json);
+                badResponseException.setResponse(resp);
+                badResponseException.setQueryInfo(String.format("Query:%s Payload:%s", query,json));
+                throw badResponseException;
             }
             WriteResponseWrapper responseWrapper = gson.get()
                     .fromJson(resp.body(), WriteResponseWrapper.class);
