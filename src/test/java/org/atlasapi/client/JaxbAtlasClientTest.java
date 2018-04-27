@@ -1,18 +1,19 @@
 package org.atlasapi.client;
 
+import com.google.common.collect.Iterables;
+import org.atlasapi.media.entity.simple.ContentQueryResult;
+import org.atlasapi.media.entity.simple.Playlist;
+import org.junit.Ignore;
+import org.junit.Test;
+
 import static org.atlasapi.output.Annotation.AVAILABLE_LOCATIONS;
 import static org.atlasapi.output.Annotation.UPCOMING;
 import static org.junit.Assert.assertNotNull;
 
-import org.atlasapi.media.entity.simple.ContentQueryResult;
-import org.atlasapi.media.entity.simple.Playlist;
-
-import com.google.common.collect.Iterables;
-import org.junit.Test;
-
 public class JaxbAtlasClientTest {
 
-    @Test
+    //TODO Make a unit test api key
+    @Test @Ignore
     public void testContentContentQuery() {
         ContentQuery contentQuery = ContentQuery.builder()
                 .withUrls("http://pressassociation.com/brands/8306")
