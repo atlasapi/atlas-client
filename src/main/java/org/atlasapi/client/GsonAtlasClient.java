@@ -17,6 +17,8 @@ import org.atlasapi.media.entity.simple.PeopleQueryResult;
 import org.atlasapi.media.entity.simple.Person;
 import org.atlasapi.media.entity.simple.Playlist;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
+import org.atlasapi.media.entity.simple.Topic;
+import org.atlasapi.media.entity.simple.TopicQueryResult;
 
 import com.metabroadcast.common.url.QueryStringParameters;
 import com.metabroadcast.common.url.UrlEncoding;
@@ -28,8 +30,6 @@ import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.net.HostSpecifier;
 import org.apache.http.client.utils.URIBuilder;
-import org.atlasapi.media.entity.simple.Topic;
-import org.atlasapi.media.entity.simple.TopicQueryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +50,15 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     public GsonAtlasClient(HostSpecifier atlasHost, Optional<String> apiKey) {
         this.apiKey = apiKey;
         this.baseUri = String.format("http://%s/3.0", atlasHost);
+    }
+
+    public GsonAtlasClient(String atlasHost, Optional<String> apiKey) {
+        this.baseUri = String.format("http://%s/3.0", atlasHost);
+        this.apiKey = apiKey;
+
+        if (apiKey.isPresent()) {
+            this.queryStringBuilder.setApiKey(apiKey.get());
+        }
     }
     
     @Deprecated
