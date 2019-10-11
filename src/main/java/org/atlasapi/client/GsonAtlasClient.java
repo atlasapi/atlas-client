@@ -52,6 +52,12 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
         this.baseUri = String.format("http://%s/3.0", atlasHost);
     }
 
+    //
+
+    /**
+     * Use this constructor with internal hostnames as you currently can't create a HostSpecifier
+     * object unless the domain used has a public suffix.
+     */
     public GsonAtlasClient(String atlasHost, Optional<String> apiKey) {
         this.baseUri = String.format("http://%s/3.0", atlasHost);
         this.apiKey = apiKey;
@@ -60,7 +66,10 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
             this.queryStringBuilder.setApiKey(apiKey.get());
         }
     }
-    
+
+    /**
+     * Deprecated use {@link #GsonAtlasClient(String, Optional<String>)} instead.
+     */
     @Deprecated
     public GsonAtlasClient(String baseUri, String apiKey) {
         this.baseUri = baseUri;
