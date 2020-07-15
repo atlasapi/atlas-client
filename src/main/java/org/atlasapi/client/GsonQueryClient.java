@@ -9,10 +9,14 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.atlasapi.client.exception.BadResponseException;
+import org.atlasapi.client.response.ChannelGroupResponse;
+import org.atlasapi.client.response.ChannelResponse;
 import org.atlasapi.client.response.ContentResponse;
 import org.atlasapi.client.response.TopicUpdateResponse;
 import org.atlasapi.client.response.WriteResponseWrapper;
 import org.atlasapi.media.entity.simple.Broadcast;
+import org.atlasapi.media.entity.simple.Channel;
+import org.atlasapi.media.entity.simple.ChannelGroup;
 import org.atlasapi.media.entity.simple.ChannelGroupQueryResult;
 import org.atlasapi.media.entity.simple.ChannelQueryResult;
 import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
@@ -337,6 +341,70 @@ public class GsonQueryClient implements StringQueryClient {
             }
         } catch (HttpException e) {
             throw new RuntimeException(String.format("%s %s %s", queryString, person.getUri(), person.getPublisher()), e);
+        }
+    }
+
+    public ChannelGroupResponse putChannelGroup(String queryString, ChannelGroup channelGroup) {
+        try {
+            String json = gson.get().toJson(channelGroup);
+            Payload httpBody = new StringPayload(json);
+            HttpResponse resp = httpClient.put(queryString, httpBody);
+            if (resp.statusCode() >= 400) {
+                throw new BadResponseException("Error PUTting item: HTTP " + resp.statusCode() + " received from Atlas");
+            }
+            WriteResponseWrapper responseWrapper = gson.get().fromJson(resp.body(), WriteResponseWrapper.class);
+            return new ChannelGroupResponse(responseWrapper.getAtlasResponse().getId(), resp.header(LOCATION));
+
+        } catch (HttpException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
+    public ChannelGroupResponse postChannelGroup(String queryString, ChannelGroup channelGroup) {
+        try {
+            String json = gson.get().toJson(channelGroup);
+            Payload httpBody = new StringPayload(json);
+            HttpResponse resp = httpClient.post(queryString, httpBody);
+            if (resp.statusCode() >= 400) {
+                throw new BadResponseException("Error PUTting item: HTTP " + resp.statusCode() + " received from Atlas");
+            }
+            WriteResponseWrapper responseWrapper = gson.get().fromJson(resp.body(), WriteResponseWrapper.class);
+            return new ChannelGroupResponse(responseWrapper.getAtlasResponse().getId(), resp.header(LOCATION));
+
+        } catch (HttpException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
+    public ChannelResponse putChannel(String queryString, Channel channel) {
+        try {
+            String json = gson.get().toJson(channel);
+            Payload httpBody = new StringPayload(json);
+            HttpResponse resp = httpClient.put(queryString, httpBody);
+            if (resp.statusCode() >= 400) {
+                throw new BadResponseException("Error PUTting item: HTTP " + resp.statusCode() + " received from Atlas");
+            }
+            WriteResponseWrapper responseWrapper = gson.get().fromJson(resp.body(), WriteResponseWrapper.class);
+            return new ChannelResponse(responseWrapper.getAtlasResponse().getId(), resp.header(LOCATION));
+
+        } catch (HttpException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
+    public ChannelResponse postChannel(String queryString, Channel channel) {
+        try {
+            String json = gson.get().toJson(channel);
+            Payload httpBody = new StringPayload(json);
+            HttpResponse resp = httpClient.post(queryString, httpBody);
+            if (resp.statusCode() >= 400) {
+                throw new BadResponseException("Error PUTting item: HTTP " + resp.statusCode() + " received from Atlas");
+            }
+            WriteResponseWrapper responseWrapper = gson.get().fromJson(resp.body(), WriteResponseWrapper.class);
+            return new ChannelResponse(responseWrapper.getAtlasResponse().getId(), resp.header(LOCATION));
+
+        } catch (HttpException e) {
+            throw Throwables.propagate(e);
         }
     }
 

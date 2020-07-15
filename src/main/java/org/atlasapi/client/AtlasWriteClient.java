@@ -1,8 +1,12 @@
 package org.atlasapi.client;
 
 import org.atlasapi.client.query.ContentWriteOptions;
+import org.atlasapi.client.response.ChannelGroupResponse;
+import org.atlasapi.client.response.ChannelResponse;
 import org.atlasapi.client.response.ContentResponse;
 import org.atlasapi.client.response.TopicUpdateResponse;
+import org.atlasapi.media.entity.simple.Channel;
+import org.atlasapi.media.entity.simple.ChannelGroup;
 import org.atlasapi.media.entity.simple.Item;
 import org.atlasapi.media.entity.simple.Person;
 import org.atlasapi.media.entity.simple.Playlist;
@@ -17,6 +21,10 @@ public interface AtlasWriteClient {
     ContentResponse writeItem(Item item, ContentWriteOptions options);
 
     ContentResponse writePlaylist(Playlist playlist, ContentWriteOptions options);
+
+    ChannelGroupResponse writeChannelGroup(ChannelGroup channelGroup, boolean overwriteExisting);
+
+    ChannelResponse writeChannel(Channel channel, boolean overwriteExisting);
 
     /**
      * @deprecated Use {@link AtlasWriteClient#writeItem(Item, ContentWriteOptions)}

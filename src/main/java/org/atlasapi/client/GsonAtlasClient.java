@@ -5,8 +5,12 @@ import java.util.List;
 
 import org.atlasapi.client.query.AtlasQuery;
 import org.atlasapi.client.query.ContentWriteOptions;
+import org.atlasapi.client.response.ChannelGroupResponse;
+import org.atlasapi.client.response.ChannelResponse;
 import org.atlasapi.client.response.ContentResponse;
 import org.atlasapi.client.response.TopicUpdateResponse;
+import org.atlasapi.media.entity.simple.Channel;
+import org.atlasapi.media.entity.simple.ChannelGroup;
 import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
@@ -198,6 +202,28 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     }
 
     @Override
+    public ChannelGroupResponse writeChannelGroup(ChannelGroup channelGroup, boolean overwriteExisting) {
+        validateChannelGroup(channelGroup);
+
+        if(overwriteExisting) {
+            return client.putChannelGroup(writeChannelGroupUri(), channelGroup);
+        } else {
+            return client.postChannelGroup(writeChannelGroupUri(), channelGroup);
+        }
+    }
+
+    @Override
+    public ChannelResponse writeChannel(Channel channel, boolean overwriteExisting) {
+        validateChannel(channel);
+
+        if(overwriteExisting) {
+            return client.putChannel(writeChannelUri(), channel);
+        } else {
+            return client.postChannel(writeChannelUri(), channel);
+        }
+    }
+
+    @Override
     public String writeItem(Item item) {
         return writeItem(
                 item,
@@ -324,6 +350,18 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
         return queryString;
     }
 
+    private String writeChannelGroupUri() {
+        checkNotNull(apiKey.get(), "An API key must be specified for write queries");
+        String queryString = baseUri + "/channel_groups.*";
+        return queryString;
+    }
+
+    private String writeChannelUri() {
+        checkNotNull(apiKey.get(), "An API key must be specified for write queries");
+        String queryString = baseUri + "/channel_groups.*";
+        return queryString;
+    }
+
     private String writeItemUri(ContentWriteOptions options) {
         checkNotNull(apiKey.get(), "An API key must be specified for content write queries");
 
@@ -385,5 +423,19 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
         checkNotNull(Strings.emptyToNull(topic.getUri()), "Cannot write a Topic without a URI");
         checkNotNull(Strings.emptyToNull(topic.getType()), "Cannot write a Topic without a type");
 
+    }
+
+    private void validateChannelGroup(ChannelGroup channelGroup) {
+        checkNotNull(channelGroup, "Cannot write a null ChannelGroup");
+        checkNotNull(channelGroup.getPublisherDetails(), "Cannot write a ChannelGroup without a publisher");
+        checkNotNull(Strings.emptyToNull(channelGroup.getUri()), "Cannot write a ChannelGroup without a URI");
+        checkNotNull(Strings.emptyToNull(channelGroup.getType()), "Cannot write a ChannelGroup without a type");
+    }
+
+    private void validateChannel(Channel channel) {
+        checkNotNull(channel, "Cannot write a null channel");
+        checkNotNull(channel.getPublisherDetails(), "Cannot write a Channel without a publisher");
+        checkNotNull(Strings.emptyToNull(channel.getUri()), "Cannot write a Channel without a URI");
+        checkNotNull(Strings.emptyToNull(channel.getType()), "Cannot write a Channel without a type");
     }
 }
