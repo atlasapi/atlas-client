@@ -217,10 +217,10 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
         validateChannel(channel);
 
         if(overwriteExisting) {
-            return client.putChannel(writeChannelUri(), channel);
+            return client.postChannel(writeChannelUri(), channel);
         } else {
-            // TODO postChannel does not exist because there is no POST channel endpoint in owl
-            return client.putChannel(writeChannelUri(), channel);
+            // TODO putChannel does not exist because there is no PUT channel endpoint in owl
+            return client.postChannel(writeChannelUri(), channel);
         }
     }
 
@@ -354,12 +354,14 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     private String writeChannelGroupUri() {
         checkNotNull(apiKey.get(), "An API key must be specified for write queries");
         String queryString = baseUri + "/channel_groups.json?";
+        queryString = Urls.appendParameters(queryString, "apiKey", apiKey.get());
         return queryString;
     }
 
     private String writeChannelUri() {
         checkNotNull(apiKey.get(), "An API key must be specified for write queries");
         String queryString = baseUri + "/channels.json?";
+        queryString = Urls.appendParameters(queryString, "apiKey", apiKey.get());
         return queryString;
     }
 
