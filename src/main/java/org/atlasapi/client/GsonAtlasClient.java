@@ -352,13 +352,13 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
 
     private String writeChannelGroupUri() {
         checkNotNull(apiKey.get(), "An API key must be specified for write queries");
-        String queryString = baseUri + "/channel_groups.*";
+        String queryString = baseUri + "/channel_groups.json?";
         return queryString;
     }
 
     private String writeChannelUri() {
         checkNotNull(apiKey.get(), "An API key must be specified for write queries");
-        String queryString = baseUri + "/channel_groups.*";
+        String queryString = baseUri + "/channels.json?";
         return queryString;
     }
 
