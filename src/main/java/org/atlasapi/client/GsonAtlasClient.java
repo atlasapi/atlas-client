@@ -215,14 +215,14 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     }
 
     @Override
-    public ChannelResponse writeChannel(Channel channel, ChannelWriteOptions channelWriteOptions) {
+    public void writeChannel(Channel channel, ChannelWriteOptions channelWriteOptions) {
         validateChannel(channel);
 
         if(channelWriteOptions.isOverwriteExisting()) {
             // TODO putChannel does not exist because there is no PUT channel endpoint in owl
-            return client.postChannel(writeChannelUri(), channel);
+            client.postChannel(writeChannelUri(), channel);
         } else {
-            return client.postChannel(writeChannelUri(), channel);
+            client.postChannel(writeChannelUri(), channel);
         }
     }
 

@@ -26,7 +26,7 @@ public interface AtlasWriteClient {
 
     ChannelGroupResponse writeChannelGroup(ChannelGroup channelGroup, ChannelGroupWriteOptions overwriteExisting);
 
-    ChannelResponse writeChannel(Channel channel, ChannelWriteOptions channelWriteOptions);
+    void writeChannel(Channel channel, ChannelWriteOptions channelWriteOptions);
 
     /**
      * @deprecated Use {@link AtlasWriteClient#writeItem(Item, ContentWriteOptions)}
