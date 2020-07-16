@@ -92,7 +92,7 @@
     </repositories>
 
     <properties>
-        <common.version>2.0-SNAPSHOT</common.version>
+        <common.version>2.2-SNAPSHOT</common.version>
         <atlas.version>${project.version}</atlas.version>
     </properties>
 </project>
