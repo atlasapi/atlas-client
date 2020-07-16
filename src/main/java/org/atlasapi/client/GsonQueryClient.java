@@ -366,7 +366,7 @@ public class GsonQueryClient implements StringQueryClient {
             Payload httpBody = new StringPayload(json);
             HttpResponse resp = httpClient.post(queryString, httpBody);
             if (resp.statusCode() >= 400) {
-                throw new BadResponseException("Error PUTting item: HTTP " + resp.statusCode() + " received from Atlas");
+                throw new BadResponseException("Error POSTting item: HTTP " + resp.statusCode() + " received from Atlas");
             }
             WriteResponseWrapper responseWrapper = gson.get().fromJson(resp.body(), WriteResponseWrapper.class);
             return new ChannelGroupResponse(responseWrapper.getAtlasResponse().getId(), resp.header(LOCATION));
@@ -381,22 +381,6 @@ public class GsonQueryClient implements StringQueryClient {
             String json = gson.get().toJson(channel);
             Payload httpBody = new StringPayload(json);
             HttpResponse resp = httpClient.put(queryString, httpBody);
-            if (resp.statusCode() >= 400) {
-                throw new BadResponseException("Error PUTting item: HTTP " + resp.statusCode() + " received from Atlas");
-            }
-            WriteResponseWrapper responseWrapper = gson.get().fromJson(resp.body(), WriteResponseWrapper.class);
-            return new ChannelResponse(responseWrapper.getAtlasResponse().getId(), resp.header(LOCATION));
-
-        } catch (HttpException e) {
-            throw Throwables.propagate(e);
-        }
-    }
-
-    public ChannelResponse postChannel(String queryString, Channel channel) {
-        try {
-            String json = gson.get().toJson(channel);
-            Payload httpBody = new StringPayload(json);
-            HttpResponse resp = httpClient.post(queryString, httpBody);
             if (resp.statusCode() >= 400) {
                 throw new BadResponseException("Error PUTting item: HTTP " + resp.statusCode() + " received from Atlas");
             }
