@@ -1,5 +1,7 @@
 package org.atlasapi.client;
 
+import org.atlasapi.client.query.ChannelGroupWriteOptions;
+import org.atlasapi.client.query.ChannelWriteOptions;
 import org.atlasapi.client.query.ContentWriteOptions;
 import org.atlasapi.client.response.ChannelGroupResponse;
 import org.atlasapi.client.response.ChannelResponse;
@@ -22,9 +24,9 @@ public interface AtlasWriteClient {
 
     ContentResponse writePlaylist(Playlist playlist, ContentWriteOptions options);
 
-    ChannelGroupResponse writeChannelGroup(ChannelGroup channelGroup, boolean overwriteExisting);
+    ChannelGroupResponse writeChannelGroup(ChannelGroup channelGroup, ChannelGroupWriteOptions overwriteExisting);
 
-    ChannelResponse writeChannel(Channel channel, boolean overwriteExisting);
+    ChannelResponse writeChannel(Channel channel, ChannelWriteOptions channelWriteOptions);
 
     /**
      * @deprecated Use {@link AtlasWriteClient#writeItem(Item, ContentWriteOptions)}

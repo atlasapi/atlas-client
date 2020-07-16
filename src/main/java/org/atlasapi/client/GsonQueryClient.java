@@ -10,9 +10,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.atlasapi.client.exception.BadResponseException;
 import org.atlasapi.client.response.ChannelGroupResponse;
-import org.atlasapi.client.response.ChannelResponse;
 import org.atlasapi.client.response.ContentResponse;
 import org.atlasapi.client.response.TopicUpdateResponse;
+import org.atlasapi.client.response.WriteResponseWithOldIdsWrapper;
 import org.atlasapi.client.response.WriteResponseWrapper;
 import org.atlasapi.media.entity.simple.Broadcast;
 import org.atlasapi.media.entity.simple.Channel;
@@ -352,7 +352,7 @@ public class GsonQueryClient implements StringQueryClient {
             if (resp.statusCode() >= 400) {
                 throw new BadResponseException("Error PUTting item: HTTP " + resp.statusCode() + " received from Atlas");
             }
-            WriteResponseWrapper responseWrapper = gson.get().fromJson(resp.body(), WriteResponseWrapper.class);
+            WriteResponseWithOldIdsWrapper responseWrapper = gson.get().fromJson(resp.body(), WriteResponseWithOldIdsWrapper.class);
             return new ChannelGroupResponse(responseWrapper.getAtlasResponse().getId(), resp.header(LOCATION));
 
         } catch (HttpException e) {
@@ -368,7 +368,7 @@ public class GsonQueryClient implements StringQueryClient {
             if (resp.statusCode() >= 400) {
                 throw new BadResponseException("Error POSTting item: HTTP " + resp.statusCode() + " received from Atlas");
             }
-            WriteResponseWrapper responseWrapper = gson.get().fromJson(resp.body(), WriteResponseWrapper.class);
+            WriteResponseWithOldIdsWrapper responseWrapper = gson.get().fromJson(resp.body(), WriteResponseWithOldIdsWrapper.class);
             return new ChannelGroupResponse(responseWrapper.getAtlasResponse().getId(), resp.header(LOCATION));
 
         } catch (HttpException e) {
@@ -376,19 +376,15 @@ public class GsonQueryClient implements StringQueryClient {
         }
     }
 
-    public ChannelResponse postChannel(String queryString, Channel channel) {
+    public void postChannel(String queryString, Channel channel) {
         try {
-            String json = gson.get().toJson(channel);
-            Payload httpBody = new StringPayload(json);
-            HttpResponse resp = httpClient.post(queryString, httpBody);
-            if (resp.statusCode() >= 400) {
-                throw new BadResponseException("Error POSTing item: HTTP " + resp.statusCode() + " received from Atlas");
+            StringPayload data = new StringPayload(gson.get().toJson(channel));
+            HttpResponse response = httpClient.put(queryString, data);
+            if (response.statusCode() >= 400) {
+                throw new BadResponseException(String.format("PUT %s %s: %s %s", channel.getUri(), channel.getPublisherDetails(), response.statusCode(), response.statusLine()));
             }
-            WriteResponseWrapper responseWrapper = gson.get().fromJson(resp.body(), WriteResponseWrapper.class);
-            return new ChannelResponse(responseWrapper.getAtlasResponse().getId(), resp.header(LOCATION));
-
         } catch (HttpException e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(String.format("%s %s %s", queryString, channel.getUri(), channel.getPublisherDetails()), e);
         }
     }
 

@@ -4,6 +4,8 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import org.atlasapi.client.query.AtlasQuery;
+import org.atlasapi.client.query.ChannelGroupWriteOptions;
+import org.atlasapi.client.query.ChannelWriteOptions;
 import org.atlasapi.client.query.ContentWriteOptions;
 import org.atlasapi.client.response.ChannelGroupResponse;
 import org.atlasapi.client.response.ChannelResponse;
@@ -202,10 +204,10 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     }
 
     @Override
-    public ChannelGroupResponse writeChannelGroup(ChannelGroup channelGroup, boolean overwriteExisting) {
+    public ChannelGroupResponse writeChannelGroup(ChannelGroup channelGroup, ChannelGroupWriteOptions channelGroupWriteOptions) {
         validateChannelGroup(channelGroup);
 
-        if(overwriteExisting) {
+        if(channelGroupWriteOptions.isOverwriteExisting()) {
             return client.putChannelGroup(writeChannelGroupUri(), channelGroup);
         } else {
             return client.postChannelGroup(writeChannelGroupUri(), channelGroup);
@@ -213,13 +215,13 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     }
 
     @Override
-    public ChannelResponse writeChannel(Channel channel, boolean overwriteExisting) {
+    public ChannelResponse writeChannel(Channel channel, ChannelWriteOptions channelWriteOptions) {
         validateChannel(channel);
 
-        if(overwriteExisting) {
+        if(channelWriteOptions.isOverwriteExisting()) {
+            // TODO putChannel does not exist because there is no PUT channel endpoint in owl
             return client.postChannel(writeChannelUri(), channel);
         } else {
-            // TODO putChannel does not exist because there is no PUT channel endpoint in owl
             return client.postChannel(writeChannelUri(), channel);
         }
     }
