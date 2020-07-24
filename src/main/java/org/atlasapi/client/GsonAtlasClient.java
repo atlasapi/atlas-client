@@ -441,6 +441,5 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
         checkNotNull(channel, "Cannot write a null channel");
         checkNotNull(channel.getPublisherDetails(), "Cannot write a Channel without a publisher");
         checkNotNull(Strings.emptyToNull(channel.getUri()), "Cannot write a Channel without a URI");
-        checkNotNull(Strings.emptyToNull(channel.getType()), "Cannot write a Channel without a type");
     }
 }
