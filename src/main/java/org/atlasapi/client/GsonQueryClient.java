@@ -379,7 +379,7 @@ public class GsonQueryClient implements StringQueryClient {
     public void postChannel(String queryString, Channel channel) {
         try {
             StringPayload data = new StringPayload(gson.get().toJson(channel));
-            HttpResponse response = httpClient.put(queryString, data);
+            HttpResponse response = httpClient.post(queryString, data);
             if (response.statusCode() >= 400) {
                 throw new BadResponseException(String.format("POST %s %s: %s %s", channel.getUri(), channel.getPublisherDetails(), response.statusCode(), response.statusLine()));
             }
