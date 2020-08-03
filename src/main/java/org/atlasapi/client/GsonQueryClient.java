@@ -386,8 +386,8 @@ public class GsonQueryClient implements StringQueryClient {
                 throw new BadResponseException(String.format("POST %s %s: %s %s", channel.getUri(), channel.getPublisherDetails(), response.statusCode(), response.statusLine()));
             }
 
-            ChannelResponse responseWrapper = gson.get().fromJson(response.body(), ChannelResponse.class);
-            return new ChannelResponse(responseWrapper.getId(), response.header(LOCATION));
+            WriteResponseWrapper responseWrapper = gson.get().fromJson(response.body(), WriteResponseWrapper.class);
+            return new ChannelResponse(responseWrapper.getAtlasResponse().getId(), response.header(LOCATION));
         } catch (HttpException e) {
             throw new RuntimeException(String.format("%s %s %s", queryString, channel.getUri(), channel.getPublisherDetails()), e);
         }
