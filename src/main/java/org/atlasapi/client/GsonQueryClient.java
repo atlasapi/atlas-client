@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.atlasapi.client.exception.BadResponseException;
 import org.atlasapi.client.response.ChannelGroupResponse;
+import org.atlasapi.client.response.ChannelResponse;
 import org.atlasapi.client.response.ContentResponse;
 import org.atlasapi.client.response.TopicUpdateResponse;
 import org.atlasapi.client.response.WriteResponseWithOldIdsWrapper;
@@ -31,6 +32,7 @@ import org.atlasapi.media.entity.simple.Playlist;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 import org.atlasapi.media.entity.simple.Topic;
 import org.atlasapi.media.entity.simple.TopicQueryResult;
+import org.atlasapi.media.entity.simple.response.WriteResponse;
 
 import com.metabroadcast.common.http.HttpException;
 import com.metabroadcast.common.http.HttpResponse;
@@ -376,13 +378,16 @@ public class GsonQueryClient implements StringQueryClient {
         }
     }
 
-    public void postChannel(String queryString, Channel channel) {
+    public ChannelResponse postChannel(String queryString, Channel channel) {
         try {
             StringPayload data = new StringPayload(gson.get().toJson(channel));
             HttpResponse response = httpClient.post(queryString, data);
             if (response.statusCode() >= 400) {
                 throw new BadResponseException(String.format("POST %s %s: %s %s", channel.getUri(), channel.getPublisherDetails(), response.statusCode(), response.statusLine()));
             }
+
+            ChannelResponse responseWrapper = gson.get().fromJson(response.body(), ChannelResponse.class);
+            return new ChannelResponse(responseWrapper.getId(), response.header(LOCATION));
         } catch (HttpException e) {
             throw new RuntimeException(String.format("%s %s %s", queryString, channel.getUri(), channel.getPublisherDetails()), e);
         }
