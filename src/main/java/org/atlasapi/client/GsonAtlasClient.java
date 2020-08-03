@@ -207,6 +207,7 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     public ChannelGroupResponse writeChannelGroup(ChannelGroup channelGroup, ChannelGroupWriteOptions channelGroupWriteOptions) {
         validateChannelGroup(channelGroup);
 
+        //Note: False options here as the API actually currently does the same with PUT and POST
         if(channelGroupWriteOptions.isOverwriteExisting()) {
             return client.putChannelGroup(writeChannelGroupUri(), channelGroup);
         } else {
@@ -215,15 +216,9 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     }
 
     @Override
-    public void writeChannel(Channel channel, ChannelWriteOptions channelWriteOptions) {
+    public ChannelResponse writeChannel(Channel channel) {
         validateChannel(channel);
-
-        if(channelWriteOptions.isOverwriteExisting()) {
-            // TODO putChannel does not exist because there is no PUT channel endpoint in owl
-            client.postChannel(writeChannelUri(), channel);
-        } else {
-            client.postChannel(writeChannelUri(), channel);
-        }
+        return client.postChannel(writeChannelUri(), channel);
     }
 
     @Override
