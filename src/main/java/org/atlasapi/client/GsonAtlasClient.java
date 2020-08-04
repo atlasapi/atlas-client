@@ -3,9 +3,10 @@ package org.atlasapi.client;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.atlasapi.client.query.AtlasQuery;
 import org.atlasapi.client.query.ChannelGroupWriteOptions;
-import org.atlasapi.client.query.ChannelWriteOptions;
 import org.atlasapi.client.query.ContentWriteOptions;
 import org.atlasapi.client.response.ChannelGroupResponse;
 import org.atlasapi.client.response.ChannelResponse;
@@ -209,9 +210,9 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
 
         //Note: False options here as the API actually currently does the same with PUT and POST
         if(channelGroupWriteOptions.isOverwriteExisting()) {
-            return client.putChannelGroup(writeChannelGroupUri(), channelGroup);
+            return client.putChannelGroup(writeChannelGroupUri(channelGroupWriteOptions.getIdFormat()), channelGroup);
         } else {
-            return client.postChannelGroup(writeChannelGroupUri(), channelGroup);
+            return client.postChannelGroup(writeChannelGroupUri(channelGroupWriteOptions.getIdFormat()), channelGroup);
         }
     }
 
@@ -348,10 +349,13 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
         return queryString;
     }
 
-    private String writeChannelGroupUri() {
+    private String writeChannelGroupUri(@Nullable String idFormat) {
         checkNotNull(apiKey.get(), "An API key must be specified for write queries");
         String queryString = baseUri + "/channel_groups.json?";
         queryString = Urls.appendParameters(queryString, "apiKey", apiKey.get());
+        if(idFormat != null) {
+            queryString = Urls.appendParameters(queryString, "id_format", idFormat);
+        }
         return queryString;
     }
 
