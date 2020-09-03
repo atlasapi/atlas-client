@@ -15,7 +15,13 @@ permissions and limitations under the License. */
 package org.atlasapi.client;
 
 import org.atlasapi.client.query.AtlasQuery;
-import org.atlasapi.media.entity.simple.*;
+import org.atlasapi.media.entity.simple.ChannelQueryResult;
+import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
+import org.atlasapi.media.entity.simple.ContentQueryResult;
+import org.atlasapi.media.entity.simple.DiscoverQueryResult;
+import org.atlasapi.media.entity.simple.EventQueryResult;
+import org.atlasapi.media.entity.simple.PeopleQueryResult;
+import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 
 /**
  * Client interface to the URIplay service.
@@ -39,6 +45,8 @@ public interface AtlasClient {
 	PeopleQueryResult people(PeopleQuery query);
 	
 	ContentQueryResult content(ContentQuery query);
+
+	ChannelQueryResult channel(ChannelQuery query);
 
 	EventQueryResult event(EventQuery query);
     

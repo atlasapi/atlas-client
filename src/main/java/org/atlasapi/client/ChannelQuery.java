@@ -1,9 +1,5 @@
 package org.atlasapi.client;
 
-import java.util.Set;
-
-import org.atlasapi.output.Annotation;
-
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
@@ -12,7 +8,12 @@ import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.metabroadcast.common.query.Selection;
+import com.metabroadcast.common.stream.MoreCollectors;
 import com.metabroadcast.common.url.QueryStringParameters;
+import org.atlasapi.media.entity.Publisher;
+import org.atlasapi.output.Annotation;
+
+import java.util.Set;
 
 public class ChannelQuery {
 
@@ -21,19 +22,29 @@ public class ChannelQuery {
     private static final String PLATFORMS_PARAMETER = "platforms";
     private static final String REGIONS_PARAMETER = "regions";
     private static final String ANNOTATIONS_PARAMETER = "annotations";
+    private static final String AVAILABLE_FROM_PARAMETER = "available_from";
 
     private final Set<String> platforms;
     private final Set<String> regions;
     private final Set<Annotation> annotations;
-    
+    private final Set<String> availableFrom;
+
     private final Optional<Selection> selection;
 
-    private ChannelQuery(Iterable<String> platforms,
-            Iterable<String> regions, Optional<Selection> selection, Set<Annotation> annotations) {
+    private ChannelQuery(
+            Iterable<String> platforms,
+            Iterable<String> regions,
+            Optional<Selection> selection,
+            Set<Annotation> annotations,
+            Set<Publisher> availableFrom
+    ) {
         this.platforms = ImmutableSet.copyOf(platforms);
         this.regions = ImmutableSet.copyOf(regions);
         this.selection = selection;
         this.annotations = ImmutableSortedSet.copyOf(annotations);
+        this.availableFrom = availableFrom.stream()
+                .map(Publisher::key)
+                .collect(MoreCollectors.toImmutableSet());
     }
 
     public static ChannelQueryBuilder builder() {
@@ -58,6 +69,10 @@ public class ChannelQuery {
             parameters.add(ANNOTATIONS_PARAMETER, JOINER.join(Iterables.transform(annotations, Annotation.TO_KEY)));
         }
 
+        if (!availableFrom.isEmpty()) {
+            parameters.add(AVAILABLE_FROM_PARAMETER, JOINER.join(availableFrom));
+        }
+
         return parameters;
     }
 
@@ -68,6 +83,7 @@ public class ChannelQuery {
                 .add(REGIONS_PARAMETER, regions)
                 .add(ANNOTATIONS_PARAMETER, annotations)
                 .add("selection", selection)
+                .add(AVAILABLE_FROM_PARAMETER, availableFrom)
                 .toString();
     }
     
@@ -81,14 +97,15 @@ public class ChannelQuery {
             return Objects.equal(this.platforms, other.platforms)
                     && Objects.equal(this.regions, other.regions)
                     && Objects.equal(this.annotations, other.annotations)
-                    && Objects.equal(this.selection, other.selection);
+                    && Objects.equal(this.selection, other.selection)
+                    && Objects.equal(this.availableFrom, other.availableFrom);
         }
         return false;
     }
     
     @Override
     public int hashCode() {
-        return Objects.hashCode(platforms, regions, selection);
+        return Objects.hashCode(platforms, regions, selection, availableFrom);
     }
 
     public static class ChannelQueryBuilder {
@@ -97,6 +114,7 @@ public class ChannelQuery {
         private Set<String> regions = Sets.newHashSet();
         private ImmutableSortedSet<Annotation> annotations = ImmutableSortedSet.of();
         private Optional<Selection> selection = Optional.absent();
+        private Set<Publisher> availableFrom = Sets.newHashSet();
 
         public ChannelQueryBuilder withPlatforms(Iterable<String> platforms) {
             Iterables.addAll(this.platforms, platforms);
@@ -130,8 +148,17 @@ public class ChannelQuery {
             return this;
         }
 
+        public ChannelQueryBuilder withAvailableFrom(Iterable<Publisher> publishers) {
+            Iterables.addAll(this.availableFrom, publishers);
+            return this;
+        }
+
+        public ChannelQueryBuilder withAvailableFrom(Publisher... publishers) {
+            return withAvailableFrom(ImmutableSet.copyOf(publishers));
+        }
+
         public ChannelQuery build() {
-            return new ChannelQuery(platforms, regions, selection, annotations);
+            return new ChannelQuery(platforms, regions, selection, annotations, availableFrom);
         }
     }
 }

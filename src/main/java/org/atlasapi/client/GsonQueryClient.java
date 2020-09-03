@@ -1,13 +1,37 @@
 package org.atlasapi.client;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
-import java.util.Date;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
+import com.google.common.base.Charsets;
+import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.google.gson.TypeAdapter;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import com.metabroadcast.common.http.HttpException;
+import com.metabroadcast.common.http.HttpResponse;
+import com.metabroadcast.common.http.HttpResponsePrologue;
+import com.metabroadcast.common.http.HttpResponseTransformer;
+import com.metabroadcast.common.http.HttpStatusCodeException;
+import com.metabroadcast.common.http.Payload;
+import com.metabroadcast.common.http.SimpleHttpClient;
+import com.metabroadcast.common.http.SimpleHttpClientBuilder;
+import com.metabroadcast.common.http.SimpleHttpRequest;
+import com.metabroadcast.common.http.StringPayload;
+import com.metabroadcast.common.intl.Countries;
+import com.metabroadcast.common.intl.Country;
 import org.atlasapi.client.exception.BadResponseException;
 import org.atlasapi.client.response.ChannelGroupResponse;
 import org.atlasapi.client.response.ChannelResponse;
@@ -32,44 +56,17 @@ import org.atlasapi.media.entity.simple.Playlist;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 import org.atlasapi.media.entity.simple.Topic;
 import org.atlasapi.media.entity.simple.TopicQueryResult;
-import org.atlasapi.media.entity.simple.response.WriteResponse;
-
-import com.metabroadcast.common.http.HttpException;
-import com.metabroadcast.common.http.HttpResponse;
-import com.metabroadcast.common.http.HttpResponsePrologue;
-import com.metabroadcast.common.http.HttpResponseTransformer;
-import com.metabroadcast.common.http.HttpStatusCodeException;
-import com.metabroadcast.common.http.Payload;
-import com.metabroadcast.common.http.SimpleHttpClient;
-import com.metabroadcast.common.http.SimpleHttpClientBuilder;
-import com.metabroadcast.common.http.SimpleHttpRequest;
-import com.metabroadcast.common.http.StringPayload;
-import com.metabroadcast.common.intl.Countries;
-import com.metabroadcast.common.intl.Country;
-
-import com.google.common.base.Charsets;
-import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableMap;
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import com.google.gson.TypeAdapter;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
+import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class GsonQueryClient implements StringQueryClient {
 
@@ -176,6 +173,48 @@ public class GsonQueryClient implements StringQueryClient {
     }
 
     @Override
+    public ChannelQueryResult channelQuery(String queryUri) {
+        try {
+            return gson.get().fromJson(httpClient.getContentsOf(queryUri), ChannelQueryResult.class);
+        } catch (HttpStatusCodeException e) {
+            if (NOT_FOUND == e.getStatusCode()) {
+                return new ChannelQueryResult();
+            }
+            throw new RuntimeException("Problem with channel query " + queryUri, e);
+        } catch (Exception e) {
+            throw new RuntimeException("Problem with channel query " + queryUri, e);
+        }
+    }
+
+    @Override
+    public ChannelGroupQueryResult channelGroupQuery(String queryUri) {
+        try {
+            return gson.get().fromJson(httpClient.getContentsOf(queryUri), ChannelGroupQueryResult.class);
+        } catch (HttpStatusCodeException e) {
+            if (NOT_FOUND == e.getStatusCode()) {
+                return new ChannelGroupQueryResult();
+            }
+            throw new RuntimeException("Problem with channel group query " + queryUri, e);
+        } catch (Exception e) {
+            throw new RuntimeException("Problem with channel group query " + queryUri, e);
+        }
+    }
+
+    @Override
+    public EventQueryResult eventQuery(String eventQueryUri) {
+        try {
+            return gson.get().fromJson(httpClient.getContentsOf(eventQueryUri), EventQueryResult.class);
+        } catch (HttpStatusCodeException e) {
+            if (NOT_FOUND == e.getStatusCode()) {
+                return new EventQueryResult();
+            }
+            throw new RuntimeException("Problem with event query " + eventQueryUri, e);
+        } catch (Exception e) {
+            throw new RuntimeException("Problem with event query " + eventQueryUri, e);
+        }
+    }
+
+    @Override
     public ContentResponse postItem(String query, Item item) {
         try {
             String json = gson.get().toJson(item);
@@ -241,50 +280,6 @@ public class GsonQueryClient implements StringQueryClient {
             );
         } catch (Exception e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public ChannelQueryResult channelQuery(String queryUri) {
-        try {
-            return httpClient.get(SimpleHttpRequest.httpRequestFrom(queryUri, new HttpResponseTransformer<ChannelQueryResult>() {
-
-                @Override
-                public ChannelQueryResult transform(HttpResponsePrologue prologue, InputStream body) throws HttpException, Exception {
-                    return gson.get().fromJson(new InputStreamReader(body, Charsets.UTF_8), ChannelQueryResult.class);
-                }
-            }));
-        } catch (Exception e) {
-            throw new RuntimeException("Problem with channel query " + queryUri, e);
-        }
-    }
-
-    @Override
-    public ChannelGroupQueryResult channelGroupQuery(String queryUri) {
-        try {
-            return httpClient.get(SimpleHttpRequest.httpRequestFrom(queryUri, new HttpResponseTransformer<ChannelGroupQueryResult>() {
-
-                @Override
-                public ChannelGroupQueryResult transform(HttpResponsePrologue prologue, InputStream body) throws HttpException, Exception {
-                    return gson.get().fromJson(new InputStreamReader(body, Charsets.UTF_8), ChannelGroupQueryResult.class);
-                }
-            }));
-        } catch (Exception e) {
-            throw new RuntimeException("Problem with channel group query " + queryUri, e);
-        }
-    }
-
-    @Override
-    public EventQueryResult eventQuery(String eventQueryUri) {
-        try {
-            return httpClient.get(SimpleHttpRequest.httpRequestFrom(eventQueryUri, new HttpResponseTransformer<EventQueryResult>() {
-                @Override
-                public EventQueryResult transform(HttpResponsePrologue httpResponsePrologue, InputStream inputStream) throws HttpException, Exception {
-                    return gson.get().fromJson(new InputStreamReader(inputStream, Charsets.UTF_8), EventQueryResult.class);
-                }
-            }));
-        } catch (Exception e) {
-            throw new RuntimeException("Problem with event query" + eventQueryUri, e);
         }
     }
 

@@ -1,10 +1,14 @@
 package org.atlasapi.client;
 
-import java.net.URISyntaxException;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
+import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
+import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
+import com.google.common.net.HostSpecifier;
+import com.metabroadcast.common.url.QueryStringParameters;
+import com.metabroadcast.common.url.UrlEncoding;
+import com.metabroadcast.common.url.Urls;
+import org.apache.http.client.utils.URIBuilder;
 import org.atlasapi.client.query.AtlasQuery;
 import org.atlasapi.client.query.ChannelGroupWriteOptions;
 import org.atlasapi.client.query.ContentWriteOptions;
@@ -14,6 +18,7 @@ import org.atlasapi.client.response.ContentResponse;
 import org.atlasapi.client.response.TopicUpdateResponse;
 import org.atlasapi.media.entity.simple.Channel;
 import org.atlasapi.media.entity.simple.ChannelGroup;
+import org.atlasapi.media.entity.simple.ChannelQueryResult;
 import org.atlasapi.media.entity.simple.ContentGroupQueryResult;
 import org.atlasapi.media.entity.simple.ContentQueryResult;
 import org.atlasapi.media.entity.simple.Description;
@@ -26,19 +31,12 @@ import org.atlasapi.media.entity.simple.Playlist;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 import org.atlasapi.media.entity.simple.Topic;
 import org.atlasapi.media.entity.simple.TopicQueryResult;
-
-import com.metabroadcast.common.url.QueryStringParameters;
-import com.metabroadcast.common.url.UrlEncoding;
-import com.metabroadcast.common.url.Urls;
-
-import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
-import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
-import com.google.common.net.HostSpecifier;
-import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.Nullable;
+import java.net.URISyntaxException;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -92,6 +90,11 @@ public class GsonAtlasClient implements AtlasClient, AtlasWriteClient {
     @Override
     public ContentQueryResult content(ContentQuery query) {
         return client.contentQuery(baseUri + "/content.json?" + withApiKey(query.toQueryStringParameters()).toQueryString());
+    }
+
+    @Override
+    public ChannelQueryResult channel(ChannelQuery query) {
+        return client.channelQuery(baseUri + "/channels.json?" + withApiKey(query.toQueryStringParameters()).toQueryString());
     }
 
     @Override
