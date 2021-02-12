@@ -4,6 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -66,6 +67,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class GsonQueryClient implements StringQueryClient {
@@ -500,13 +502,15 @@ public class GsonQueryClient implements StringQueryClient {
 
     public static class DescriptionDeserializer implements JsonDeserializer<Description> {
 
+        private static final Set<String> PLAYLIST_TYPES = ImmutableSet.of("brand", "series");
+
         @Override
         public Description deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             JsonObject jsonObj = json.getAsJsonObject();
-            if (jsonObj.has("locations") || jsonObj.has("broadcasts")) {
-                return context.deserialize(json, Item.class);
-            } else {
+            if (PLAYLIST_TYPES.contains(jsonObj.get("type").getAsString())) {
                 return context.deserialize(json, Playlist.class);
+            } else {
+                return context.deserialize(json, Item.class);
             }
         }
     }
