@@ -1,13 +1,38 @@
 package org.atlasapi.client;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
-import java.util.Date;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
+import com.google.common.base.Charsets;
+import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.google.gson.TypeAdapter;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import com.metabroadcast.common.http.HttpException;
+import com.metabroadcast.common.http.HttpResponse;
+import com.metabroadcast.common.http.HttpResponsePrologue;
+import com.metabroadcast.common.http.HttpResponseTransformer;
+import com.metabroadcast.common.http.HttpStatusCodeException;
+import com.metabroadcast.common.http.Payload;
+import com.metabroadcast.common.http.SimpleHttpClient;
+import com.metabroadcast.common.http.SimpleHttpClientBuilder;
+import com.metabroadcast.common.http.SimpleHttpRequest;
+import com.metabroadcast.common.http.StringPayload;
+import com.metabroadcast.common.intl.Countries;
+import com.metabroadcast.common.intl.Country;
 import org.atlasapi.client.exception.BadResponseException;
 import org.atlasapi.client.response.ChannelGroupResponse;
 import org.atlasapi.client.response.ChannelResponse;
@@ -32,44 +57,18 @@ import org.atlasapi.media.entity.simple.Playlist;
 import org.atlasapi.media.entity.simple.ScheduleQueryResult;
 import org.atlasapi.media.entity.simple.Topic;
 import org.atlasapi.media.entity.simple.TopicQueryResult;
-import org.atlasapi.media.entity.simple.response.WriteResponse;
-
-import com.metabroadcast.common.http.HttpException;
-import com.metabroadcast.common.http.HttpResponse;
-import com.metabroadcast.common.http.HttpResponsePrologue;
-import com.metabroadcast.common.http.HttpResponseTransformer;
-import com.metabroadcast.common.http.HttpStatusCodeException;
-import com.metabroadcast.common.http.Payload;
-import com.metabroadcast.common.http.SimpleHttpClient;
-import com.metabroadcast.common.http.SimpleHttpClientBuilder;
-import com.metabroadcast.common.http.SimpleHttpRequest;
-import com.metabroadcast.common.http.StringPayload;
-import com.metabroadcast.common.intl.Countries;
-import com.metabroadcast.common.intl.Country;
-
-import com.google.common.base.Charsets;
-import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableMap;
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import com.google.gson.TypeAdapter;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
+import java.util.Date;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 public class GsonQueryClient implements StringQueryClient {
 
@@ -505,13 +504,15 @@ public class GsonQueryClient implements StringQueryClient {
 
     public static class DescriptionDeserializer implements JsonDeserializer<Description> {
 
+        private static final Set<String> PLAYLIST_TYPES = ImmutableSet.of("brand", "series");
+
         @Override
         public Description deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             JsonObject jsonObj = json.getAsJsonObject();
-            if (jsonObj.has("locations") || jsonObj.has("broadcasts")) {
-                return context.deserialize(json, Item.class);
-            } else {
+            if (PLAYLIST_TYPES.contains(jsonObj.get("type").getAsString())) {
                 return context.deserialize(json, Playlist.class);
+            } else {
+                return context.deserialize(json, Item.class);
             }
         }
     }
