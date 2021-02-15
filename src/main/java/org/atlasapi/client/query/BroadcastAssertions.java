@@ -54,7 +54,7 @@ public class BroadcastAssertions {
             this.from = checkNotNull(from);
             this.to = checkNotNull(to);
 
-            checkArgument(this.from.isBefore(this.to) || this.from.isEqual(this.to));
+            checkArgument(!this.from.isAfter(this.to));
         }
 
         public static BroadcastAssertion create(
