@@ -3,6 +3,7 @@ package org.atlasapi.client;
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Iterables;
@@ -15,6 +16,8 @@ import org.atlasapi.output.Annotation;
 
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 public class ChannelQuery {
 
     private static final Joiner JOINER = Joiner.on(',');
@@ -23,11 +26,13 @@ public class ChannelQuery {
     private static final String REGIONS_PARAMETER = "regions";
     private static final String ANNOTATIONS_PARAMETER = "annotations";
     private static final String AVAILABLE_FROM_PARAMETER = "available_from";
+    private static final String URI_PARAMETER = "uri";
 
     private final Set<String> platforms;
     private final Set<String> regions;
     private final Set<Annotation> annotations;
     private final Set<String> availableFrom;
+    private final String uri;
 
     private final Optional<Selection> selection;
 
@@ -36,7 +41,8 @@ public class ChannelQuery {
             Iterable<String> regions,
             Optional<Selection> selection,
             Set<Annotation> annotations,
-            Set<Publisher> availableFrom
+            Set<Publisher> availableFrom,
+            @Nullable String uri
     ) {
         this.platforms = ImmutableSet.copyOf(platforms);
         this.regions = ImmutableSet.copyOf(regions);
@@ -45,6 +51,7 @@ public class ChannelQuery {
         this.availableFrom = availableFrom.stream()
                 .map(Publisher::key)
                 .collect(MoreCollectors.toImmutableSet());
+        this.uri = uri;
     }
 
     public static ChannelQueryBuilder builder() {
@@ -71,6 +78,10 @@ public class ChannelQuery {
 
         if (!availableFrom.isEmpty()) {
             parameters.add(AVAILABLE_FROM_PARAMETER, JOINER.join(availableFrom));
+        }
+
+        if (!Strings.isNullOrEmpty(uri)) {
+            parameters.add(URI_PARAMETER, uri);
         }
 
         return parameters;
@@ -115,6 +126,7 @@ public class ChannelQuery {
         private ImmutableSortedSet<Annotation> annotations = ImmutableSortedSet.of();
         private Optional<Selection> selection = Optional.absent();
         private Set<Publisher> availableFrom = Sets.newHashSet();
+        private String uri;
 
         public ChannelQueryBuilder withPlatforms(Iterable<String> platforms) {
             Iterables.addAll(this.platforms, platforms);
@@ -157,8 +169,13 @@ public class ChannelQuery {
             return withAvailableFrom(ImmutableSet.copyOf(publishers));
         }
 
+        public ChannelQueryBuilder withUri(String uri) {
+            this.uri = uri;
+            return this;
+        }
+
         public ChannelQuery build() {
-            return new ChannelQuery(platforms, regions, selection, annotations, availableFrom);
+            return new ChannelQuery(platforms, regions, selection, annotations, availableFrom, uri);
         }
     }
 }
