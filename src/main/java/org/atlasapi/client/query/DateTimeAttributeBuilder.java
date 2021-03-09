@@ -36,4 +36,5 @@ public class DateTimeAttributeBuilder {
 	public AtlasQuery between(Interval interval) {
 		return between(interval.getStart(), interval.getEnd());
 	}
+
 }
