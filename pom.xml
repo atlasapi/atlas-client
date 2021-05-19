@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.atlasapi</groupId>
     <artifactId>atlas-client</artifactId>
-    <version>5.11-SNAPSHOT</version>
+    <version>5.1-SNAPSHOT</version>
     <description>Java Client for Atlas API</description>
     <build>
         <finalName>atlas-client</finalName>
