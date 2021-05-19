@@ -397,7 +397,10 @@ public class GsonQueryClient implements StringQueryClient {
         try {
             HttpResponse response = httpClient.delete(queryString);
             if (response.statusCode() >= 400) {
-                throw new BadResponseException(String.format("DELETE %s: %s %s", queryString, response.statusCode(), response.statusLine()));
+                BadResponseException badResponseException =
+                        new BadResponseException(String.format("DELETE %s: %s %s", queryString, response.statusCode(), response.statusLine()));
+                badResponseException.setResponse(response);
+                throw badResponseException;
             }
         } catch (HttpException e) {
             throw new RuntimeException(String.format("%s", queryString), e);
